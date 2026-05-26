@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>継続率</title>
+
+<style>
+body {
+  background: #dcdcdc;
+  font-family: Arial, sans-serif;
+  margin: 0;
+}
+
+/* 全体 */
+.container {
+  width: 360px;
+  margin: 40px auto;
+  background: #d8e8da;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* タイトル */
+.header {
+  text-align: center;
+  font-size: 40px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* ボックス */
+.box {
+  background: #e0e0e0;
+  border: 1px solid #666;
+  padding: 30px 10px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* 数値 */
+.rate {
+  font-size: 40px;
+  font-weight: bold;
+}
+
+/* サブ */
+.sub {
+  font-size: 16px;
+}
+
+/* グラフ */
+.graph {
+  height: 180px;
+  border-left: 3px solid black;
+  border-right: 3px solid black;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+}
+
+/* 理由 */
+.footer {
+  background: #e5e5e5;
+  border-left: 5px solid #39ff00;
+  padding: 15px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* ✅ メニューバー（ここに移動） */
+.menu-bar {
+  background: #f2f2f2;
+  border-top: 1px solid #ccc;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 60px;
+  border-radius: 10px;
+}
+
+/* メニュー */
+.menu-item {
+  text-align: center;
+  font-size: 12px;
+  color: #555;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.menu-item:hover {
+  opacity: 0.7;
+}
+
+/* 選択中 */
+.active {
+  color: purple;
+  font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="header">継続率</div>
+
+  <div class="box">
+    <div class="rate">75%</div>
+    <div class="sub">継続日数：30日</div>
+  </div>
+
+  <div class="box graph">
+    （グラフ表示エリア）
+  </div>
+
+  <div class="footer">
+    できなかった理由を上位順に表示
+  </div>
+
+  <!-- ✅ ここに配置 -->
+  <div class="menu-bar">
+    <a href="#" class="menu-item">📅<br>記録</a>
+    <a href="#" class="menu-item">⏱<br>履歴</a>
+    <a href="#" class="menu-item active">📊<br>分析</a>
+    <a href="#" class="menu-item">⚙<br>設定</a>
+  </div>
+
+</div>
+
+</body>
+</html>
