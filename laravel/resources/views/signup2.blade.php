@@ -322,7 +322,7 @@
             showMessage('登録を送信しています。', 'idle');
 
             try {
-                const response = await fetch('http://localhost/backend/signup.php', {
+                const response = await fetch('/api/signup', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
