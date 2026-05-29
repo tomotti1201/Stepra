@@ -1,0 +1,496 @@
+<!-- ===================================================== -->
+<!-- HTML -->
+<!-- ===================================================== -->
+
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+  <title>STEPRA ユーザー情報</title>
+
+
+
+
+
+<!-- ===================================================== -->
+<!-- CSS -->
+<!-- ===================================================== -->
+
+<style>
+
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: sans-serif;
+}
+
+body{
+
+  background: #d9d9d9;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  min-height: 100vh;
+
+  padding: 10px;
+}
+
+
+/* ===== スマホ ===== */
+
+.phone{
+
+  width: 100%;
+  max-width: 390px;
+
+  height: 100vh;
+
+  background: #d8e8da;
+
+  border: 6px solid #666;
+
+  border-radius: 35px;
+
+  overflow: hidden;
+
+  position: relative;
+}
+
+/* ===== 上部分 ===== */
+
+.top-area{
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 20px;
+
+  padding: 25px;
+}
+
+/* ===================================================== */
+/* アイコンボタン */
+/* ===================================================== */
+
+.user-icon{
+
+  width: 95px;
+  height: 95px;
+
+  border-radius: 50%;
+
+  background: #7fa7d8;
+
+  border: 2px solid black;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  position: relative;
+
+  overflow: hidden;
+
+  cursor: pointer;
+
+  font-size: 18px;
+}
+
+/* 画像 */
+
+.user-icon img{
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  display: none;
+}
+
+/* テキスト */
+
+#iconText{
+
+  position: absolute;
+}
+
+/* ===== ユーザー名 ===== */
+
+.user-name{
+
+  width: 200px;
+  height: 80px;
+
+  background: #3cff00;
+
+  border: 2px solid black;
+
+  border-radius: 10px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 18px;
+}
+
+/* ===================================================== */
+/* 白いエリア */
+/* ===================================================== */
+
+.level-box{
+
+  width: calc(100% - 40px);
+
+  height: 260px;
+
+  background: white;
+
+  border: 2px solid #555;
+
+  margin: 10px auto;
+
+  padding: 18px;
+
+  font-size: 16px;
+
+  line-height: 1.7;
+
+  border-radius: 10px;
+}
+
+/* ===== 設定ボタン ===== */
+
+.setting-btn{
+
+  width: calc(100% - 40px);
+
+  height: 120px;
+
+  background: #3cff00;
+
+  border: 2px solid black;
+
+  border-radius: 12px;
+
+  margin: 25px auto;
+
+  cursor: pointer;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  transition: 0.2s;
+}
+
+.setting-btn:hover{
+
+  background: #35e600;
+}
+
+.setting-btn:active{
+
+  transform: scale(0.97);
+}
+
+/* ===== 下メニュー ===== */
+
+.bottom-menu{
+
+  width: 100%;
+  height: 70px;
+
+  background: #f2f2f2;
+
+  position: absolute;
+
+  bottom: 0;
+
+  border-top: 2px solid #ccc;
+
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+/* ボタン */
+
+.menu-btn{
+
+  width: 50px;
+  height: 50px;
+
+  border: none;
+
+  background: transparent;
+
+  font-size: 30px;
+
+  color: #777;
+
+  cursor: pointer;
+
+  border-radius: 12px;
+
+  transition: 0.2s;
+}
+
+.menu-btn:active{
+
+  transform: scale(0.9);
+}
+
+.active-btn{
+
+  color: #8e5eff;
+
+  font-weight: bold;
+}
+
+/* ボタン */
+
+.menu-btn{
+
+  width: 50px;
+  height: 50px;
+
+  border: none;
+
+  background: transparent;
+
+  font-size: 30px;
+
+  color: #777;
+
+  cursor: pointer;
+
+  border-radius: 12px;
+
+  transition: 0.2s;
+}
+
+/* 押した時 */
+
+.menu-btn:active{
+
+  transform: scale(0.9);
+}
+
+/* 現在ページ */
+
+.active-btn{
+
+  color: #8e5eff;
+
+  font-weight: bold;
+}
+
+</style>
+
+</head>
+
+
+
+
+
+<!-- ===================================================== -->
+<!-- BODY -->
+<!-- ===================================================== -->
+
+<body>
+
+<div class="phone">
+
+  <!-- 上部分 -->
+
+  <div class="top-area">
+
+    <!-- アイコン -->
+
+    <button class="user-icon"
+        onclick="selectImage()">
+
+    <img id="iconImage"
+        src=""
+        alt="">
+
+    <span id="iconText">
+        アイコン
+    </span>
+
+    </button>
+
+<!-- 画像選択 -->
+
+<input type="file"
+       id="imageInput"
+       accept="image/*"
+       style="display: none;"
+       onchange="changeIcon(event)">
+
+    <!-- ユーザー名 -->
+
+    <div class="user-name">
+      ユーザー名
+    </div>
+
+  </div>
+
+  <!-- 白い空白部分 -->
+
+  <div class="level-box">
+
+    （開発予定）
+
+  </div>
+
+  <!-- 設定 -->
+
+  <button class="setting-btn"
+          onclick="window.location.href='settei.html'">
+
+    <div class="setting-title">
+      設定
+    </div>
+
+    <div class="setting-text">
+
+      ユーザー情報の<br>
+      変更・削除など
+
+    </div>
+
+  </button>
+
+  <!-- 下メニュー -->
+
+  <div class="bottom-menu">
+
+    <button class="menu-btn">
+      ⌂
+    </button>
+
+    <button class="menu-btn">
+      ◷
+    </button>
+
+    <button class="menu-btn">
+      ▤
+    </button>
+
+    <button class="menu-btn active-btn">
+      ◉
+    </button>
+
+    <button class="menu-btn">
+      ☷
+    </button>
+
+  </div>
+
+</div>
+
+
+
+
+
+<!-- ===================================================== -->
+<!-- JavaScript -->
+<!-- ===================================================== -->
+
+<script>
+
+/* ===================================================== */
+/* 画像選択を開く */
+/* ===================================================== */
+
+function selectImage(){
+
+  document.getElementById("imageInput")
+    .click();
+}
+
+/* ===================================================== */
+/* アイコン変更 */
+/* ===================================================== */
+
+function changeIcon(event){
+
+  const file =
+    event.target.files[0];
+
+  if(!file){
+    return;
+  }
+
+  const reader =
+    new FileReader();
+
+  reader.onload = function(e){
+
+    const image =
+      document.getElementById("iconImage");
+
+    const text =
+      document.getElementById("iconText");
+
+    image.src = e.target.result;
+
+    image.style.display = "block";
+
+    text.style.display = "none";
+  };
+
+  reader.readAsDataURL(file);
+}
+
+/* =======================================
+   設定画面へ
+======================================= */
+
+function goSetting(){
+
+  /* 遷移例 */
+
+  window.location.href =
+    "setting.html";
+}
+
+/* =======================================
+   下メニュー切り替え
+======================================= */
+
+const menuButtons =
+  document.querySelectorAll(".menu-btn");
+
+menuButtons.forEach(button => {
+
+  button.addEventListener("click", () => {
+
+    menuButtons.forEach(btn => {
+      btn.classList.remove("active-btn");
+    });
+
+    button.classList.add("active-btn");
+
+  });
+
+});
+
+</script>
+
+</body>
+</html>
