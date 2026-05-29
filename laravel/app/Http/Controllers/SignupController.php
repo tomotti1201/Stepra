@@ -12,12 +12,13 @@ class SignupController extends Controller
     {
         $name = trim($request->name ?? '');
         $email = trim($request->email ?? '');
+        $birth_date = trim($request->birth_date ?? '');
         $password = $request->password ?? '';
 
-        if ($name === '' || $email === '' || $password === '') {
+        if ($name === '' || $email === '' || $birth_date === '' || $password === '') {
             return response()->json([
                 'status' => 'error',
-                'message' => 'name, email, password are required',
+                'message' => 'name, email, birth_date, password are required',
             ], 400);
         }
 
@@ -27,6 +28,15 @@ class SignupController extends Controller
                 'message' => 'Invalid email format',
             ], 400);
         }
+
+        if(strlen($birth_date) !== 8){
+            return response() -> json([
+                'status' => 'error',
+                'message' => 'Birth date must be 8 characters',
+            ], 400);
+        }
+
+        $birth_date = substr($birth_date,0,4) . '-' . substr($birth_date,4,2) . '-' . substr($birth_date,6,2);
 
         if (strlen($password) < 8) {
             return response()->json([
@@ -49,6 +59,7 @@ class SignupController extends Controller
         $id = DB::table('users')->insertGetId([
             'name' => $name,
             'email' => $email,
+            'birth_date' => $birth_date,
             'password' => Hash::make($password),
         ]);
 
@@ -59,6 +70,7 @@ class SignupController extends Controller
                 'id' => $id,
                 'name' => $name,
                 'email' => $email,
+                'birth_date' => $birth_date,
             ]
         ], 201);
     }

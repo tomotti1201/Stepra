@@ -6,6 +6,7 @@
   <title>STEPRA ログイン画面</title>
 
   <style>
+
     *{
       margin: 0;
       padding: 0;
@@ -18,23 +19,35 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
+      padding: 10px;
     }
 
+    /* ===== スマホ本体 ===== */
+
     .phone{
-      width: 280px;
-      height: 500px;
+      width: 100%;
+      max-width: 390px;
+      height: 90vh;
+
       background-color: #d8e8da;
       border: 2px solid black;
       border-radius: 45px;
+
       padding-top: 25px;
+      position: relative;
     }
 
+    /* ===== タイトル ===== */
+
     .title{
-      width: 190px;
-      height: 70px;
+      width: 75%;
+      height: 100px;
+
       background-color: #3cff00;
-      margin: 0 auto;
+
+      margin: 25px auto 0 auto;   /* タイトルの上下の余白 */
+
       border: 1px solid black;
       border-radius: 15px;
 
@@ -42,65 +55,173 @@
       justify-content: center;
       align-items: center;
 
-      font-size: 32px;
+      font-size: 2rem;
       font-weight: bold;
     }
 
-    /* 全体を上に移動 */
+    /* ===== 入力フォーム ===== */
+
     .form-area{
-      margin-top: 40px;
+      margin-top: 30px;   /* タイトルとフォームの余白 */
+
       display: flex;
       flex-direction: column;
       align-items: center;
     }
 
     .input-group{
-      width: 160px;
-      margin-bottom: 10px;
+      width: 75%;
+      margin-bottom: 15px;
     }
 
     .input-group label{
-      font-size: 14px;
+      font-size: 1rem;
     }
 
     .input-group input{
       width: 100%;
-      height: 25px;
+      height: 50px;
+
       border: 1px solid black;
-      padding-left: 5px;
-      font-size: 12px;
+
+      padding-left: 10px;
+      font-size: 0.9rem;
+
+      margin-top: 3px;
     }
+
+    /* ===== ログインボタン ===== */
 
     .login-btn{
-      width: 180px;
-      height: 55px;
+      width: 80%;
+      height: 70px;
+
       background-color: #3cff00;
+
       border: 1px solid black;
       border-radius: 12px;
-      margin-top: 15px;
+
+      margin-top: 20px;
+
       cursor: pointer;
-      font-size: 30px;
+
+      font-size: 1.7rem;
+      font-weight: bold;
     }
 
+    /* ===== 下のボタン ===== */
+
     .sub-btn{
-      width: 160px;
-      height: 22px;
+      width: 70%;
+      height: 35px;
+
       margin-top: 28px;
-      border: 1px solid black;
-      background-color: #f4f4f4;
-      font-size: 12px;
+
+      border: 1px solid #eaf5eb;
+
+      background-color: #eef4ee;
+
+      font-size: 0.85rem;
+
       cursor: pointer;
     }
 
     .sub-btn:last-child{
-      margin-top: 38px;
+      margin-top: 20px;
     }
 
     .message{
       margin-top: 15px;
-      font-size: 12px;
+      font-size: 0.9rem;
       color: #333;
     }
+
+    /* ===== エラー画面 ===== */
+
+    .overlay{
+      position: fixed;
+
+      top: 0;
+      left: 0;
+
+      width: 100%;
+      height: 100%;
+
+      background: rgba(0,0,0,0.3);
+
+      display: none;
+
+      justify-content: center;
+      align-items: center;
+
+      padding: 20px;
+    }
+
+    .error-box{
+      width: 100%;
+      max-width: 280px;
+
+      background-color: #f6b8b8;
+
+      border: 1px solid white;
+      border-radius: 10px;
+
+      padding: 30px 20px;
+
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .error-title{
+      color: rgb(179, 0, 0);
+
+      font-size: 1.5rem;
+      font-weight: bold;
+
+      margin-bottom: 20px;
+    }
+
+    .error-text{
+      font-size: 1rem;
+      text-align: center;
+      line-height: 1.7;
+    }
+
+    .close-btn{
+      margin-top: 20px;
+
+      width: 80px;
+      height: 35px;
+
+      border: 1px solid black;
+
+      cursor: pointer;
+
+      background-color: rgb(238, 106, 106);
+
+      font-size: 1rem;
+    }
+
+    /* ===== 小さいスマホ用 ===== */
+
+    @media (max-width: 400px){
+
+      .title{
+        font-size: 1.8rem;
+      }
+
+      .login-btn{
+        font-size: 1.4rem;
+      }
+
+      .phone{
+        border-radius: 30px;
+      }
+
+    }
+
   </style>
 </head>
 
@@ -116,23 +237,32 @@
 
       <div class="input-group">
         <label>ユーザー名</label>
-        <input type="text" id="username" placeholder="ユーザー名を入力する場所">
+        <input type="text" id="username" placeholder="ユーザー名を入力">
+      </div>
+
+      <div class="input-group">
+        <label>メールアドレス</label>
+        <input 
+          type="email"
+          id="email"
+          placeholder="メールアドレスを入力"
+        >
       </div>
 
       <div class="input-group">
         <label>パスワード</label>
-        <input type="password" id="password" placeholder="パスワードを入力する場所">
+        <input type="password" id="password" placeholder="パスワードを入力">
       </div>
 
       <button class="login-btn" onclick="login()">
         ログイン
       </button>
 
-      <button class="sub-btn" onclick="location.href='passwordReset.html'">
+      <button class="sub-btn">
         パスワードを忘れた場合
       </button>
 
-      <button class="sub-btn" onclick="location.href='newuser.html'">
+      <button class="sub-btn">
         新規アカウント作成
       </button>
 
@@ -142,18 +272,64 @@
 
   </div>
 
+  <!-- エラー画面 -->
+
+  <div class="overlay" id="overlay">
+
+    <div class="error-box">
+
+      <div class="error-title">
+        エラー
+      </div>
+
+      <div class="error-text">
+        ユーザー名、<br>メールアドレスまたは、<br>
+        パスワードが違います
+      </div>
+
+      <button class="close-btn" onclick="closeError()">
+        OK
+      </button>
+
+    </div>
+
+  </div>
+
   <script>
+
     function login() {
+
       const username = document.getElementById("username").value;
+      const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
       const message = document.getElementById("message");
 
-      if(username === "" || password === ""){
-        message.textContent = "ユーザー名とパスワードを入力してください";
+      const validUsername = "user";
+      const validPassword = "pass";
+
+      if (
+        username === "" ||
+        email === "" ||
+        password === "" ||
+        username !== validUsername ||
+        email !== validEmail ||
+        password !== validPassword
+      ) {
+
+        document.getElementById("overlay").style.display = "flex";
+
       } else {
-        message.textContent = "ログインボタンが押されました";
+
+        message.textContent = "ログインに成功しました";
+
       }
+
     }
+
+    function closeError() {
+      document.getElementById("overlay").style.display = "none";
+    }
+
   </script>
 
 </body>
