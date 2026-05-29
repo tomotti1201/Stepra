@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\TaskController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -17,3 +18,7 @@ Route::get('/roguin',function(){
 Route::get('/newuser',function(){
     return view('newuser');
 });
+
+Route::get('/tasks', [TaskController::class, 'index']);
+Route::get('/user/tasks', [TaskController::class, 'userTask']);
+Route::post('/tasks', [TaskController::class, 'store']);
