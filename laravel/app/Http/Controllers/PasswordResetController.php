@@ -8,11 +8,11 @@ use Illuminate\Support\Facades\Hash;
 
 class PasswordResetController extends Controller
 {
-    public function resetPassword(Request $request)
+    public function passwordReset(Request $request)
     {
         $email = trim($request->email ?? '');
         $birth_date = trim($request->birth_date ?? '');
-        $new_password = $request->new_password ?? '';
+        $new_password = $request->password ?? '';
 
         // 必須チェック
         if ($email === '' || $birth_date === '' || $new_password === '') {

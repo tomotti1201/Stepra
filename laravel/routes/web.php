@@ -27,7 +27,3 @@ Route::get('/passwordReset',function(){
     return view('passwordReset');
 });
 
-Route::get('/tasks', [TaskController::class, 'index']);
-Route::get('/user/tasks', [TaskController::class, 'userTask']);
-Route::post('/tasks', [TaskController::class, 'store']);
-

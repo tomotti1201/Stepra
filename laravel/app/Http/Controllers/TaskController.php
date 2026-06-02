@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
 
 class TaskController extends Controller
 {
@@ -18,6 +20,7 @@ class TaskController extends Controller
     //その日のタスクを取得したい
   public function userTask(){
     $userId = Auth::id();
+    //$userId = 1;
 
     if (!$userId) {
         return response()->json([
