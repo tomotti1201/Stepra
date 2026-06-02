@@ -5,17 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-
-class Schedule extends Model
+class Group extends Model
 {
     use HasFactory;
 
-    protected $table = 'schedules';
+    protected $table = 'group';
 
     protected $fillable = [
-        'task_id',
-        'user_id',
-        'schedules_date',
+      'id',
+      'name',
+      'icon',
+      'invite_code',
+      'description',
+      'ispublic',
     ];
 
     public $timestamps = false;
