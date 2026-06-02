@@ -23,7 +23,7 @@
 
         <div class="form-group">
             <label>生年月日</label>
-            <input type="text" id="birth_date" placeholder="例: 2000/01/01" required>
+            <input type="text" id="birth_date" placeholder="例: 20000101" required>
         </div>
 
         <div class="form-group">
@@ -39,6 +39,7 @@
         <button type="submit" class="submit-btn" id="submitButton">再設定する</button>
         <button type="button" class="back-btn" id="backButton" onclick="history.back()">戻る</button>
     </form>
+    <div id="message" class="message"></div>
 
 </div>
     <script src="{{asset('/js/passwordReset.js')}}"></script>

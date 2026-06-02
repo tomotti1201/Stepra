@@ -29,7 +29,7 @@
             <input type="password" id="password_confirm"  name="password_confirm" placeholder="パスワード再入力" required>
         </div>
         <button type="submit" class="submit-btn" id="submitButton">登録する</button>
-        <button type="button" class="back-btn" onclick="location.href='/login'">取消・戻る</button>
+        <button type="button" class="back-btn" onclick="location.href='/login'">ログインする</button>
     </form>
     <div id="message"></div>
 </div>

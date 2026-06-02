@@ -30,7 +30,7 @@
         ログイン
       </button>
 
-      <button class="sub-btn" onclick="location.href='passwordReset.html'">
+      <button class="sub-btn" onclick="location.href='/passwordReset'">
         パスワードを忘れた場合
       </button>
 
