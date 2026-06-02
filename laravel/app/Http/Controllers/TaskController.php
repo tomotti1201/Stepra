@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
@@ -45,7 +46,7 @@ class TaskController extends Controller
             'title' => $request->title,
             'content' => $request->content,
             'week_days'=>$request->week_days,
-          'start_time' => $request->start_time,
+            'start_time' => $request->start_time,
             'required_minutes'=>$request->required_minutes,
             'priority'=>$request->priority,
             'color'=>$request->color,
