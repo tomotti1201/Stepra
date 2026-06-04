@@ -1,4 +1,5 @@
 <?php
+
  
 namespace App\Http\Controllers;
  
@@ -6,12 +7,14 @@ use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
  
+
 class TaskController extends Controller
 {
     //タスクの一覧取得
     public function index()
     {
         $tasks = Task::all();
+
  
         return response()->json($tasks);
     }
@@ -20,24 +23,29 @@ class TaskController extends Controller
   public function userTask(){
     $userId = Auth::id();
  
+
     if (!$userId) {
         return response()->json([
             'message' => 'ログインしてください',
         ], 401);
     }
+
  
     $todayWeekDay = now()->isoWeekday();
     $today = now()->toDateString();
  
+
     $tasks = Task::where('user_id', $userId)
         ->whereDate('start_date', '<=', $today)
         ->whereDate('end_date', '>=', $today)
         ->whereRaw('FIND_IN_SET(?, week_days)', [$todayWeekDay])
         ->get();
+
  
     return response()->json($tasks);
 }
  
+
     //タスク作成
     public function store(Request $request)
     {
@@ -58,7 +66,9 @@ class TaskController extends Controller
         ]);
         return response()->json($task,201);
     }
+
  
+
     public function create()
     {
         return redirect('/tasks');
@@ -91,3 +101,4 @@ class TaskController extends Controller
 }
  
  
+
