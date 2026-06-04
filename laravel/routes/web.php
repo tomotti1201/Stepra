@@ -27,3 +27,6 @@ Route::get('/passwordReset',function(){
     return view('passwordReset');
 });
 
+Route::get('/taskCreate',function(){
+    return view('taskCreate');
+});

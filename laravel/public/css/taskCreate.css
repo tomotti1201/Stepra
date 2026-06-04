@@ -1,0 +1,189 @@
+body {
+background: #e6e6e6;
+font-family: sans-serif;
+margin: 0;
+}
+
+/* 画面中央の白い外枠（メインコンテンツ） */
+.container {
+width: 400px;
+height: 600px;               /* スマートフォンのような高さを固定 */
+margin: 20px auto;
+background: #b8c5d0;
+border-radius: 40px;
+border: 2px solid #333;
+padding: 15px;
+display: flex;               /* 子要素を縦に並べるための設定 */
+flex-direction: column;      /* 要素を上から下に配置 */
+box-sizing: border-box;      /* パディングを含めたサイズ計算 */
+}
+
+/* スクロールエリアの設定：ここだけが動くようにする */
+.scroll-area {
+flex: 1;                     /* タイトルとボタン以外の余ったスペースをすべて使う */
+overflow-y: auto;            /* 縦方向に内容が溢れた場合のみスクロールバーを出す */
+margin-bottom: 10px;         /* 下のボタンとの間に少し隙間を作る */
+padding-right: 5px;          /* スクロールバーで内容が隠れないように調整 */
+}
+
+/* スクロールバーのデザイン設定（scroll-areaに対して適用） */
+.scroll-area::-webkit-scrollbar {
+width: 8px;
+}
+.scroll-area::-webkit-scrollbar-track {
+background: #f1f1f1; /* トラックの背景色 */
+border-radius: 10px;
+}
+.scroll-area::-webkit-scrollbar-thumb {
+background: #888; /* サム（動く部分）の色 */
+border-radius: 10px;
+}
+.scroll-area::-webkit-scrollbar-thumb:hover {
+background: #555; /* ホバー時のサムの色 */
+}
+
+/* 「目標編集」という見出しのデザイン */
+.title {
+text-align: center;
+background: #3cff00;
+border: 1px solid #888;
+padding: 8px;
+margin-bottom: 15px;
+}
+
+/* 各設定項目（頻度やモードなど）を囲むグレーのボックス */
+.box {
+background: #eee;
+border: 1px solid #999;
+padding: 15px;
+margin-bottom: 12px;
+font-size: 13px;
+}
+
+/* 曜日やモードの選択ボタンを横並びにする設定 */
+.days {
+display: flex;
+border: 2px solid #000;
+margin-top: 5px;
+}
+
+.day {
+flex: 1;
+text-align: center;
+padding: 8px;
+border-right: 1px solid #000;
+cursor: pointer;
+}
+
+.day:last-child {
+border-right: none;
+}
+
+/* 選択されているボタンを強調する色 */
+.day.active {
+background: #c5d8a4;
+}
+
+/* 開始日と終了日を横並びにする設定 */
+.row {
+display: flex;
+gap: 10px;
+}
+
+.row .box {
+flex: 1;
+}
+
+/* 「編集する」や「削除」ボタンの共通デザイン */
+.btn {
+text-align: center;
+padding: 12px;
+margin-top: 10px;
+cursor: pointer;
+border: none;
+width: 100%;
+display: block;
+font-size: 16px;
+font-family: inherit;
+}
+
+/* ボタンごとの色設定 */
+.edit {
+background: #5b82b1;
+}
+
+.delete {
+background: #c97c74;
+}
+
+/* 入力フォームの幅を調整 */
+input.box {
+width: 100%;
+box-sizing: border-box;
+font-family: inherit;
+}
+
+/* 日付や時間の入力欄のデザイン */
+.date-box {
+width: 100%;
+margin-top: 5px;
+padding: 5px;
+border: 1px solid #999;
+box-sizing: border-box;
+font-family: inherit;
+}
+
+/* 無効化されたグループのスタイル */
+.disabled-group {
+pointer-events: none; /* クリックイベントを無効化 */
+opacity: 0.5; /* 半透明にして無効化を視覚的に示す */
+background-color: #f0f0f0; /* 背景色を少し明るく */
+}
+.disabled-group .day {
+background-color: #e0e0e0 !important; /* 無効化された日の背景色 */
+cursor: default; /* カーソルをデフォルトに */
+}
+
+/* 目標カラーを選択する丸いボタンの並び */
+.color-selection {
+display: flex;
+flex-wrap: wrap;
+gap: 10px;
+margin-top: 10px;
+}
+/* 通常のカラーサークル */
+.color-circle {
+width: 30px;
+height: 30px;
+border-radius: 50%;
+cursor: pointer;
+border: 2px solid transparent;
+box-sizing: border-box;
+}
+.color-circle.active {
+border: 2px solid #333;
+transform: scale(1.1);
+}
+.color-circle.add-color {
+border: 1px dashed #666;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 18px;
+color: #666;
+background-color: #fff;
+}
+.color-circle.none {
+border: 1px solid #999;
+background-color: #fff;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 14px;
+color: #666;
+}
+/* 削除モード時のスタイル */
+.color-selection.delete-mode .color-circle.selected-for-delete:not(.none):not(.custom) {
+border: 2px solid #ff0000;
+position: relative;
+}

@@ -1,0 +1,299 @@
+*{
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: sans-serif;
+}
+
+body{
+	background: #d9d9d9;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 100vh;
+	padding: 10px;
+}
+
+.phone{
+	width: 100%;
+	max-width: 390px;
+	height: 100vh;
+	background: #d8e8da;
+	border: 6px solid #666;
+	border-radius: 35px;
+	overflow: hidden;
+	position: relative;
+}
+
+.top-bar{
+	width: 100%;
+	margin-top: 20px;
+	display: flex;
+	justify-content: center;
+}
+
+.schedule-title{
+	width: 260px;
+	height: 60px;
+	border: 2px solid black;
+	border-radius: 12px;
+	background: #3cff00;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 18px;
+}
+
+.chart-area{
+	margin-top: 30px;
+	display: flex;
+	justify-content: center;
+}
+
+.circle-chart{
+	width: 250px;
+	height: 250px;
+	border-radius: 50%;
+	position: relative;
+	border: 2px solid white;
+}
+
+.circle-chart::before{
+	content: "";
+	width: 140px;
+	height: 140px;
+	background: #d8e8da;
+	border-radius: 50%;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+.chart-label{
+	position: absolute;
+	font-size: 11px;
+	font-weight: bold;
+	background: rgba(255,255,255,0.9);
+	padding: 2px 6px;
+	border-radius: 10px;
+	border: 1px solid #999;
+	transform: translate(-50%, -50%);
+	white-space: nowrap;
+	z-index: 10;
+}
+
+.goal-area{
+	margin-top: 35px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 10px;
+}
+
+.goal-title{
+	width: 210px;
+	height: 45px;
+	border: 2px solid black;
+	border-radius: 10px;
+	background: #3cff00;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 16px;
+}
+
+.change-btn{
+	width: 40px;
+	height: 40px;
+	border: none;
+	background: transparent;
+	font-size: 28px;
+	color: #8e5eff;
+	cursor: pointer;
+}
+
+.goal-list{
+	margin-top: 25px;
+	padding: 0 20px;
+	max-height: 280px;
+	overflow-y: auto;
+}
+
+.goal-list::-webkit-scrollbar{
+	width: 5px;
+}
+
+.goal-list::-webkit-scrollbar-thumb{
+	background: #999;
+	border-radius: 10px;
+}
+
+.goal-item{
+	display: flex;
+	align-items: center;
+	margin-bottom: 18px;
+	gap: 8px;
+}
+
+.goal-text{
+	flex: 1;
+	border-bottom: 3px solid #bdbdbd;
+	padding-bottom: 4px;
+	font-size: 14px;
+}
+
+.cancel-btn{
+	width: 50px;
+	height: 28px;
+	border: 1px solid black;
+	background: white;
+	display: none;
+	cursor: pointer;
+	flex-shrink: 0;
+}
+
+.circle-btn{
+	width: 36px;
+	height: 36px;
+	border-radius: 50%;
+	border: 2px solid black;
+	background: white;
+	font-size: 18px;
+	cursor: pointer;
+	flex-shrink: 0;
+}
+
+.delete-btn{
+	width: 36px;
+	height: 36px;
+	border: 2px solid black;
+	background: white;
+	font-size: 22px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+	flex-shrink: 0;
+}
+
+.bottom-menu{
+	width: 100%;
+	height: 70px;
+	background: #f2f2f2;
+	position: absolute;
+	bottom: 0;
+	border-top: 2px solid #ccc;
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+}
+
+.menu-btn{
+	width: 50px;
+	height: 50px;
+	border: none;
+	background: transparent;
+	font-size: 30px;
+	color: #777;
+	cursor: pointer;
+	border-radius: 12px;
+	transition: 0.2s;
+}
+
+.menu-btn:active{
+	transform: scale(0.9);
+}
+
+.menu-btn:hover{
+	background: rgba(0,0,0,0.05);
+}
+
+.active-btn{
+	color: #8e5eff;
+	font-weight: bold;
+}
+
+.hide-labels .chart-label{
+	display: none;
+}
+
+.overlay{
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0,0,0,0.3);
+	display: none;
+	justify-content: center;
+	align-items: center;
+}
+
+.reason-modal{
+	width: 320px;
+	background: white;
+	border: 2px solid black;
+	padding: 20px;
+	position: relative;
+}
+
+.close-modal-btn{
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	width: 35px;
+	height: 35px;
+	border: 2px solid black;
+	border-radius: 8px;
+	background: white;
+	font-size: 22px;
+	cursor: pointer;
+	transition: 0.2s;
+}
+
+.close-modal-btn:active{
+	transform: scale(0.92);
+}
+
+.modal-title{
+	text-align: center;
+	font-size: 20px;
+	margin-bottom: 20px;
+}
+
+.reason-list{
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.reason-item{
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 5px;
+	border-radius: 8px;
+	cursor: pointer;
+}
+
+.reason-item input[type="radio"]{
+	width: 18px;
+	height: 18px;
+	accent-color: blue;
+}
+
+.reason-item input[type="radio"]:checked + span{
+	color: blue;
+	font-weight: bold;
+}
+
+.register-btn{
+	width: 100%;
+	height: 40px;
+	margin-top: 25px;
+	border: 2px solid black;
+	background: #3cff00;
+	font-size: 16px;
+	cursor: pointer;
+}
