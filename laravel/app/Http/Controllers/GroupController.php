@@ -41,4 +41,11 @@ class GroupController extends Controller
 
         return response()->json($member, 201);
     }
+    //グループ削除
+public function destroy($id)
+{
+    $group = Group::findOrFail($id);
+    $group->delete();
+    return response()->json(null, 204);
+}
 }
