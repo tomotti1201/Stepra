@@ -1,0 +1,440 @@
+<!-- ===================================================== -->
+<!-- HTML -->
+<!-- ===================================================== -->
+
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>STEPRA 設定画面</title>
+
+
+
+
+
+<!-- ===================================================== -->
+<!-- CSS -->
+<!-- ===================================================== -->
+
+<style>
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+
+body {
+    background: #d9d9d9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 10px;
+}
+
+/* スマホ */
+
+.phone {
+    width: 100%;
+    max-width: 390px;
+    height: 100vh;
+    background: #d8e8da;
+    border: 6px solid #666;
+    border-radius: 35px;
+    overflow: hidden;
+    position: relative;
+}
+
+/* 戻るボタン */
+
+.back-btn {
+    position: absolute;
+    top: 40px;
+    left: 20px;
+    width: 30px;
+    height: 38px;
+    border: 1px solid #000;
+    border-radius: 12px;
+    background: #d8e8da;
+    font-size: 30px;
+    cursor: pointer;
+}
+
+/* タイトル */
+
+.setting-title {
+    width: 240px;
+    height: 70px;
+    margin: 30px auto;
+    background: #3cff00;
+    border: 2px solid #000;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 34px;
+    font-weight: bold;
+}
+
+/* 設定一覧 */
+
+.setting-box {
+    width: calc(100% - 60px);
+    height: 520px;
+    margin: 0 auto;
+    padding: 15px;
+    background: #fff;
+    border: 2px solid #555;
+    overflow-y: auto;
+}
+
+.setting-box-title {
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 14px;
+}
+
+/* 設定ボタン */
+
+.setting-btn {
+    width: 100%;
+    height: 45px;
+    margin-bottom: 12px;
+    border: 2px solid #999;
+    border-radius: 10px;
+    background: #f8f8f8;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.setting-btn:hover {
+    background: #eee;
+}
+
+.setting-btn:active {
+    transform: scale(0.98);
+}
+
+/* 下メニュー */
+
+.bottom-menu {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 70px;
+    background: #f2f2f2;
+    border-top: 2px solid #ccc;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.menu-btn {
+    width: 50px;
+    height: 50px;
+    border: none;
+    border-radius: 12px;
+    background: transparent;
+    font-size: 30px;
+    color: #777;
+    cursor: pointer;
+}
+
+.active-btn {
+    color: #8e5eff;
+    font-weight: bold;
+}
+
+/* モーダル背景 */
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+
+/* モーダル */
+
+.modal {
+    position: relative;
+    width: 320px;
+    padding: 20px;
+    background: #ead6d6;
+    border: 2px solid #555;
+    text-align: center;
+}
+
+.modal-title {
+    margin-bottom: 20px;
+    font-size: 22px;
+}
+
+.modal-label {
+    margin: 12px 0 5px;
+    font-size: 15px;
+}
+
+.current-data,
+.modal-input {
+    width: 100%;
+    height: 35px;
+    border: 1px solid #555;
+    font-size: 14px;
+}
+
+.current-data {
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    background: #fff;
+}
+
+.modal-input {
+    padding-left: 10px;
+}
+
+/* 変更ボタン */
+
+.change-btn {
+    width: 100%;
+    height: 45px;
+    margin-top: 25px;
+    border: 2px solid #000;
+    background: #999;
+    color: #fff;
+    font-size: 18px;
+    cursor: not-allowed;
+}
+
+.change-btn.active {
+    background: #3cff00;
+    color: #000;
+    cursor: pointer;
+}
+
+/* 閉じるボタン */
+
+.close-modal-btn {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 35px;
+    height: 35px;
+    border: 2px solid #000;
+    border-radius: 8px;
+    background: #fff;
+    font-size: 22px;
+    cursor: pointer;
+}
+</style>
+
+</head>
+
+
+
+
+
+<!-- ===================================================== -->
+<!-- BODY -->
+<!-- ===================================================== -->
+
+<body>
+<div class="phone">
+  <button class="back-btn" onclick="goBack()">←</button>
+
+  <div class="setting-title">設定</div>
+
+  <div class="setting-box">
+    <div class="setting-box-title">設定を一覧表示するところ</div>
+
+    <button class="setting-btn" onclick="openSetting('username')">ユーザー名</button>
+    <button class="setting-btn" onclick="openSetting('mail')">メールアドレス</button>
+    <button class="setting-btn" onclick="openSetting('password')">パスワード</button>
+    <button class="setting-btn">通知設定(製作中)</button>
+    <button class="setting-btn">プライバシー設定(製作中)</button>
+    <button class="setting-btn">アカウント管理(製作中)</button>
+    <button class="setting-btn">テーマ変更(製作中)</button>
+    <button class="setting-btn">バックアップ(製作中)</button>
+    <button class="setting-btn">ヘルプ(製作中)</button>
+    <button class="setting-btn" onclick="logout()">ログアウト(製作中)</button>
+  </div>
+
+  <div class="bottom-menu">
+    <button class="menu-btn">⌂</button>
+    <button class="menu-btn">◷</button>
+    <button class="menu-btn">▤</button>
+    <button class="menu-btn active-btn">◉</button>
+    <button class="menu-btn">☷</button>
+  </div>
+</div>
+
+<div class="overlay" id="userOverlay">
+  <div class="modal">
+    <button class="close-modal-btn" onclick="closeModal('userOverlay')">×</button>
+
+    <div class="modal-title">ユーザー名変更</div>
+
+    <div class="modal-label">現在のユーザー名</div>
+    <div class="current-data" id="currentUserName"></div>
+
+    <div class="modal-label">変更後のユーザー名</div>
+    <input type="text" id="newUserName" class="modal-input" oninput="checkUserNameInput()">
+
+    <div class="modal-label">ユーザー名確認</div>
+    <input type="text" id="confirmUserName" class="modal-input" oninput="checkUserNameInput()">
+
+    <button class="change-btn" id="changeUserBtn" onclick="changeUserName()" disabled>変更</button>
+  </div>
+</div>
+
+<div class="overlay" id="mailOverlay">
+  <div class="modal">
+    <div class="modal-title">
+      <button class="close-modal-btn" onclick="closeModal('mailOverlay')">×</button>
+      メールアドレス変更
+    </div>
+
+    <div class="modal-label">現在のメールアドレス</div>
+    <div class="current-data" id="currentMail"></div>
+
+    <div class="modal-label">変更後のメールアドレス</div>
+    <input type="email" id="newMail" class="modal-input" oninput="checkMailInput()">
+
+    <div class="modal-label">メールアドレス確認</div>
+    <input type="email" id="confirmMail" class="modal-input" oninput="checkMailInput()">
+
+    <button class="change-btn" id="changeMailBtn" onclick="changeMail()" disabled>変更</button>
+  </div>
+</div>
+
+<div class="overlay" id="passwordOverlay">
+  <div class="modal">
+    <div class="modal-title">
+      <button class="close-modal-btn" onclick="closeModal('passwordOverlay')">×</button>
+      パスワード変更
+    </div>
+
+    <div class="modal-label">現在のパスワード</div>
+    <div class="current-data" id="currentPassword"></div>
+
+    <div class="modal-label">変更後のパスワード</div>
+    <input type="password" id="newPassword" class="modal-input" oninput="checkPasswordInput()">
+
+    <div class="modal-label">パスワード確認</div>
+    <input type="password" id="confirmPassword" class="modal-input" oninput="checkPasswordInput()">
+
+    <button class="change-btn" id="changePasswordBtn" onclick="changePassword()" disabled>変更</button>
+  </div>
+</div>
+
+<script>
+let userName = "stepra_user";
+let userMail = "sample@gmail.com";
+let userPassword = "password123";
+
+document.getElementById("currentUserName").textContent = userName;
+document.getElementById("currentMail").textContent = userMail;
+document.getElementById("currentPassword").textContent = userPassword;
+
+function goBack(){
+  window.location.href = "userzyouho.html";
+}
+
+function openSetting(type){
+  if(type === "username"){
+    document.getElementById("userOverlay").style.display = "flex";
+  }else if(type === "mail"){
+    document.getElementById("mailOverlay").style.display = "flex";
+  }else if(type === "password"){
+    document.getElementById("passwordOverlay").style.display = "flex";
+  }
+}
+
+function checkUserNameInput(){
+  const newName = document.getElementById("newUserName").value;
+  const confirmName = document.getElementById("confirmUserName").value;
+  const button = document.getElementById("changeUserBtn");
+
+  if(newName !== "" && confirmName !== "" && newName === confirmName){
+    button.disabled = false;
+    button.classList.add("active");
+  }else{
+    button.disabled = true;
+    button.classList.remove("active");
+  }
+}
+
+function changeUserName(){
+  userName = document.getElementById("newUserName").value;
+  document.getElementById("currentUserName").textContent = userName;
+  document.getElementById("userOverlay").style.display = "none";
+  alert("ユーザー名を変更しました");
+}
+
+function checkMailInput(){
+  const newMail = document.getElementById("newMail").value;
+  const confirmMail = document.getElementById("confirmMail").value;
+  const button = document.getElementById("changeMailBtn");
+
+  if(newMail !== "" && confirmMail !== "" && newMail === confirmMail){
+    button.disabled = false;
+    button.classList.add("active");
+  }else{
+    button.disabled = true;
+    button.classList.remove("active");
+  }
+}
+
+function changeMail(){
+  userMail = document.getElementById("newMail").value;
+  document.getElementById("currentMail").textContent = userMail;
+  document.getElementById("mailOverlay").style.display = "none";
+  alert("メールアドレスを変更しました");
+}
+
+function checkPasswordInput(){
+  const newPassword = document.getElementById("newPassword").value;
+  const confirmPassword = document.getElementById("confirmPassword").value;
+  const button = document.getElementById("changePasswordBtn");
+
+  if(newPassword !== "" && confirmPassword !== "" && newPassword === confirmPassword){
+    button.disabled = false;
+    button.classList.add("active");
+  }else{
+    button.disabled = true;
+    button.classList.remove("active");
+  }
+}
+
+function changePassword(){
+  userPassword = document.getElementById("newPassword").value;
+  document.getElementById("currentPassword").textContent = userPassword;
+  document.getElementById("passwordOverlay").style.display = "none";
+  alert("パスワードを変更しました");
+}
+
+function logout(){
+  alert("ログアウトしました");
+}
+
+function closeModal(id){
+  document.getElementById(id).style.display = "none";
+}
+</script>
+</body>
+</html>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -45,9 +46,7 @@ class SignupController extends Controller
             ], 400);
         }
 
-        $exists = DB::table('users')
-            ->where('email', $email)
-            ->exists();
+        $exists = User::where('email', $email)->exists();
 
         if ($exists) {
             return response()->json([
@@ -56,7 +55,7 @@ class SignupController extends Controller
             ], 409);
         }
 
-        $id = DB::table('users')->insertGetId([
+        $user = User::create([
             'name' => $name,
             'email' => $email,
             'birth_date' => $birth_date,
@@ -67,10 +66,10 @@ class SignupController extends Controller
             'status' => 'success',
             'message' => 'User registered successfully',
             'user' => [
-                'id' => $id,
-                'name' => $name,
-                'email' => $email,
-                'birth_date' => $birth_date,
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'birth_date' => $user->birth_date,
             ]
         ], 201);
     }

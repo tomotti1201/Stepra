@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -22,8 +23,7 @@ class LoginController extends Controller
         }
 
         // users テーブルから検索
-        $user = DB::table('users')
-            ->where('name', $name)
+        $user = User::where('name', $name)
             ->first();
 
         // ユーザー存在確認

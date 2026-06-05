@@ -30,3 +30,11 @@ Route::get('/passwordReset',function(){
 Route::get('/taskCreate',function(){
     return view('taskCreate');
 });
+
+Route::get('/taskList',function(){
+    return view('taskList');
+});
+
+Route::get('/setting',function(){
+    return view('setting');
+});

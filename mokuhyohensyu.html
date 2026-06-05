@@ -1,530 +1,332 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<title>目標編集</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>目標編集 | STEPRA</title>
+  
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <style>
+    body { background-color: #f8f9fa; }
+    .day.active { background-color: #0d6efd !important; color: white !important; }
+    .disabled-group { opacity: 0.5; pointer-events: none; }
 
-<style>
-body {
-  background: #e6e6e6;
-  font-family: sans-serif;
-  margin: 0;
-}
-
-/* 画面中央の白い外枠（メインコンテンツ） */
-.container {
-  width: 400px;
-  height: 600px;               /* スマートフォンのような高さを固定 */
-  margin: 20px auto;
-  background: #b8c5d0;
-  border-radius: 40px;
-  border: 2px solid #333;
-  padding: 15px;
-  display: flex;               /* 子要素を縦に並べるための設定 */
-  flex-direction: column;      /* 要素を上から下に配置 */
-  box-sizing: border-box;      /* パディングを含めたサイズ計算 */
-}
-
-/* スクロールエリアの設定：ここだけが動くようにする */
-.scroll-area {
-  flex: 1;                     /* タイトルとボタン以外の余ったスペースをすべて使う */
-  overflow-y: auto;            /* 縦方向に内容が溢れた場合のみスクロールバーを出す */
-  margin-bottom: 10px;         /* 下のボタンとの間に少し隙間を作る */
-  padding-right: 5px;          /* スクロールバーで内容が隠れないように調整 */
-}
-
-/* スクロールバーのデザイン設定（scroll-areaに対して適用） */
-.scroll-area::-webkit-scrollbar {
-  width: 8px;
-}
-.scroll-area::-webkit-scrollbar-track {
-  background: #f1f1f1; /* トラックの背景色 */
-  border-radius: 10px;
-}
-.scroll-area::-webkit-scrollbar-thumb {
-  background: #888; /* サム（動く部分）の色 */
-  border-radius: 10px;
-}
-.scroll-area::-webkit-scrollbar-thumb:hover {
-  background: #555; /* ホバー時のサムの色 */
-}
-
-/* 「目標編集」という見出しのデザイン */
-.title {
-  text-align: center;
-  background: #3cff00;
-  border: 1px solid #888;
-  padding: 8px;
-  margin-bottom: 15px;
-}
-
-/* 各設定項目（頻度やモードなど）を囲むグレーのボックス */
-.box {
-  background: #eee;
-  border: 1px solid #999;
-  padding: 15px;
-  margin-bottom: 12px;
-  font-size: 13px;
-}
-
-/* 曜日やモードの選択ボタンを横並びにする設定 */
-.days {
-  display: flex;
-  border: 2px solid #000;
-  margin-top: 5px;
-}
-
-.day {
-  flex: 1;
-  text-align: center;
-  padding: 8px;
-  border-right: 1px solid #000;
-  cursor: pointer;
-}
-
-.day:last-child {
-  border-right: none;
-}
-
-/* 選択されているボタンを強調する色 */
-.day.active {
-  background: #c5d8a4;
-}
-
-/* 開始日と終了日を横並びにする設定 */
-.row {
-  display: flex;
-  gap: 10px;
-}
-
-.row .box {
-  flex: 1;
-}
-
-/* 「編集する」や「削除」ボタンの共通デザイン */
-.btn {
-  text-align: center;
-  padding: 12px;
-  margin-top: 10px;
-  cursor: pointer;
-  border: none;
-  width: 100%;
-  display: block;
-  font-size: 16px;
-  font-family: inherit;
-}
-
-/* ボタンごとの色設定 */
-.edit {
-  background: #5b82b1;
-}
-
-.delete {
-  background: #c97c74;
-}
-
-/* 入力フォームの幅を調整 */
-input.box {
-  width: 100%;
-  box-sizing: border-box;
-  font-family: inherit;
-}
-
-/* 日付や時間の入力欄のデザイン */
-.date-box {
-  width: 100%;
-  margin-top: 5px;
-  padding: 5px;
-  border: 1px solid #999;
-  box-sizing: border-box;
-  font-family: inherit;
-}
-
-/* 無効化されたグループのスタイル */
-.disabled-group {
-  pointer-events: none; /* クリックイベントを無効化 */
-  opacity: 0.5; /* 半透明にして無効化を視覚的に示す */
-  background-color: #f0f0f0; /* 背景色を少し明るく */
-}
-.disabled-group .day {
-  background-color: #e0e0e0 !important; /* 無効化された日の背景色 */
-  cursor: default; /* カーソルをデフォルトに */
-}
-
-/* 目標カラーを選択する丸いボタンの並び */
-.color-selection {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 10px;
-}
-/* 通常のカラーサークル */
-.color-circle {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 2px solid transparent;
-  box-sizing: border-box;
-}
-.color-circle.active {
-  border: 2px solid #333;
-  transform: scale(1.1);
-}
-.color-circle.custom {
-  border: 1px dashed #666;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  color: #666;
-  background-color: #fff;
-}
-.color-circle.none {
-  border: 1px solid #999;
-  background-color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  color: #666;
-}
-/* 削除モード時のスタイル */
-.color-selection.delete-mode .color-circle.selected-for-delete:not(.none):not(.custom) {
-  border: 2px solid #ff0000;
-  position: relative;
-}
-</style>
-
+    /* カラーサークルのスタイル */
+    .color-selection {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .color-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #333;
+      box-sizing: border-box;
+      box-shadow: 0 0 0 1px #ccc;
+    }
+    .color-circle.custom {
+      border: 2px dashed #666;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: #666;
+      background-color: #fff;
+      box-shadow: none;
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="container">
-
-  <div class="title">目標編集</div>
-
-  <!-- スクロールさせたい範囲を div で囲む -->
-  <div class="scroll-area">
-  <!-- 目標の名前を入力する場所 -->
-  <input type="text" class="box" id="goal-name" name="goal_name" placeholder="目標名を入力">
-  <div class="box">
-    頻度
-    <!-- 曜日を選択する（複数選択可能） -->
-    <div class="days" id="frequency-group">
-      <div class="day" onclick="this.classList.toggle('active')">日</div>
-      <div class="day active" onclick="this.classList.toggle('active')">月</div>
-      <div class="day" onclick="this.classList.toggle('active')">火</div>
-      <div class="day active" onclick="this.classList.toggle('active')">水</div>
-      <div class="day" onclick="this.classList.toggle('active')">木</div>
-      <div class="day" onclick="this.classList.toggle('active')">金</div>
-      <div class="day active" onclick="this.classList.toggle('active')">土</div>
-    </div>
-  </div>
-
-  <div class="box">
-    開始タイミング<br>
-    <!-- 何時に始めるかなどを入力 -->
-    <input type="text" class="date-box" id="start-timing" name="start_timing" placeholder="例:10:00 または 朝" value="10:00">
-  </div>
-
-  <div class="box">
-    所要時間<br>
-    <div style="display: flex; align-items: center; gap: 5px; margin-top: 5px;">
-      <input type="text" class="date-box" id="duration-hours" name="duration_hours" placeholder="0" value="0" style="margin-top: 0; flex: 1;"> 時間
-      <input type="text" class="date-box" id="duration-minutes" name="duration_minutes" placeholder="30" value="30" style="margin-top: 0; flex: 1;"> 分
-    </div>
-  </div>
-
-  <div class="box">
-    モード<br>
-    <!-- どちらかのモードを選択 -->
-    <div class="days" id="mode-group">
-      <div class="day active" onclick="selectMode(this)">自由設定</div>
-      <div class="day" onclick="selectMode(this)">優先順位</div>
-    </div>
-  </div>
-
-  <div class="box" id="priority-box">
-    優先度<br>
-    <!-- モードが「優先順位」の時だけ選択可能 -->
-    <div class="days" id="priority-group">
-      <div class="day" onclick="selectSingle(this)">高</div>
-      <div class="day active" onclick="selectSingle(this)">中</div>
-      <div class="day" onclick="selectSingle(this)">低</div>
-    </div>
-  </div>
-
-  <!-- 目標の有効期間 -->
-  <div class="row">
-    <div class="box">
-      開始日
-      <input type="text" class="date-box" id="start-date" name="start_date" placeholder="20241107" value="20240101">
-    </div>
-    <div class="box">
-      終了日
-      <input type="text" class="date-box" id="end-date" name="end_date" placeholder="20241231" value="20241231">
-    </div>
-  </div>
-
-  <div class="box">
-    目標カラー 
-    <button type="button" id="delete-selected-btn" onclick="deleteSelectedColor()" style="font-size: 11px; margin-left: 10px; cursor: pointer; padding: 2px 5px; background-color: #ffcccc; border: 1px solid #999; border-radius: 3px; display: none;">選択中の色をとりけす</button>
-    <button type="button" id="delete-mode-btn" onclick="toggleColorDeleteMode()" style="font-size: 11px; margin-left: 5px; cursor: pointer; padding: 2px 5px; border: 1px solid #999; border-radius: 3px;">色の追加・とりけし</button>
-    <br>
-    <div class="color-selection" id="color-group">
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-5">
       
-      <div class="color-circle" style="background-color: #ffadad;" onclick="handleColorClick(this)" oncontextmenu="deleteColor(event, this)" data-color="#ffadad" title="クリックまたは右クリックでとりけし"></div>
-      <div class="color-circle" style="background-color: #ffd6a5;" onclick="handleColorClick(this)" oncontextmenu="deleteColor(event, this)" data-color="#ffd6a5" title="クリックまたは右クリックでとりけし"></div>
-      <div class="color-circle" style="background-color: #fdffb6;" onclick="handleColorClick(this)" oncontextmenu="deleteColor(event, this)" data-color="#fdffb6" title="クリックまたは右クリックでとりけし"></div>
-      <div class="color-circle active" style="background-color: #caffbf;" onclick="handleColorClick(this)" oncontextmenu="deleteColor(event, this)" data-color="#caffbf" title="クリックまたは右クリックでとりけし"></div>
-      <div class="color-circle" style="background-color: #9bf6ff;" onclick="handleColorClick(this)" oncontextmenu="deleteColor(event, this)" data-color="#9bf6ff" title="クリックまたは右クリックでとりけし"></div>
-      <div class="color-circle" style="background-color: #a0c4ff;" onclick="handleColorClick(this)" oncontextmenu="deleteColor(event, this)" data-color="#a0c4ff" title="クリックまたは右クリックでとりけし"></div>
-      <div class="color-circle" style="background-color: #bdb2ff;" onclick="handleColorClick(this)" oncontextmenu="deleteColor(event, this)" data-color="#bdb2ff" title="クリックまたは右クリックでとりけし"></div>
-      <div class="color-circle" style="background-color: #ffc6ff;" onclick="handleColorClick(this)" oncontextmenu="deleteColor(event, this)" data-color="#ffc6ff" title="クリックまたは右クリックでとりけし"></div>
-      <div class="color-circle" style="background-color: #fffffc;" onclick="handleColorClick(this)" oncontextmenu="deleteColor(event, this)" data-color="#fffffc" title="クリックまたは右クリックでとりけし"></div>
-      <div class="color-circle" style="background-color: #e2e2e2;" onclick="handleColorClick(this)" oncontextmenu="deleteColor(event, this)" data-color="#e2e2e2" title="クリックまたは右クリックでとりけし"></div>
-      <!-- 新しい色を追加するためのボタン -->
-      <div class="color-circle custom" id="custom-color-circle" onclick="selectCustomColor()" data-color="#ffffff" style="display: none;">＋</div>
-      <!-- 隠しカラーピッカー（＋を押した時にプログラムから呼び出される） -->
-      <input type="color" id="custom-color-picker" style="display: none;" onchange="updateCustomColor(this.value)">
+      <div class="card shadow">
+        <div class="card-body p-4">
+          
+          <h2 class="text-center fw-bold mb-4 fs-4">目標編集</h2>
+          
+          <div class="mb-3">
+            <label class="form-label fw-bold small">目標名</label>
+            <input type="text" class="form-control" id="goal-name" placeholder="目標名を入力">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold small">頻度</label>
+            <div class="btn-group w-100" id="frequency-group">
+              <button type="button" class="btn btn-outline-secondary day" onclick="this.classList.toggle('active')">日</button>
+              <button type="button" class="btn btn-outline-secondary day" onclick="this.classList.toggle('active')">月</button>
+              <button type="button" class="btn btn-outline-secondary day" onclick="this.classList.toggle('active')">火</button>
+              <button type="button" class="btn btn-outline-secondary day" onclick="this.classList.toggle('active')">水</button>
+              <button type="button" class="btn btn-outline-secondary day" onclick="this.classList.toggle('active')">木</button>
+              <button type="button" class="btn btn-outline-secondary day" onclick="this.classList.toggle('active')">金</button>
+              <button type="button" class="btn btn-outline-secondary day" onclick="this.classList.toggle('active')">土</button>
+            </div>
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label fw-bold small">開始タイミング</label>
+              <input type="text" class="form-control" id="start-timing" placeholder="10:00">
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-bold small">所要時間</label>
+              <div class="d-flex gap-1">
+                <input type="number" class="form-control" id="duration-hours" placeholder="0" min="0">
+                <span class="align-self-center small">時間</span>
+                <input type="number" class="form-control" id="duration-minutes" placeholder="0" min="0" max="59">
+                <span class="align-self-center small">分</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3 border p-3 rounded bg-light">
+            <label class="form-label fw-bold small">モード設定</label>
+            <div class="btn-group w-100 mb-2" id="mode-group">
+              <button type="button" class="btn btn-outline-primary day active" onclick="selectMode(this)">自由設定</button>
+              <button type="button" class="btn btn-outline-primary day" onclick="selectMode(this)">優先順位</button>
+            </div>
+            <div id="priority-box" class="disabled-group">
+              <label class="form-label small">優先度</label>
+              <div class="btn-group w-100" id="priority-group">
+                <button type="button" class="btn btn-outline-dark day" onclick="selectSingle(this)">高</button>
+                <button type="button" class="btn btn-outline-dark day" onclick="selectSingle(this)">中</button>
+                <button type="button" class="btn btn-outline-dark day" onclick="selectSingle(this)">低</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label fw-bold small">開始日</label>
+              <input type="text" class="form-control" id="start-date" placeholder="20260101">
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-bold small">終了日</label>
+              <input type="text" class="form-control" id="end-date" placeholder="20261231">
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label fw-bold small">目標カラー</label>
+            <button type="button" id="delete-mode-btn" class="btn btn-sm btn-outline-secondary ms-2" style="font-size: 11px; padding: 2px 6px;" onclick="toggleColorDeleteMode()">色の変更</button>
+            
+            <div class="color-selection" id="color-group">
+              <div class="color-circle" id="current-color-circle" style="background-color: #0d6efd;" data-color="#0d6efd"></div>
+              <div class="color-circle custom" id="custom-color-circle" style="display: none;" onclick="selectCustomColor()">＋</div>
+              <input type="color" id="custom-color-picker" style="display: none;" onchange="updateCustomColor(this.value)">
+            </div>
+          </div>
+
+          <div>
+            <button type="button" class="btn btn-primary w-100 mb-2" onclick="saveGoal()">編集を保存</button>
+            <button type="button" class="btn btn-danger w-100" onclick="deleteGoal()">削除</button>
+          </div>
+          
+        </div>
+      </div>
+
     </div>
   </div>
-  </div> <!-- /scroll-area ここまでスクロール -->
-
-  <!-- 保存と削除のメインボタン -->
-  <button class="btn edit" onclick="saveGoal()">編集する</button>
-  <button class="btn delete" onclick="if(confirm('本当にとりけししますか？')){ alert('とりけししました'); }">削除</button>
-
 </div>
 
 <script>
-/**
- * モード選択時の処理
- * 優先度グループの有効/無効を切り替える
- */
-function selectMode(element) {
-  selectSingle(element); // まずは単一選択の処理を実行
-
-  const selectedMode = element.innerText;
-  const priorityBox = document.getElementById('priority-box');
-  const priorityGroup = document.getElementById('priority-group');
-
-  if (selectedMode === '自由設定') {
-    priorityBox.classList.add('disabled-group');
-    // 優先度ボタンのactive状態を解除
-    priorityGroup.querySelectorAll('.day').forEach(day => day.classList.remove('active'));
-  } else { // '優先順位'
-    priorityBox.classList.remove('disabled-group');
-    // もしactiveな優先度ボタンがなければ、「中」をactiveにする
-    if (!priorityGroup.querySelector('.day.active')) {
-      priorityGroup.querySelector('.day:nth-child(2)').classList.add('active'); // 「中」をactiveに
-    }
-  }
-}
-
-/**
- * 複数のボタンの中から一つだけ選べるようにする（ラジオボタンのような動き）
- */
-function selectSingle(element) {
-  const parent = element.parentElement;
-  const children = parent.children;
-  // 全員のactiveクラスを外してから、クリックされた要素だけに付ける
-  Array.from(children).forEach(child => child.classList.remove('active'));
-  element.classList.add('active');
-}
-
-/**
- * カラーパレットを管理するモード（追加・削除ができる状態）に切り替える
- */
-let isColorDeleteMode = false;
-function toggleColorDeleteMode() {
-  isColorDeleteMode = !isColorDeleteMode;
-  const btn = document.getElementById('delete-mode-btn');
-  const deleteBtn = document.getElementById('delete-selected-btn');
-  const addBtn = document.getElementById('custom-color-circle');
-  const group = document.getElementById('color-group');
-
-  if (isColorDeleteMode) { // 整理モードON
-    btn.textContent = 'とりけし完了';
-    btn.style.backgroundColor = '#ddd';
-    deleteBtn.style.display = 'inline-block';
-    addBtn.style.display = 'flex';
-    group.classList.add('delete-mode');
-  } else { // 整理モードOFF
-    btn.textContent = '色の追加・とりけし';
-    btn.style.backgroundColor = '';
-    deleteBtn.style.display = 'none';
-    addBtn.style.display = 'none';
-    group.classList.remove('delete-mode');
-    // モード終了時に削除用の選択状態をクリア
-    group.querySelectorAll('.selected-for-delete').forEach(el => el.classList.remove('selected-for-delete'));
-  }
-}
-
-/**
- * 「削除マーク（赤枠）」がついた色をまとめて画面から消す
- */
-function deleteSelectedColor() {
-  // 削除対象（selected-for-deleteクラスがついているもの）をすべて取得
-  const targetColors = Array.from(document.querySelectorAll('#color-group .color-circle.selected-for-delete'))
-                            .filter(el => !el.classList.contains('none') && !el.classList.contains('custom'));
-  
-  if (targetColors.length === 0) {
-    alert('とりけし対象が選択されていません。とりけししたい色をクリック（赤枠にする）してからこのボタンを押してください。');
-    return;
-  }
-  
-  if (confirm(`${targetColors.length}個の色をとりけししますか？`)) {
-    targetColors.forEach(el => {
-      // もし削除される色が「目標カラー」として選ばれていたら、選択を解除する
-      if (el.classList.contains('active')) {
-        const noneBtn = document.querySelector('#color-group .none');
-        if (noneBtn) selectSingle(noneBtn);
-      }
-      el.remove();
-    });
-  }
-}
-
-/**
- * 色をクリックした時に「目標カラーに選ぶ」か「削除対象にする」かを判断する
- */
-function handleColorClick(element) {
-  if (isColorDeleteMode) { 
-    // 削除モード中は、削除用マーク（赤枠）をトグル
-    if (!element.classList.contains('none') && !element.classList.contains('custom')) {
-      element.classList.toggle('selected-for-delete');
-    }
-  } else { 
-    // 通常モードは単一選択
+  // モード切り替え
+  function selectMode(element) {
     selectSingle(element);
-  }
-}
-
-/**
- * 「＋」ボタンが押された時に、OS標準のカラーパレットを起動する
- */
-function selectCustomColor() {
-  // 「＋」ボタン自体は選択状態にせず、ピッカーだけ開く
-  document.getElementById('custom-color-picker').click();
-}
-
-/**
- * 特定の色を削除する（確認ダイアログを出す）
- */
-function deleteColor(event, element) {
-  if (event) event.preventDefault();
-  if (confirm('この色をとりけししますか？')) {
-    // もし削除される色が現在選択中なら、「なし(×)」を代わりに選択状態にする
-    if (element.classList.contains('active')) {
-      const noneBtn = element.parentElement.querySelector('.none');
-      if (noneBtn) selectSingle(noneBtn);
+    const priorityBox = document.getElementById('priority-box');
+    priorityBox.className = (element.innerText === '優先順位') ? '' : 'disabled-group';
+    
+    if (element.innerText === '自由設定') {
+      document.querySelectorAll('#priority-group .day').forEach(el => el.classList.remove('active'));
     }
-    element.remove();
-  }
-}
-
-/**
- * カラーピッカーで色を選んだ後、新しい丸ボタンをパレットに追加する
- */
-function updateCustomColor(value) {
-  if (!value) return;
-
-  const colorGroup = document.getElementById('color-group');
-  const addBtn = document.getElementById('custom-color-circle');
-
-  // 新しいカラーサークルを作成して追加
-  const newColor = document.createElement('div');
-  newColor.className = 'color-circle';
-  newColor.style.backgroundColor = value;
-  newColor.dataset.color = value;
-  newColor.title = "右クリックでとりけし";
-  
-  // クリック時の選択処理
-  newColor.onclick = function() { handleColorClick(this); };
-  
-  // 右クリック時の削除処理
-  newColor.oncontextmenu = function(e) { deleteColor(e, this); };
-
-  // 「＋」ボタンの前に新しい色を挿入
-  colorGroup.insertBefore(newColor, addBtn);
-  
-  // 追加した色をそのまま選択状態にする
-  selectSingle(newColor);
-}
-
-// 画面が読み込まれた時に、最初の設定（自由設定モードなど）を反映する
-document.addEventListener('DOMContentLoaded', (event) => {
-  const initialActiveMode = document.querySelector('#mode-group .day.active');
-  if (initialActiveMode) {
-    selectMode(initialActiveMode);
-  }
-});
-
-/**
- * 「編集する」ボタンを押した時に、入力された全てのデータを取得して表示する
- */
-function saveGoal() {
-  const name = document.getElementById('goal-name').value.trim();
-  if (!name) {
-    alert('目標名を入力してください。');
-    return;
   }
 
-  const daysActive = document.querySelectorAll('#frequency-group .active');
-  if (daysActive.length === 0) {
-    alert('頻度を少なくとも1つ選択してください。');
-    return;
+  // 単一選択
+  function selectSingle(element) {
+    const parent = element.parentElement;
+    parent.querySelectorAll('.day').forEach(el => el.classList.remove('active'));
+    element.classList.add('active');
   }
 
-  const timing = document.getElementById('start-timing').value.trim();
-  if (!timing) {
-    alert('開始タイミングを入力してください。');
-    return;
+  // 🎨 カラー選択
+  let isColorDeleteMode = false;
+  function toggleColorDeleteMode() {
+    isColorDeleteMode = !isColorDeleteMode;
+
+    const btn = document.getElementById('delete-mode-btn');
+    const addBtn = document.getElementById('custom-color-circle');
+
+    if (isColorDeleteMode) {
+      btn.textContent = '色の変更完了';
+      btn.classList.replace('btn-outline-secondary', 'btn-secondary');
+      if (addBtn) addBtn.style.display = 'flex';
+    } else {
+      btn.textContent = '色の変更';
+      btn.classList.replace('btn-secondary', 'btn-outline-secondary');
+      if (addBtn) addBtn.style.display = 'none';
+    }
   }
 
-  const hours = document.getElementById('duration-hours').value.trim();
-  const minutes = document.getElementById('duration-minutes').value.trim();
-  if (!hours && !minutes) {
-    alert('所要時間を入力してください。');
-    return;
+  function selectCustomColor() {
+    document.getElementById('custom-color-picker').click();
   }
 
-  const start = document.getElementById('start-date').value.trim();
-  const end = document.getElementById('end-date').value.trim();
-
-  // 【バリデーション箇所】8桁の数字以外は受け付けない
-  const datePattern = /^\d{8}$/;
-  if (!datePattern.test(start) || !datePattern.test(end)) {
-    alert('日付は「20241107」のような8桁の数字で入力してください。');
-    return;
+  function updateCustomColor(value) {
+    if (!value) return;
+    const targetCircle = document.getElementById('current-color-circle');
+    if (targetCircle) {
+      targetCircle.style.backgroundColor = value;
+      targetCircle.dataset.color = value;
+    }
   }
 
-  // 開始日と終了日の前後関係チェック
-  if (parseInt(start) > parseInt(end)) {
-    alert('終了日は開始日より後の日付に設定してください。');
-    return;
+  // 🔄 既存編集データのロードと初期化
+  document.addEventListener('DOMContentLoaded', () => {
+    isColorDeleteMode = false;
+
+    const params = new URLSearchParams(location.search);
+    const editId = params.get('id');
+
+    if (!editId) return;
+
+    let goals = JSON.parse(localStorage.getItem('goals')) || [];
+    const goal = goals.find(g => String(g.id) === String(editId));
+    if (!goal) return;
+
+    document.getElementById('goal-name').value = goal.name || '';
+    document.getElementById('start-date').value = goal.start || '';
+    document.getElementById('end-date').value = goal.end || '';
+    document.getElementById('start-timing').value = goal.timing || '10:00';
+    
+    if (goal.duration) {
+      const hoursMatch = goal.duration.match(/(\d+)時間/);
+      const minutesMatch = goal.duration.match(/(\d+)分/);
+      document.getElementById('duration-hours').value = hoursMatch ? hoursMatch[1] : '0';
+      document.getElementById('duration-minutes').value = minutesMatch ? minutesMatch[1] : '0';
+    }
+
+    document.querySelectorAll('#frequency-group .day').forEach(day => {
+      if (goal.days?.includes(day.innerText)) {
+        day.classList.add('active');
+      }
+    });
+
+    const modeBtn = [...document.querySelectorAll('#mode-group .day')].find(btn => btn.innerText === (goal.mode || '自由設定'));
+    if (modeBtn) selectMode(modeBtn);
+
+    const priorityBtn = [...document.querySelectorAll('#priority-group .day')].find(btn => btn.innerText === goal.priority);
+    if (priorityBtn && goal.mode !== '自由設定') selectSingle(priorityBtn);
+
+    // 保存されていた色を反映
+    if (goal.color) {
+      const targetCircle = document.getElementById('current-color-circle');
+      if (targetCircle) {
+        targetCircle.style.backgroundColor = goal.color;
+        targetCircle.dataset.color = goal.color;
+      }
+    }
+  });
+
+  // 💾 上書き保存処理
+  function saveGoal() {
+    const params = new URLSearchParams(location.search);
+    const editId = params.get('id');
+    if (!editId) return;
+
+    const name = document.getElementById('goal-name').value.trim();
+    if (!name) { alert('目標名を入力してください。'); return; }
+
+    const daysActive = document.querySelectorAll('#frequency-group .active');
+    if (daysActive.length === 0) { alert('頻度を少なくとも1つ選択してください。'); return; }
+
+    const timing = document.getElementById('start-timing').value.trim();
+    if (!timing) { alert('開始タイミングを入力してください。'); return; }
+
+    const hours = document.getElementById('duration-hours').value || 0;
+    const minutes = document.getElementById('duration-minutes').value || 0;
+    const duration = `${hours}時間${minutes}分`;
+
+    const start = document.getElementById('start-date').value.trim();
+    const end = document.getElementById('end-date').value.trim();
+
+    const datePattern = /^\d{8}$/;
+    if (!datePattern.test(start) || !datePattern.test(end)) {
+      alert('日付は8桁の数字で入力してください。');
+      return;
+    }
+    if (parseInt(start) > parseInt(end)) {
+      alert('終了日は開始日より後の日付に設定してください。');
+      return;
+    }
+
+    const targetCircle = document.getElementById('current-color-circle');
+    const color = targetCircle ? targetCircle.dataset.color : '';
+
+    let priority = '設定されていません';
+    const priorityBox = document.getElementById('priority-box');
+    if (!priorityBox.classList.contains('disabled-group')) {
+      priority = document.querySelector('#priority-group .active')?.innerText || '設定されていません';
+    }
+
+    const mode = document.querySelector('#mode-group .active')?.innerText || '自由設定';
+
+    let goals = JSON.parse(localStorage.getItem('goals')) || [];
+    const index = goals.findIndex(g => String(g.id) === String(editId));
+
+    const goalData = {
+      id: Number(editId),
+      name: name,
+      start: start,
+      end: end,
+      timing: timing,
+      duration: duration,
+      mode: mode,
+      priority: priority,
+      days: Array.from(daysActive).map(el => el.innerText),
+      color: color
+    };
+
+    if (index !== -1) {
+      goals[index] = goalData;
+      localStorage.setItem('goals', JSON.stringify(goals));
+      alert(`目標【${name}】の変更を保存しました。`);
+      
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        location.href = "css/mokuhyouitiran.html#12467;&#12540;&#12489;/css/mokuhyouitiran.html"; 
+      }
+    } else {
+      alert('該当する目標データが見つかりませんでした。');
+    }
   }
 
-  const color = document.querySelector('#color-group .active')?.dataset.color || 'なし'; // 選ばれている色
-  
-  const duration = `${hours || 0}時間${minutes || 0}分`;
-  const mode = document.querySelector('#mode-group .active')?.innerText || '自由設定'; // デフォルト値を追加
-  
-  let priority = '-';
-  const priorityBox = document.getElementById('priority-box');
-  if (!priorityBox.classList.contains('disabled-group')) {
-    priority = document.querySelector('#priority-group .active')?.innerText || '-';
+  // 📋 削除処理
+  function deleteGoal() {
+    if (confirm('本当にとりけししますか？')) {
+      const params = new URLSearchParams(location.search);
+      const editId = params.get('id');
+      
+      if (editId) {
+        let goals = JSON.parse(localStorage.getItem('goals')) || [];
+        goals = goals.filter(g => String(g.id) !== String(editId));
+        localStorage.setItem('goals', JSON.stringify(goals));
+      }
+      
+      alert('とりけししました');
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        location.href = "css/mokuhyouitiran.html#12467;&#12540;&#12489;/css/mokuhyouitiran.html";
+      }
+    }
   }
-  
-  // 頻度（複数選択）の取得
-  const days = Array.from(daysActive)
-                   .map(el => el.innerText)
-                   .join(',');
-
-  alert(`目標【${name}】を編集しました。\n期間: ${start} ～ ${end}\n頻度: ${days}\n開始タイミング: ${timing}\n所要時間: ${duration}\nモード: ${mode}\n優先度: ${priority}\nカラー: ${color}`);
-}
 </script>
 
 </body>

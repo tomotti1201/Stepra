@@ -127,4 +127,20 @@ class TaskController extends Controller
             'task' => $task
         ], 201);
     }
+
+    public function index()
+    {
+        $tasks = Task::select(
+            'id',
+            'title',
+            'week_days',
+            'start_time',
+            'required_minutes'
+        )->get();
+
+        return response()->json([
+            'status' => 'success',
+            'tasks' => $tasks
+        ]);
+    }
 }

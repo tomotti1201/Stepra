@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -48,8 +49,7 @@ class PasswordResetController extends Controller
             substr($birth_date, 6, 2);
 
         // ユーザー検索
-        $user = DB::table('users')
-            ->where('email', $email)
+        $user = User::where('email', $email)
             ->where('birth_date', $birth_date)
             ->first();
 
@@ -63,12 +63,8 @@ class PasswordResetController extends Controller
         }
 
         // パスワード更新
-        DB::table('users')
-            ->where('id', $user->id)
-            ->update([
-                'password' => Hash::make($new_password)
-            ]);
-
+        $user->password = Hash::make($new_password);
+        $user->save();
         return response()->json([
             'status' => 'success',
             'message' => 'パスワードを変更しました'

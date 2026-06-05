@@ -30,13 +30,13 @@
                     頻度
 
                     <div class="days" id="frequency-group">
-                        <div class="day">日</div>
                         <div class="day">月</div>
                         <div class="day">火</div>
                         <div class="day">水</div>
                         <div class="day">木</div>
                         <div class="day">金</div>
                         <div class="day">土</div>
+                        <div class="day">日</div>
                     </div>
                 </div>
 
