@@ -3,28 +3,49 @@
 namespace App\Http\Controllers;
 
 use App\Models\Group;
+use App\Models\Groupmember;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class GroupController extends Controller
 {
+     //グループ一覧取得
     public function index()
     {
-        
+        $groups = Group::all();
+
+        return response()->json($groups);
     }
 
-    public function store()
+     //グループ作成
+    public function store(Request $request)
     {
+        $group = Group::create([
+            'name' => $request->name,
+            'icon' => $request->icon,
+            'invite_code' => $request->invite_code,
+            'description' => $request->description,
+            'ispublic' => $request->ispublic,
+        ]);
 
+        return response()->json($group, 201);
     }
-
-    public function show($id)
+     //グループ参加
+    public function join(Request $request)
     {
-      
-    }
+        $member = Groupmember::create([
+            'group_id' => $request->group_id,
+            'user_id' => $request->user_id,
+            'notification_enabled' => 1,
+            'role' => 'member',
+        ]);
 
-    public function destroy($id)
-    {
-      
+        return response()->json($member, 201);
     }
+    //グループ削除
+public function destroy($id)
+{
+    $group = Group::findOrFail($id);
+    $group->delete();
+    return response()->json(null, 204);
+}
 }

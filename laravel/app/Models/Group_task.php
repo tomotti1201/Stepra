@@ -5,19 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Group extends Model
+class Group_task extends Model
 {
     use HasFactory;
 
-    protected $table = 'group_task';
+    protected $table = 'group_tasks';
 
     protected $fillable = [
-      'id',
-      'name',
-      'icon',
-      'invite_code',
-      'description',
-      'ispublic',
+        'group_id',
+        'title',
+        'content',
+        'created_by',
     ];
 
     public $timestamps = false;
