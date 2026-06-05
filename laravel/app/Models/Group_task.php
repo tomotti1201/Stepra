@@ -12,13 +12,11 @@ class Group extends Model
     protected $table = 'group_task';
 
     protected $fillable = [
-      'id',
-      'name',
-      'icon',
-      'invite_code',
-      'description',
-      'ispublic',
+   'group_id',
+        'title',
+        'content',
+        'created_by',
     ];
-
+    
     public $timestamps = false;
 }
