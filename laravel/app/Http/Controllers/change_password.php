@@ -37,9 +37,9 @@ class ChangePasswordController extends Controller
         return response()->json($passwordResets);
     }
 
-    /**
-     * パスワードリセット作成
-     */
+    
+     //パスワードリセット作成
+
     public function store(Request $request)
     {
         $changePassword = ChangePassword::create([
@@ -51,17 +51,17 @@ class ChangePasswordController extends Controller
         return response()->json($changePassword, 201);
     }
 
-    /**
-     * create
-     */
+
+     //create
+     
     public function create()
     {
         return redirect('/change_password');
     }
 
-    /**
-     * 編集画面
-     */
+    
+     //編集画面
+     
     public function edit($id)
     {
         $changePassword = ChangePassword::findOrFail($id);
@@ -69,9 +69,9 @@ class ChangePasswordController extends Controller
         return response()->json($changePassword);
     }
 
-    /**
-     * 更新
-     */
+    
+     //更新
+     
     public function update(Request $request, $id)
     {
         $changePassword = ChangePassword::findOrFail($id);
@@ -81,9 +81,9 @@ class ChangePasswordController extends Controller
         return response()->json($changePassword);
     }
 
-    /**
-     * 削除
-     */
+    
+     //削除
+     
     public function destroy($id)
     {
         $changePassword = ChangePassword::findOrFail($id);
