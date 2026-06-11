@@ -1,175 +1,130 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<title>目標一覧</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>目標一覧 | STEPRA</title>
 
-<style>
-body {
-  background: #e6e6e6;
-  font-family: sans-serif;
-  margin: 0;
-}
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-/* 全体カード */
-.container {
-  width: 360px;
-  margin: 20px auto;
-  background: #b8c5d0;
-  border-radius: 40px;
-  border: 2px solid #333;
-  padding: 10px;
-}
+  <style>
+    body { background-color: #f8f9fa; }
 
-/* 上タイトル */
-.header {
-  text-align: center;
-  background: #3cff00;
-  padding: 10px;
-  border: 1px solid #999;
-  margin-bottom: 10px;
-  font-size: 18px;
-}
-
-/* 各項目 */
-.item {
-  display: flex;
-  margin-bottom: 15px;
-}
-
-/* 左（内容） */
-.content {
-  flex: 2;
-  background: #eee;
-  padding: 25px 10px;
-  text-align: center;
-  border: 1px solid #999;
-}
-
-/* 右（ボタン） */
-.buttons {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-/* 編集 */
-.edit {
-  background: #5b82b1;
-  color: black;
-  text-align: center;
-  padding: 15px;
-  border: 1px solid #333;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-/* 削除 */
-.delete {
-  background: #c05050;
-  color: white;
-  text-align: center;
-  padding: 15px;
-  border: 1px solid #333;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-/* 新規作成ボタン */
-.create {
-  margin: 15px 0;
-  background: #3cff00;
-  text-align: center;
-  padding: 15px;
-  font-size: 24px;
-  border: 1px solid #999;
-  display: block;
-  text-decoration: none;
-  color: black;
-}
-
-/* 下メニュー */
-.menu-bar {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  background: #f0f0f0;
-  padding: 10px 0;
-  border-top: 1px solid #aaa;
-  border-radius: 0 0 30px 30px;
-}
-
-.menu-item {
-  text-align: center;
-  font-size: 12px;
-  color: #555;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.active {
-  color: purple;
-  font-weight: bold;
-}
-</style>
-
+    /* 目標アイテムの枠線と背景 */
+    .target-item {
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      overflow: hidden;
+      background-color: #fff;
+    }
+    .target-content {
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
 
-<div class="container">
+<div class="container-fluid py-4">
+  <img src="im/tit.png" class="mb-3" style="width:200px;">
+  <div class="row justify-content-center">
+    
+    <div class="col-12 px-3 px-md-4">
 
-  <div class="header">
-    目標一覧<br>
-    <small>編集・削除</small>
-  </div>
+      <div class="card-body">
+        
+        <h2 class="text-center fw-bold mb-4 fs-4">
+          目標一覧<br>
+          <span class="fs-6 fw-normal text-muted">作成・編集</span>
+        </h2>
 
-  <!-- アイテム -->
-  <div class="item">
-    <div class="content">目標内容</div>
-    <div class="buttons">
-      <a href="#" class="edit">編集</a>
-      <a href="#" class="delete">削除</a>
+        <div id="target-list" class="d-flex flex-column gap-2">
+        </div>
+
+        <div class="mt-4">
+          <a href="mokuhyosinki.html" class="btn btn-success w-100 py-3 fw-bold fs-5 shadow-sm">
+            ＋ 新規目標作成
+          </a>
+        </div>
+
+      </div>
+
     </div>
   </div>
-
-  <div class="item">
-    <div class="content">目標内容</div>
-    <div class="buttons">
-      <a href="#" class="edit">編集</a>
-      <a href="#" class="delete">削除</a>
-    </div>
-  </div>
-
-  <div class="item">
-    <div class="content">目標内容</div>
-    <div class="buttons">
-      <a href="#" class="edit">編集</a>
-      <a href="#" class="delete">削除</a>
-    </div>
-  </div>
-
-  <div class="item">
-    <div class="content">目標内容</div>
-    <div class="buttons">
-      <a href="#" class="edit">編集</a>
-      <a href="#" class="delete">削除</a>
-    </div>
-  </div>
-
-  <!-- 新規作成 -->
-  <a href="#" class="create">
-    新規目標作成
-  </a>
-
-  <!-- メニュー -->
-  <div class="menu-bar">
-    <a href="#" class="menu-item">📅<br>記録</a>
-    <a href="#" class="menu-item">🔄<br>履歴</a>
-    <a href="#" class="menu-item active">📊<br>分析</a>
-    <a href="#" class="menu-item">✅<br>目標</a>
-  </div>
-
 </div>
 
+<nav class="navbar navbar-light bg-light border-top fixed-bottom py-2">
+  <div class="container-fluid justify-content-around">
+    <a href="kiroku.html" class="text-decoration-none text-secondary text-center" style="font-size: 12px;">
+      <div>📅</div><div>記録</div>
+    </a>
+    <a href="rireki.html" class="text-decoration-none text-secondary text-center" style="font-size: 12px;">
+      <div>🔄</div><div>履歴</div>
+    </a>
+    <a href="gekkankarenda.html" class="text-decoration-none text-secondary text-center" style="font-size: 12px;">
+      <div>📊</div><div>分析</div>
+    </a>
+    <a href="mokuhyouitiran.html" class="text-decoration-none text-primary fw-bold text-center" style="font-size: 12px;">
+      <div>✅</div><div>目標</div>
+    </a>
+  </div>
+</nav>
+
+<div style="height: 100px;"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  const storageKey = 'goals';
+
+  // 画面に目標一覧を組み立てて表示する関数
+  function renderList() {
+    const listContainer = document.getElementById('target-list');
+    
+    // 1. ブラウザから最新の保存データを読み込む
+    let goals = localStorage.getItem(storageKey);
+    goals = goals ? JSON.parse(goals) : [];
+
+    // 2. 一度リストの中身をすべて空っぽにする
+    listContainer.innerHTML = ''; 
+
+    // データが無いときの案内
+    if (goals.length === 0) {
+      listContainer.innerHTML = '<div class="text-center text-muted small py-4">登録された目標がありません</div>';
+      return;
+    }
+
+    // 3. 登録データでリストを組み立てる
+    goals.forEach((goal) => {
+      const item = document.createElement('div');
+      item.className = 'target-item d-flex row g-0 align-items-center mb-2 shadow-sm';
+
+      // 左側：目標名表示エリア
+      const content = document.createElement('div');
+      content.className = 'target-content col-8 p-3 text-start d-flex align-items-center';
+      content.textContent = goal.name; 
+
+      if (goal.color) {
+        content.style.borderLeft = `8px solid ${goal.color}`;
+      }
+
+      // 右側：編集ボタンエリア
+      const editBtnWrapper = document.createElement('div');
+      editBtnWrapper.className = 'col-4 px-3 text-end';
+
+      const editLink = document.createElement('a');
+      editLink.className = 'btn btn-primary w-100 py-2 fw-bold';
+      editLink.textContent = '編集';
+      editLink.href = `mokuhyohensyu.html?id=${goal.id}`;
+
+      editBtnWrapper.appendChild(editLink);
+      item.appendChild(content);
+      item.appendChild(editBtnWrapper);
+      listContainer.appendChild(item);
+    });
+  }
+
+  // 画面が表示されたタイミングに、最新データを読み込んで一覧を表示する
+  document.addEventListener('DOMContentLoaded', renderList);
+</script>
 </body>
 </html>

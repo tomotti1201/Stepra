@@ -15,7 +15,7 @@ class Schedule extends Model
     protected $fillable = [
         'task_id',
         'user_id',
-        'schedules_date',
+        'scheduled_date',
     ];
 
     public $timestamps = false;

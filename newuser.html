@@ -1,93 +1,66 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<title>新規登録</title>
-<style>
-    body {
-        background-color: #e6e6e6;
-        font-family: sans-serif;
-    }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>新規登録 | STEPRA</title>
 
-    .container {
-        width: 350px;
-        margin: 30px auto;
-        padding: 25px;
-        background-color: #d8e8da;;
-        border-radius: 40px;
-        border: 2px solid #333;
-    }
-
-    .title {
-        text-align: center;
-        padding: 10px;
-        background-color: #3cff00;
-        border: 1px solid #333;
-        border-radius: 10px;
-        margin-bottom: 20px;
-        font-size: 16px;
-    }
-
-    .form-group {
-        margin-bottom: 15px;
-    }
-
-    input {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #999;
-        background-color: white;
-        box-sizing: border-box;
-    }
-
-    .submit-btn {
-        width: 100%;
-        padding: 12px;
-        background-color: #3cff00;
-        color: #333;
-        border: 1px solid #333;
-        margin-top: 10px;
-        cursor: pointer;
-        font-size: 14px;
-    }
-
-    .back-btn {
-        width: 100%;
-        padding: 12px;
-        background-color: #f26c6c;
-        color: #333;
-        border: 1px solid #333;
-        margin-top: 10px;
-        cursor: pointer;
-        font-size: 14px;
-    }
-</style>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+<body class="bg-light">
 
-<body>
+<!-- 【共通ルール準拠】レイアウトコンテナ -->
+<div class="container py-5">
+  <img src="im/tit.png" class="mb-3" style="width:200px;">
+  <div class="row justify-content-center">
+    <!-- 【共通ルール準拠】レスポンシブカラム幅（ログイン・新規登録に最適化） -->
+    <!-- <div class="col-12 col-md-8 col-lg-5"> -->
 
-<div class="container">
-    <div class="title">新規登録</div>
-    <form action="register.php" method="POST">
-        <div class="form-group">
-            <input type="text" name="username" placeholder="ユーザー名" required>
+      <!-- 【共通ルール準拠】カード（card shadow） -->
+      <!-- <div class="card shadow border-0"> -->
+        <div class="card-body p-4">
+          
+          <!-- 【共通ルール準拠】タイトル（中央寄せ＋太字） -->
+          <h2 class="text-center fw-bold mb-4 fs-4">新規登録</h2>
+
+          <form action="register.php" method="POST">
+            
+            <!-- 【共通ルール準拠】入力欄（form-control） -->
+            <div class="mb-3">
+              <input type="text" class="form-control" name="username" placeholder="ユーザー名" required>
+            </div>
+
+            <div class="mb-3">
+              <input type="email" class="form-control" name="email" placeholder="メールアドレス" required>
+            </div>
+
+            <div class="mb-3">
+              <input type="text" class="form-control" name="birthdate" placeholder="生年月日 (例: 2000/01/01)" required>
+            </div>
+
+            <div class="mb-3">
+              <input type="password" class="form-control" name="password" placeholder="パスワード" required>
+            </div>
+
+            <div class="mb-4">
+              <input type="password" class="form-control" name="password_confirm" placeholder="パスワード再入力" required>
+            </div>
+
+            <!-- 【共通ルール準拠】作成・登録：btn-success、戻る：btn-secondary -->
+            <div>
+              <button type="submit" class="btn btn-success w-100 mb-2 py-2 fw-bold">登録する</button>
+              <button type="button" class="btn btn-secondary w-100 py-2" onclick="history.back()">戻る</button>
+            </div>
+            
+          </form>
         </div>
-        <div class="form-group">
-            <input type="email" name="email" placeholder="メールアドレス" required>
-        </div>
-        <div class="form-group">
-            <input type="text" name="birthdate" placeholder="生年月日(例:2000/01/01)" required>
-        </div>
-        <div class="form-group">
-            <input type="password" name="password" placeholder="パスワード" required>
-        </div>
-        <div class="form-group">
-            <input type="password" name="password_confirm" placeholder="パスワード再入力" required>
-        </div>
-        <button type="submit" class="submit-btn">登録する</button>
-        <button type="button" class="back-btn" onclick="history.back()">取消・戻る</button>
-    </form>
+      <!-- </div> -->
+
+    <!-- </div> -->
+  </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

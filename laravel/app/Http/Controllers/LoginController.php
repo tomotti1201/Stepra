@@ -10,11 +10,11 @@ class LoginController extends Controller
 {
     public function login(Request $request)
     {
-        $name = trim($request->name ?? '');
+        $email = trim($request->email ?? '');
         $password = $request->password ?? '';
 
         // 入力チェック
-        if ($name === '' || $password === '') {
+        if ($email === '' || $password === '') {
             return response()->json([
                 'status' => 'error',
                 'message' => 'ユーザー名とパスワードを入力してください'
@@ -23,22 +23,22 @@ class LoginController extends Controller
 
         // users テーブルから検索
         $user = DB::table('users')
-            ->where('name', $name)
+            ->where('email', $email)
             ->first();
 
         // ユーザー存在確認
         if (!$user) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'ユーザーが存在しません'
-            ], 404);
+                'message' => 'メールアドレスまたはパスワードが違います'
+            ], 401);
         }
 
         // パスワード確認
         if (!Hash::check($password, $user->password)) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'パスワードが違います'
+                'message' => 'メールアドレスまたはパスワードが違います'
             ], 401);
         }
 

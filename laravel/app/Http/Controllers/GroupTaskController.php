@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Group_task;
+use App\Models\Grouptask;
 use Illuminate\Http\Request;
 
 class GroupTaskController extends Controller
@@ -11,7 +11,7 @@ class GroupTaskController extends Controller
      //グループタスク一覧取得
     public function index()
     {
-        $tasks = Group_task::all();
+        $tasks = Grouptask::all();
 
         return response()->json($tasks);
     }
@@ -21,7 +21,7 @@ class GroupTaskController extends Controller
      
     public function store(Request $request)
     {
-        $task = Group_task::create([
+        $task = Grouptask::create([
             'group_id' => $request->group_id,
             'title' => $request->title,
             'content' => $request->content,
@@ -36,7 +36,7 @@ class GroupTaskController extends Controller
      
     public function destroy($id)
     {
-        $task = Group_task::findOrFail($id);
+        $task = Grouptask::findOrFail($id);
         $task->delete();
 
         return response()->json(null, 204);

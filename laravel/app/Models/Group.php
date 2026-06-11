@@ -9,7 +9,7 @@ class Group extends Model
 {
     use HasFactory;
 
-    protected $table = 'group';
+    protected $table = 'groups';
 
     protected $fillable = [
       'id',
@@ -17,7 +17,7 @@ class Group extends Model
       'icon',
       'invite_code',
       'description',
-      'ispublic',
+      'is_public',
     ];
 
     public $timestamps = false;

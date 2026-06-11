@@ -24,7 +24,7 @@ class GroupController extends Controller
             'icon' => $request->icon,
             'invite_code' => $request->invite_code,
             'description' => $request->description,
-            'ispublic' => $request->ispublic,
+            'is_public' => $request->is_public,
         ]);
 
         return response()->json($group, 201);

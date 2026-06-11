@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
-    public function taskCreate(Request $request)
+    public function store(Request $request)
 {
     $title = trim($request->title ?? '');
 
@@ -115,11 +115,11 @@ class TaskController extends Controller
         'required_minutes' => $requiredMinutes,
         'priority' => $priority,
         'color' => $request->color,
-        'period' => $request->period,
-        'notification_enabled' => $request->notification_enabled,
+        'period' => 'weekly',
+        'notification_enabled' => '1',
         'start_date' => $startDate,
         'end_date' => $endDate,
-        'status' => $request->status
+        'status' => 'active'
     ]);
 
     return response()->json([
@@ -127,6 +127,95 @@ class TaskController extends Controller
         'message' => '目標を登録しました',
         'task' => $task
     ], 201);
+}
+public function index()
+{
+    $tasks = Task::all();
+
+    return response()->json([
+        'status' => 'success',
+        'tasks' => $tasks
+    ]);
+}
+public function show($id)
+{
+    $task = Task::find($id);
+
+    if (!$task) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'タスクが見つかりません'
+        ], 404);
+    }
+
+    return response()->json([
+        'status' => 'success',
+        'task' => $task
+    ]);
+}
+public function taskedit($id)
+{
+    return Task::findOrFail($id);
+}
+public function update(Request $request, $id)
+{
+    $task = Task::find($id);
+
+    if (!$task) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'タスクが見つかりません'
+        ], 404);
+    }
+
+    $title = trim($request->title ?? '');
+
+    if ($title === '') {
+        return response()->json([
+            'status' => 'error',
+            'message' => '目標名を入力してください'
+        ], 400);
+    }
+
+    $weekDays = $request->week_days ?? [];
+
+    $start_time = $request->start_time ?? '';
+
+    $duration_hours = (int)$request->duration_hours;
+    $duration_minutes = (int)$request->duration_minutes;
+
+    $requiredMinutes = ($duration_hours * 60) + $duration_minutes;
+
+    $priority = match ($request->priority) {
+        '高' => 'high',
+        '中' => 'middle',
+        '低' => 'low',
+        default => null
+    };
+
+    $weekDayMap = [
+        '月' => 1, '火' => 2, '水' => 3,
+        '木' => 4, '金' => 5, '土' => 6, '日' => 7
+    ];
+
+    $weekDays = array_map(fn($d) => $weekDayMap[$d], $weekDays);
+
+    $task->update([
+        'title' => $title,
+        'week_days' => json_encode($weekDays),
+        'start_time' => $start_time,
+        'required_minutes' => $requiredMinutes,
+        'priority' => $priority,
+        'color' => $request->color,
+        'start_date' => str_replace('-', '', $request->start_date),
+        'end_date' => str_replace('-', '', $request->end_date),
+    ]);
+
+    return response()->json([
+        'status' => 'success',
+        'message' => '更新しました',
+        'task' => $task
+    ]);
 }
 }
 

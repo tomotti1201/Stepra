@@ -1,51 +1,184 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="stylesheet" href="{{asset('css/login.css')}}">
-  <title>STEPRA ログイン画面</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>STEPRA ログイン</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
 </head>
 
-<body>
+<body class="bg-light">
 
-  <div class="phone">
+<div class="container">
 
-    <div class="title">
-      STEPRA
+    <div class="row justify-content-center min-vh-100 align-items-center">
+
+        <div class="col-12 col-md-8 col-lg-5">
+
+            <!-- タイトル -->
+            <div class="text-center mb-4">
+                    <img src="{{ asset('image/t.png') }}"
+                    alt="ロゴ"
+                    class="mb-3"
+                    style="width: 500px; height: auto;">
+            </div>
+
+            <div id="error-message"
+     class="text-danger text-center mb-3">
+            </div>
+
+                    <!--ユーザー名-->
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            メールアドレス
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            class="form-control"
+                            placeholder="example@email.com">
+
+                    </div>
+
+                    <!-- メールアドレス -->
+
+                    <!-- <div class="mb-3">
+
+                        <label class="form-label">
+                            メールアドレス
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            class="form-control"
+                            placeholder="example@email.com">
+
+                    </div> -->
+
+                    <!-- パスワード -->
+
+                    <div class="mb-4">
+
+                        <label class="form-label">
+                            パスワード
+                        </label>
+
+                        <input
+                            type="password"
+                            id="password"
+                            class="form-control"
+                            placeholder="パスワード">
+
+                    </div>
+
+                    <!-- ログイン -->
+
+                    <button
+                        type="button"
+                        class="btn btn-success w-100 mb-2"
+                        onclick="login()">
+
+                        ログイン
+
+                    </button>
+
+                    <!-- 新規登録 -->
+
+                    <button
+                      type="button"
+                        class="btn btn-secondary w-100"
+                        onclick="location.href='/newuser'">
+
+                        新規登録
+
+                    </button>
+
+                    <!--パスワードを忘れた場合-->
+
+                    <button
+                        class="btn btn-link w-100"
+                        onclick="forgotPassword()">
+
+                        パスワードを忘れた場合
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
 
-    <div class="form-area">
+</div>
 
-      <div class="form-group">
-        <input type="text" id="username" placeholder="ユーザー名を入力する場所">
-      </div>
+<script>
 
-      <div class="form-group">
-        <input type="password" id="password" placeholder="パスワードを入力する場所">
-      </div>
+async function login(){
 
-      <button class="login-btn" onclick="login()">
-        ログイン
-      </button>
 
-      <button class="sub-btn" onclick="location.href='/passwordReset'">
-        パスワードを忘れた場合
-      </button>
+    document.getElementById("error-message").textContent = "";
 
-      <button class="sub-btn" onclick="location.href='/newuser'">
-        新規アカウント作成
-      </button>
+    const email =
+        document.getElementById("email").value;
 
-      <div class="message" id="message"></div>
+    const password =
+        document.getElementById("password").value;
 
-    </div>
+    try{
 
-  </div>
+        const response = await fetch(
+            "http://localhost:8000/api/login",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password
+                })
+            }
+        );
 
-    <script src="{{asset('/js/login.js')}}"></script>
+        const data = await response.json();
 
+        console.log(data);
+
+        if(response.ok){
+
+        localStorage.setItem(
+          "user_id",
+          data.user.id
+        );
+
+    location.href = "/home";
+
+}else{
+
+    document.getElementById("error-message")
+        .textContent = data.message;
+
+}
+
+    }catch(error){
+
+        console.error(error);
+
+        alert("通信エラー");
+
+    }
+
+}
+
+</script>
 
 </body>
 </html>

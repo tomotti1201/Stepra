@@ -15,9 +15,9 @@ class ScheduleController extends Controller
         $userId = $request->query('user_id', Auth::id());
 
         $query = Schedule::query()
-            ->whereYear('schedules_date', $year)
-            ->whereMonth('schedules_date', $month)
-            ->orderBy('schedules_date');
+            ->whereYear('scheduled_date', $year)
+            ->whereMonth('scheduled_date', $month)
+            ->orderBy('scheduled_date');
 
         if ($userId) {
             $query->where('user_id', $userId);
@@ -31,7 +31,7 @@ class ScheduleController extends Controller
         $schedule = Schedule::create([
             'task_id' => $request->task_id,
             'user_id' => $request->user_id ?? Auth::id(),
-            'schedules_date' => $request->schedules_date,
+            'scheduled_date' => $request->scheduled_date,
         ]);
 
         return response()->json($schedule, 201);
