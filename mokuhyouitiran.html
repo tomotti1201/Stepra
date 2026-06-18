@@ -20,67 +20,56 @@
     .target-content {
       font-weight: bold;
     }
-
-    /* フッターナビゲーションのスタイル */
-    .bottom-nav {
-      border-top: 1px solid #dee2e6;
-      background-color: #fff;
-      padding: 10px 0;
-    }
-    .menu-item {
-      color: #6c757d;
-      text-decoration: none;
-      font-size: 12px;
-    }
-    .menu-item.active {
-      color: #0d6efd;
-      font-weight: bold;
-    }
   </style>
 </head>
 <body>
 
-<!-- 【共通ルール準拠】レイアウトコンテナ -->
-<div class="container py-4">
+<div class="container-fluid py-4">
+  <img src="im/tit.png" class="mb-3" style="width:200px;">
   <div class="row justify-content-center">
-    <!-- 【共通ルール準拠】レスポンシブカラム幅 -->
-    <div class="col-12 col-md-8 col-lg-5">
+    
+    <div class="col-12 px-3 px-md-4">
 
-      <!-- 【共通ルール準拠】カード（card shadow） -->
-      <div class="card shadow">
-        <div class="card-body p-4">
-          
-          <!-- 【共通ルール準拠】タイトル（中央寄せ＋太字） -->
-          <h2 class="text-center fw-bold mb-4 fs-4">
-            目標一覧<br>
-            <span class="fs-6 fw-normal text-muted">編集</span>
-          </h2>
+      <div class="card-body">
+        
+        <h2 class="text-center fw-bold mb-4 fs-4">
+          目標一覧<br>
+          <span class="fs-6 fw-normal text-muted">作成・編集</span>
+        </h2>
 
-          <!-- 目標リスト（JavaScriptで動的生成） -->
-          <div id="target-list" class="d-flex flex-column gap-2">
-          </div>
-
-          <!-- 【共通ルール準拠】新規作成・登録ボタンは btn-success -->
-          <div class="mt-4">
-            <a href="mokuhyosinki.html" class="btn btn-success w-100 py-2 fw-bold">
-              ＋ 新規目標作成
-            </a>
-          </div>
-
+        <div id="target-list" class="d-flex flex-column gap-2">
         </div>
 
-        <!-- フッターナビゲーション -->
-        <div class="bottom-nav d-flex justify-content-around align-items-center rounded-bottom">
-          <a href="#" class="menu-item text-center">📅<br>記録</a>
-          <a href="#" class="menu-item text-center">🔄<br>履歴</a>
-          <a href="#" class="menu-item text-center active">📊<br>分析</a>
-          <a href="#" class="menu-item text-center">✅<br>目標</a>
+        <div class="mt-4">
+          <a href="mokuhyosinki.html" class="btn btn-success w-100 py-3 fw-bold fs-5 shadow-sm">
+            ＋ 新規目標作成
+          </a>
         </div>
+
       </div>
 
     </div>
   </div>
 </div>
+
+<nav class="navbar navbar-light bg-light border-top fixed-bottom py-2">
+  <div class="container-fluid justify-content-around">
+    <a href="kiroku.html" class="text-decoration-none text-secondary text-center" style="font-size: 12px;">
+      <div>📅</div><div>記録</div>
+    </a>
+    <a href="rireki.html" class="text-decoration-none text-secondary text-center" style="font-size: 12px;">
+      <div>🔄</div><div>履歴</div>
+    </a>
+    <a href="gekkankarenda.html" class="text-decoration-none text-secondary text-center" style="font-size: 12px;">
+      <div>📊</div><div>分析</div>
+    </a>
+    <a href="mokuhyouitiran.html" class="text-decoration-none text-primary fw-bold text-center" style="font-size: 12px;">
+      <div>✅</div><div>目標</div>
+    </a>
+  </div>
+</nav>
+
+<div style="height: 100px;"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -107,7 +96,7 @@
     // 3. 登録データでリストを組み立てる
     goals.forEach((goal) => {
       const item = document.createElement('div');
-      item.className = 'target-item d-flex row g-0 align-items-center';
+      item.className = 'target-item d-flex row g-0 align-items-center mb-2 shadow-sm';
 
       // 左側：目標名表示エリア
       const content = document.createElement('div');
@@ -120,11 +109,10 @@
 
       // 右側：編集ボタンエリア
       const editBtnWrapper = document.createElement('div');
-      editBtnWrapper.className = 'col-4 px-2 text-end';
+      editBtnWrapper.className = 'col-4 px-3 text-end';
 
       const editLink = document.createElement('a');
-      // 【共通ルール準拠】一覧内の編集ボタンは btn-primary を指定
-      editLink.className = 'btn btn-sm btn-primary w-100';
+      editLink.className = 'btn btn-primary w-100 py-2 fw-bold';
       editLink.textContent = '編集';
       editLink.href = `mokuhyohensyu.html?id=${goal.id}`;
 

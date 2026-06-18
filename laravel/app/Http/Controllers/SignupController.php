@@ -17,41 +17,39 @@ class SignupController extends Controller
         $password = $request->password ?? '';
 
         if ($name === '' || $email === '' || $birth_date === '' || $password === '') {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'name, email, birth_date, password are required',
-            ], 400);
-        }
+    return response()->json([
+        'status' => 'error',
+        'message' => '必須項目を入力してください',
+    ], 400);
+}
 
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Invalid email format',
-            ], 400);
-        }
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    return response()->json([
+        'status' => 'error',
+        'message' => 'メールアドレスの形式が正しくありません',
+    ], 400);
+}
 
-        if(strlen($birth_date) !== 8){
-            return response() -> json([
-                'status' => 'error',
-                'message' => 'Birth date must be 8 characters',
-            ], 400);
-        }
+if (strlen($birth_date) !== 8) {
+    return response()->json([
+        'status' => 'error',
+        'message' => '生年月日は8桁で入力してください',
+    ], 400);
+}
 
-        $birth_date = substr($birth_date,0,4) . '-' . substr($birth_date,4,2) . '-' . substr($birth_date,6,2);
-
-        if (strlen($password) < 8) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Password must be at least 8 characters',
-            ], 400);
-        }
+if (strlen($password) < 8) {
+    return response()->json([
+        'status' => 'error',
+        'message' => 'パスワードは8文字以上で入力してください',
+    ], 400);
+}
 
         $exists = User::where('email', $email)->exists();
 
         if ($exists) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Email already exists',
+                'message' => 'このメールアドレスは既に登録されています',
             ], 409);
         }
 
