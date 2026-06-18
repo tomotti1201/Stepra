@@ -15,8 +15,8 @@
         </button>
 
         <button
-            class="btn {{ request()->is('calendar') ? 'btn-success' : 'btn-outline-secondary' }}"
-            onclick="location.href='/calendar'">
+            class="btn {{ request()->is('schedules') ? 'btn-success' : 'btn-outline-secondary' }}"
+            onclick="location.href='/schedules'">
             📅 月間カレンダー
         </button>
 
@@ -27,9 +27,15 @@
         </button>
 
         <button
+            class="btn {{ request()->is('continuity') ? 'btn-success' : 'btn-outline-secondary' }}"
+            onclick="location.href='/continuity'">
+            ⚙️ 継続率
+        </button>
+
+        <button
             class="btn {{ request()->is('setting') ? 'btn-success' : 'btn-outline-secondary' }}"
             onclick="location.href='/setting'">
-            ⚙️ 設定・継続率
+            ⚙️ 設定
         </button>
 
     </div>

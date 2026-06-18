@@ -17,7 +17,7 @@ class LoginController extends Controller
         if ($email === '' || $password === '') {
             return response()->json([
                 'status' => 'error',
-                'message' => 'ユーザー名とパスワードを入力してください'
+                'message' => 'メールアドレスとパスワードを入力してください'
             ], 400);
         }
 

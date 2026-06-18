@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>STEPRA 日別詳細</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet">
+
+</head>
+
+<body class="bg-light">
+
+<div class="container py-4 mb-5">
+
+    <!-- タイトル画像 -->
+
+    <img src="im/tit.png"
+         class="mb-3"
+         style="width:200px;">
+
+    <!-- 日付 -->
+
+    <div class="card shadow mb-4">
+
+        <div class="card-body text-center">
+
+            <h4
+                id="dateTitle"
+                class="fw-bold mb-0">
+
+            </h4>
+
+        </div>
+
+    </div>
+
+    <!-- スケジュール -->
+
+    <div class="card shadow mb-4">
+
+        <div class="card-body text-center">
+
+            <h4 class="fw-bold mb-4">
+
+                スケジュール
+
+            </h4>
+
+            <div class="d-flex justify-content-center">
+
+                <div
+                    id="circleChart"
+                    class="position-relative"
+                    style="
+                    width:280px;
+                    height:280px;
+                    border-radius:50%;
+                    ">
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- 目標タイトル -->
+
+    <div class="card shadow mb-3">
+
+        <div class="card-body">
+
+            <div
+                class="d-flex justify-content-between align-items-center">
+
+                <h5
+                    id="goalTitle"
+                    class="fw-bold mb-0">
+
+                    個人目標一覧
+
+                </h5>
+
+                <button
+                    class="btn btn-success"
+                    onclick="changeGoal()">
+
+                    切替
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- 目標一覧 -->
+
+    <div id="goalList"></div>
+
+</div>
+
+<!-- 未達成理由モーダル -->
+
+<div
+    class="modal fade"
+    id="reasonModal"
+    tabindex="-1">
+
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title">
+
+                    未達成理由
+
+                </h5>
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <div class="form-check mb-2">
+
+                    <input
+                        class="form-check-input"
+                        type="radio"
+                        name="reason">
+
+                    <label
+                        class="form-check-label">
+
+                        急な用事が入った
+
+                    </label>
+
+                </div>
+
+                <div class="form-check mb-2">
+
+                    <input
+                        class="form-check-input"
+                        type="radio"
+                        name="reason">
+
+                    <label
+                        class="form-check-label">
+
+                        仮眠をしすぎた
+
+                    </label>
+
+                </div>
+
+                <div class="form-check mb-2">
+
+                    <input
+                        class="form-check-input"
+                        type="radio"
+                        name="reason">
+
+                    <label
+                        class="form-check-label">
+
+                        他ごとをしていて忘れていた
+
+                    </label>
+
+                </div>
+
+                <div class="form-check">
+
+                    <input
+                        class="form-check-input"
+                        type="radio"
+                        name="reason">
+
+                    <label
+                        class="form-check-label">
+
+                        やる気がなかった
+
+                    </label>
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button
+                    class="btn btn-success"
+                    onclick="registerReason()">
+
+                    登録
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- 下メニュー -->
+
+<nav class="navbar bg-white border-top fixed-bottom">
+
+    <div class="container d-flex justify-content-around">
+
+        <button class="btn btn-outline-secondary">
+            🏠 ホーム
+        </button>
+
+        <button class="btn btn-outline-secondary">
+            🎯 目標
+        </button>
+
+        <button class="btn btn-success">
+            📅 月間カレンダー
+        </button>
+
+        <button class="btn btn-outline-secondary">
+            👥 グループ
+        </button>
+
+        <button class="btn btn-outline-secondary">
+            ⚙️ 設定・継続率
+        </button>
+
+    </div>
+
+</nav>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+
+/* =====================================
+   選択日付取得
+===================================== */
+
+let selectedDate = JSON.parse(
+    localStorage.getItem(
+        "selectedDate"
+    )
+);
+
+if(!selectedDate){
+
+    selectedDate = {
+
+        year:2027,
+        month:10,
+        date:3
+
+    };
+
+}
+
+/* =====================================
+   日付表示
+===================================== */
+
+document.getElementById(
+    "dateTitle"
+).textContent =
+
+`${selectedDate.year}年
+${selectedDate.month}月
+${selectedDate.date}日の記録`;
+
+/* =====================================
+   日付比較
+===================================== */
+
+const clickedDate =
+
+new Date(
+    selectedDate.year,
+    selectedDate.month - 1,
+    selectedDate.date
+);
+
+const today = new Date();
+
+today.setHours(0,0,0,0);
+clickedDate.setHours(0,0,0,0);
+
+/* =====================================
+   個人目標
+===================================== */
+
+const personalGoals = [
+
+{
+    text:"朝の運動をする",
+    result:"達成"
+},
+
+{
+    text:"課題を終わらせる",
+    result:"未達成"
+},
+
+{
+    text:"SNSを1時間以内にする",
+    result:"達成"
+},
+
+{
+    text:"読書を30分する",
+    result:"達成"
+},
+
+{
+    text:"筋トレをする",
+    result:"未達成"
+}
+
+];
+
+/* =====================================
+   グループ目標
+===================================== */
+
+const groupGoals = [
+
+{
+    text:"全員で勉強時間10時間達成",
+    result:"達成"
+},
+
+{
+    text:"グループ継続率90%以上",
+    result:"達成"
+},
+
+{
+    text:"全員が課題提出",
+    result:"未達成"
+},
+
+{
+    text:"毎日進捗報告",
+    result:"達成"
+},
+
+{
+    text:"目標達成率80%以上",
+    result:"達成"
+}
+
+];
+
+let currentGoals =
+    personalGoals;
+
+/* =====================================
+   スケジュールデータ
+===================================== */
+
+const tasks = [
+    {
+    name:"睡眠",
+    start:"00:00",
+    duration:420,
+    color:"#5e5ce6"
+},
+
+{
+    name:"学校",
+    start:"09:00",
+    duration:360,
+    color:"#34c759"
+},
+
+{
+    name:"SNS",
+    start:"16:00",
+    duration:120,
+    color:"#32ade6"
+},
+
+{
+    name:"勉強",
+    start:"19:00",
+    duration:180,
+    color:"#ff9500"
+}
+
+];
+
+/* =====================================
+   時間変換
+===================================== */
+
+function timeToMinutes(time){
+
+    const [h,m] =
+        time.split(":").map(Number);
+
+    return h * 60 + m;
+}
+
+function minutesToTime(minutes){
+
+    let h =
+        Math.floor(minutes / 60);
+
+    let m =
+        minutes % 60;
+
+    if(h >= 24){
+
+        h -= 24;
+
+    }
+
+    return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`;
+}
+
+/* =====================================
+   円グラフ生成
+===================================== */
+
+function createChart(){
+
+    const chart =
+        document.getElementById(
+            "circleChart"
+        );
+
+    chart.innerHTML = "";
+
+    let gradients = [];
+    let currentPercent = 0;
+
+    tasks.forEach(task=>{
+
+        const start =
+            timeToMinutes(task.start);
+
+        const end =
+            start + task.duration;
+
+        const startPercent =
+            (start / 1440) * 100;
+
+        const endPercent =
+            (end / 1440) * 100;
+
+        if(startPercent > currentPercent){
+
+            gradients.push(
+
+                `#dee2e6
+                ${currentPercent}%
+                ${startPercent}%`
+
+            );
+
+        }
+
+        gradients.push(
+
+            `${task.color}
+            ${startPercent}%
+            ${endPercent}%`
+
+        );
+
+        currentPercent =
+            endPercent;
+
+        const middle =
+            start +
+            task.duration / 2;
+
+        const angle =
+            (middle / 1440) * 360 - 90;
+
+        const radius = 105;
+
+        const x =
+            140 +
+            radius *
+            Math.cos(
+                angle *
+                Math.PI / 180
+            );
+
+        const y =
+            140 +
+            radius *
+            Math.sin(
+                angle *
+                Math.PI / 180
+            );
+
+        const label =
+            document.createElement(
+                "div"
+            );
+
+        label.className =
+            "position-absolute bg-white border rounded p-1 fw-bold text-center";
+
+        label.style.width =
+            "90px";
+
+        label.style.left =
+            `${x}px`;
+
+        label.style.top =
+            `${y}px`;
+
+        label.style.transform =
+            "translate(-50%, -50%)";
+
+        label.style.fontSize =
+            "11px";
+
+        /* ★ 白丸より前面 */
+
+        label.style.zIndex =
+            "10";
+
+        label.innerHTML =
+
+        `
+        ${task.name}<br>
+        ${task.start}〜
+        ${minutesToTime(end)}
+        `;
+
+        chart.appendChild(
+            label
+        );
+
+    });
+
+    if(currentPercent < 100){
+
+        gradients.push(
+
+            `#dee2e6
+            ${currentPercent}%
+            100%`
+
+        );
+
+    }
+
+    chart.style.background =
+
+        `conic-gradient(
+            ${gradients.join(",")}
+        )`;
+
+    /* ドーナツ中央 */
+
+    const center =
+        document.createElement(
+            "div"
+        );
+
+    center.className =
+        "position-absolute bg-light rounded-circle";
+
+    center.style.width =
+        "160px";
+
+    center.style.height =
+        "160px";
+
+    center.style.top =
+        "50%";
+
+    center.style.left =
+        "50%";
+
+    center.style.transform =
+        "translate(-50%, -50%)";
+
+    /* ★ 白丸を背面へ */
+
+    center.style.zIndex =
+        "1";
+
+    center.style.pointerEvents =
+        "none";
+
+    chart.appendChild(
+        center
+    );
+
+}
+
+createChart();
+
+/* =====================================
+   目標一覧切替
+===================================== */
+
+let isGroup = false;
+
+function changeGoal(){
+
+    const title =
+        document.getElementById(
+            "goalTitle"
+        );
+
+    if(isGroup){
+
+        title.textContent =
+            "個人目標一覧";
+
+        currentGoals =
+            personalGoals;
+
+    }else{
+
+        title.textContent =
+            "グループ目標一覧";
+
+        currentGoals =
+            groupGoals;
+
+    }
+
+    isGroup = !isGroup;
+
+    createGoals();
+}
+
+/* =====================================
+   目標一覧生成
+===================================== */
+
+function createGoals(){
+
+    const goalList =
+        document.getElementById(
+            "goalList"
+        );
+
+    goalList.innerHTML = "";
+
+    currentGoals.forEach(goal=>{
+
+        let rightContent = "";
+
+        /* 過去の日付 */
+
+        if(clickedDate < today){
+
+            if(goal.result === "達成"){
+
+                rightContent =
+
+                `
+                <span
+                    class="fs-4 fw-bold text-success">
+
+                    ○
+
+                </span>
+                `;
+
+            }else{
+
+                rightContent =
+
+                `
+                <span
+                    class="fs-4 fw-bold text-danger">
+
+                    ×
+
+                </span>
+                `;
+
+            }
+
+        }
+
+        /* 今日 */
+
+        else if(
+            clickedDate.getTime()
+            ===
+            today.getTime()
+        ){
+
+            rightContent =
+                        `
+            <button
+                class="btn btn-success done-btn"
+                onclick="doneGoal(this)">
+
+                ○
+
+            </button>
+
+            <button
+                class="btn btn-danger fail-btn"
+                onclick="openReasonModal(this)">
+
+                ×
+
+            </button>
+
+            <button
+                class="btn btn-secondary cancel-btn d-none"
+                onclick="cancelGoal(this)">
+
+                取消
+
+            </button>
+            `;
+
+        }
+
+        /* 未来 */
+
+        else{
+
+            rightContent =
+
+            `
+            <span
+                class="text-secondary">
+
+                未登録
+
+            </span>
+            `;
+
+        }
+
+        goalList.innerHTML +=
+
+        `
+        <div class="card shadow mb-3">
+
+            <div class="card-body">
+
+                <div class="d-flex align-items-center gap-2">
+
+                    <div class="flex-grow-1">
+
+                        ${goal.text}
+
+                    </div>
+
+                    ${rightContent}
+
+                </div>
+
+            </div>
+
+        </div>
+        `;
+
+    });
+
+}
+
+createGoals();
+
+/* =====================================
+   ○ボタン
+===================================== */
+
+function doneGoal(button){
+
+    const item =
+        button.parentElement;
+
+    item.querySelector(".done-btn")
+        .classList.add("d-none");
+
+    item.querySelector(".fail-btn")
+        .classList.add("d-none");
+
+    item.querySelector(".cancel-btn")
+        .classList.remove("d-none");
+}
+
+/* =====================================
+   ×ボタン
+===================================== */
+
+let currentItem = null;
+
+function openReasonModal(button){
+
+    currentItem =
+        button.parentElement;
+
+    const modal =
+        new bootstrap.Modal(
+            document.getElementById(
+                "reasonModal"
+            )
+        );
+
+    modal.show();
+}
+
+/* =====================================
+   未達成理由登録
+===================================== */
+
+function registerReason(){
+
+    const selectedReason =
+
+        document.querySelector(
+            'input[name="reason"]:checked'
+        );
+
+    if(!selectedReason){
+
+        alert(
+            "未達成理由を選択してください"
+        );
+
+        return;
+    }
+
+    currentItem
+        .querySelector(".done-btn")
+        .classList.add("d-none");
+
+    currentItem
+        .querySelector(".fail-btn")
+        .classList.add("d-none");
+
+    currentItem
+        .querySelector(".cancel-btn")
+        .classList.remove("d-none");
+
+    const modal =
+        bootstrap.Modal.getInstance(
+            document.getElementById(
+                "reasonModal"
+            )
+        );
+
+    modal.hide();
+
+    selectedReason.checked = false;
+}
+
+/* =====================================
+   取消
+===================================== */
+
+function cancelGoal(button){
+
+    const item =
+        button.parentElement;
+
+    item.querySelector(".done-btn")
+        .classList.remove("d-none");
+
+    item.querySelector(".fail-btn")
+        .classList.remove("d-none");
+
+    item.querySelector(".cancel-btn")
+        .classList.add("d-none");
+}
+
+/* =====================================
+   モーダル閉じた時
+===================================== */
+
+document
+.getElementById("reasonModal")
+.addEventListener(
+
+    "hidden.bs.modal",
+
+    ()=>{
+
+        const checked =
+            document.querySelector(
+                'input[name="reason"]:checked'
+            );
+
+        if(checked){
+
+            checked.checked = false;
+
+        }
+
+    }
+
+);
+
+/* =====================================
+   下メニュー切替
+===================================== */
+
+const menuButtons =
+    document.querySelectorAll(
+        ".navbar button"
+    );
+
+menuButtons.forEach(button=>{
+
+    button.addEventListener(
+
+        "click",
+
+        ()=>{
+
+            menuButtons.forEach(btn=>{
+
+                btn.classList.remove(
+                    "btn-success"
+                );
+
+                btn.classList.add(
+                    "btn-outline-secondary"
+                );
+
+            });
+
+            button.classList.remove(
+                "btn-outline-secondary"
+            );
+
+            button.classList.add(
+                "btn-success"
+            );
+
+        }
+
+    );
+
+});
+
+/* =====================================
+   script終了
+===================================== */
+
+</script>
+
+</body>
+</html>

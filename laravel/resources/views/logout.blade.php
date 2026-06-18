@@ -10,4 +10,3 @@ function logout() {
     location.href = "/login";
 }
 </script>
-<x-menubar />

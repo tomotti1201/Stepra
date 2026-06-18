@@ -1,46 +1,83 @@
-const form = document.getElementById('resetForm');
 const submitButton = document.getElementById('submitButton');
-const message = document.getElementById('message')
 
-function showMessage(text,state){
+const message = document.getElementById('message');
+
+function showMessage(text, state) {
     message.textContent = text;
-    message.className = `message ${state}`;
-    message.dataset.state = state === 'idle' ? 'idle' : 'visible';
+
+    if (state === 'success') {
+        message.className =
+            'text-success text-center mb-3';
+    } else if (state === 'error') {
+        message.className =
+            'text-danger text-center mb-3';
+    } else {
+        message.className =
+            'text-secondary text-center mb-3';
+    }
 }
 
-form.addEventListener('submit',async(event) => {
-    event.preventDefault();
-
+async function resetPassword() {
     const payload = {
-        email:document.getElementById('email').value.trim(),
-        birth_date:document.getElementById('birth_date').value.trim(),
-        password:document.getElementById('password').value,
-        password_confirmation:document.getElementById('password_confirmation').value,
+        email:
+            document.getElementById('email')
+                .value
+                .trim(),
+        birth_date:
+            document.getElementById('birth_date')
+                .value
+                .trim(),
+        password:
+            document.getElementById('password')
+                .value,
+        password_confirmation:
+            document.getElementById('password_confirmation')
+                .value,
     };
-    submitButton.disabled = true;
-    submitButton.textContent = '送信中...';
-    showMessage('パスワードを更新しています。', 'idle');
 
-    try{
-        const response = await fetch('/api/passwordReset',{
-            method:'POST',
-            headers:{
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload),
-        });
-        const result = await response.json();
+    submitButton.disabled = true;
+
+    try {
+        const response = await fetch(
+            '/api/passwordReset',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            }
+        );
+        const result =
+            await response.json();
 
         if (!response.ok) {
-            throw new Error(result.message || 'パスワード更新に失敗しました');
+            showMessage(
+                result.message ||
+                'パスワード更新に失敗しました',
+                'error'
+            );
+            return;
         }
+        showMessage(
+            result.message,
+            'success'
+        );
 
-        showMessage(result.message, 'success');
-        form.reset();
+        document.getElementById('email').value = '';
+        document.getElementById('birth_date').value = '';
+        document.getElementById('password').value = '';
+        document.getElementById('password_confirmation').value = '';
+
     } catch (error) {
-        showMessage(error.message, 'error');
+        console.error(error);
+
+        showMessage(
+            '通信エラー',
+            'error'
+        );
     } finally {
         submitButton.disabled = false;
         submitButton.textContent = '再設定する';
     }
-})
+}

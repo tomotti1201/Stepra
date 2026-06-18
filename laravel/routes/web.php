@@ -35,17 +35,27 @@ Route::get('/taskedit', function () {
     return view('taskedit');
 });
 
-Route::get('/calendar',function(){
-    return view('calendar');
+Route::get('/schedules',function(){
+    return view('schedules');
 });
 
 Route::get('/group',function(){
     return view('group');
 });
 
+Route::get('/continuity',function(){
+    return view('continuity');
+});
+
 Route::get('/setting',function(){
     return view('setting');
 });
+
+Route::get('/logout',function(){
+    return view('logout');
+});
+
+
 
 Route::get('/tasks', [TaskController::class, 'index']);
 Route::get('/user/tasks', [TaskController::class, 'userTask']);
@@ -61,3 +71,4 @@ Route::get('/passwordReset',function(){
 Route::get('/tasks/{id}', [TaskController::class, 'show']);
 
 Route::put('/tasks/{id}', [TaskController::class, 'update']);
+Route::delete('/tasks/{id}', [TaskController::class, 'destroy']);
