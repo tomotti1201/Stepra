@@ -165,10 +165,23 @@ while ($date->lte($endLimit)) {
     if (in_array($dow, $weekDays)) {
 
         Schedule::create([
-            'task_id' => $task->id,
-            'user_id' => $request->user_id ?? Auth::id(),
-            'scheduled_date' => $date->format('Y-m-d'),
-        ]);
+    'task_id' => $task->id,
+    'user_id' => $request->user_id ?? Auth::id(),
+    'scheduled_date' => $date->format('Y-m-d'),
+
+    'title' => $task->title,
+    'content' => $task->content,
+    'week_days' => $task->week_days,
+    'start_time' => $task->start_time,
+    'required_minutes' => $task->required_minutes,
+    'priority' => $task->priority,
+    'color' => $task->color,
+    'period' => $task->period,
+    'notification_enabled' => $task->notification_enabled,
+    'start_date' => $task->start_date,
+    'end_date' => $task->end_date,
+    'status' => $task->status,
+]);
     }
 
     // ⭐⭐⭐これが絶対必要（進める）
@@ -324,6 +337,45 @@ while ($date->lte($endLimit)) {
             'end_date' => $endDate,
         ]);
 
+        $today = now()->toDateString();
+
+        Schedule::where('task_id', $task->id)
+            ->where('scheduled_date', '>=', $today)
+            ->delete();
+
+            $start = Carbon::parse($startDate);
+            $endLimit = (clone $start)->addMonth();
+
+            $date = $start->copy();
+
+            while ($date->lte($endLimit)) {
+
+                $dow = $date->dayOfWeekIso;
+
+                if (in_array($dow, $weekDays)) {
+
+                    Schedule::create([
+                        'task_id' => $task->id,
+                        'user_id' => $task->user_id,
+                        'scheduled_date' => $date->format('Y-m-d'),
+
+                        'title' => $title,
+                        'content' => $request->content,
+                        'week_days' => json_encode($weekDays),
+                        'start_time' => $start_time,
+                        'required_minutes' => $requiredMinutes,
+                        'priority' => $priority,
+                        'color' => $request->color,
+                        'period' => $request->period,
+                        'notification_enabled' => 1,
+                        'start_date' => $startDate,
+                        'end_date' => $endDate,
+                        'status' => 'active'
+                    ]);
+                }
+
+                $date->addDay();
+            }
         return response()->json([
             'status' => 'success',
             'message' => '更新しました',
@@ -341,8 +393,9 @@ while ($date->lte($endLimit)) {
             ], 404);
         }
 
-        $task->delete();
+        Schedule::where('task_id', $task->id)->delete();
 
+        $task->delete();
         return response()->json([
             'status' => 'success',
             'message' => '削除しました'

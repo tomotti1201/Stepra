@@ -56,6 +56,10 @@
     background-color: #fff;
     box-shadow: none;
     }
+    .color-circle.selected {
+    transform: scale(1.15);
+    border: 3px solid black;
+    }
 </style>
 </head>
 <body>
@@ -185,40 +189,54 @@
         </div>
 
         <div class="mb-4">
-        <label class="form-label fw-bold small">目標カラー</label>
 
-        <button
-            type="button"
-            id="delete-mode-btn"
-            class="btn btn-sm btn-outline-secondary ms-2"
-            style="font-size: 11px; padding: 2px 6px;"
-            onclick="toggleColorDeleteMode()">
-            色の変更
-        </button>
+    <label class="form-label fw-bold small">目標カラー</label>
 
-        <div class="color-selection" id="color-group">
-            <div
-            class="color-circle"
-            id="current-color-circle"
-            style="background-color: #0d6efd;"
-            data-color="#0d6efd">
-            </div>
+    <div class="color-selection" id="color-group">
 
-            <div
-            class="color-circle custom"
-            id="custom-color-circle"
-            style="display: none;"
+        <div class="color-circle"
+            data-color="#0d6efd"
+            style="background:#0d6efd"
+            onclick="selectColor(this)">
+        </div>
+
+        <div class="color-circle"
+            data-color="#198754"
+            style="background:#198754"
+            onclick="selectColor(this)">
+        </div>
+
+        <div class="color-circle"
+            data-color="#dc3545"
+            style="background:#dc3545"
+            onclick="selectColor(this)">
+        </div>
+
+        <div class="color-circle"
+            data-color="#ffc107"
+            style="background:#ffc107"
+            onclick="selectColor(this)">
+        </div>
+
+        <div class="color-circle"
+            data-color="#6f42c1"
+            style="background:#6f42c1"
+            onclick="selectColor(this)">
+        </div>
+
+        <div class="color-circle custom"
+            id="add-color-btn"
             onclick="selectCustomColor()">
             ＋
-            </div>
+        </div>
 
-            <input
+        <input
             type="color"
             id="custom-color-picker"
-            style="display: none;"
-            onchange="updateCustomColor(this.value)">
-        </div>
-        </div>
+            style="display:none;"
+            onchange="addCustomColor(this.value)">
+    </div>
+</div>
 
         <div class="row g-2">
 
@@ -348,36 +366,69 @@ function selectSingle(element) {
     element.classList.add('active');
 }
 
-let isColorDeleteMode = false;
+let selectedColor = "#0d6efd";
 
-function toggleColorDeleteMode() {
-    isColorDeleteMode = !isColorDeleteMode;
+function selectColor(element) {
 
-    const btn = document.getElementById('delete-mode-btn');
-    const addBtn = document.getElementById('custom-color-circle');
+    document
+        .querySelectorAll(".color-circle")
+        .forEach(circle =>
+            circle.classList.remove("selected")
+        );
 
-    if (isColorDeleteMode) {
-        btn.textContent = '色の変更完了';
-        btn.classList.replace('btn-outline-secondary', 'btn-secondary');
-        if (addBtn) addBtn.style.display = 'flex';
-    } else {
-        btn.textContent = '色の変更';
-        btn.classList.replace('btn-secondary', 'btn-outline-secondary');
-        if (addBtn) addBtn.style.display = 'none';
-    }
+    element.classList.add("selected");
+
+    selectedColor = element.dataset.color;
+}
+
+function addCustomColor(value) {
+
+    if (!value) return;
+
+    const colorGroup =
+        document.getElementById("color-group");
+
+    const addButton =
+        document.getElementById("add-color-btn");
+
+    const newColor =
+        document.createElement("div");
+
+    newColor.className =
+        "color-circle selected";
+
+    newColor.style.backgroundColor =
+        value;
+
+    newColor.dataset.color =
+        value;
+
+    newColor.onclick = function () {
+        selectColor(this);
+    };
+
+    document
+        .querySelectorAll(".color-circle")
+        .forEach(circle =>
+            circle.classList.remove("selected")
+        );
+
+    colorGroup.insertBefore(
+        newColor,
+        addButton
+    );
+
+    selectedColor = value;
+}
+
+function selectCustomColor() {
+    document.getElementById("custom-color-picker").click();
 }
 
 function selectCustomColor() {
     document.getElementById('custom-color-picker').click();
 }
 
-function updateCustomColor(value) {
-    if (!value) return;
-
-    const circle = document.getElementById('current-color-circle');
-    circle.style.backgroundColor = value;
-    circle.dataset.color = value;
-}
 
 async function loadTaskFromDB() {
     const params = new URLSearchParams(location.search);
@@ -411,9 +462,22 @@ async function loadTaskFromDB() {
     const circle = document.getElementById('current-color-circle');
 
     if (task.color) {
-        circle.style.backgroundColor = task.color;
-        circle.dataset.color = task.color;
+
+    let colorBtn =
+        document.querySelector(
+            `.color-circle[data-color="${task.color}"]`
+        );
+
+    if (colorBtn) {
+
+        colorBtn.classList.add("selected");
+        selectedColor = task.color;
+
+    } else {
+
+        addCustomColor(task.color);
     }
+}
 
     const dayMap = {
         1: '月',
@@ -495,9 +559,8 @@ async function saveGoal() {
     const hours = document.getElementById('duration-hours').value;
     const minutes = document.getElementById('duration-minutes').value;
 
-    const color =
-        document.getElementById('current-color-circle').dataset.color;
-
+    const color = selectedColor;
+    
     if (days.length === 0) {
         alert('曜日を選択してください');
         return;

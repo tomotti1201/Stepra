@@ -51,20 +51,16 @@ class ScheduleController extends Controller
             ->orderBy('scheduled_date')
             ->get()
             ->map(function ($schedule) {
-                return [
-                    'id' => $schedule->id,
-                    'task_id' => $schedule->task_id,
-                    'user_id' => $schedule->user_id,
-                    'scheduled_date' => $schedule->scheduled_date->format('Y-m-d'),
+    return [
+        'id' => $schedule->id,
+        'task_id' => $schedule->task_id,
+        'user_id' => $schedule->user_id,
+        'scheduled_date' => $schedule->scheduled_date->format('Y-m-d'),
 
-                    // ★JSで使うメイン部分
-                    'task' => $schedule->task ? [
-                        'id' => $schedule->task->id,
-                        'title' => $schedule->task->title,
-                        'color' => $schedule->task->color,
-                    ] : null,
-                ];
-            });
+        'title' => $schedule->title,
+        'color' => $schedule->color,
+    ];
+});
 
         return response()->json([
             'status' => 'success',
@@ -94,7 +90,7 @@ class ScheduleController extends Controller
      */
     public function show($id)
     {
-        $schedule = Schedule::with('task')->findOrFail($id);
+        $schedule = Schedule::query()->findOrFail($id);
 
         return response()->json([
             'status' => 'success',
