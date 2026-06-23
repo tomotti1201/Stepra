@@ -43,6 +43,10 @@ Route::get('/group',function(){
     return view('group');
 });
 
+Route::get('/groupCreate',function(){
+    return view('groupCreate');
+});
+
 Route::get('/continuity',function(){
     return view('continuity');
 });
