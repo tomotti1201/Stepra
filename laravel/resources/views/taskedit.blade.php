@@ -179,7 +179,7 @@
         <div class="row g-2 mb-3">
         <div class="col-6">
             <label class="form-label fw-bold small">開始日</label>
-            <input type="date" class="form-control" id="start-date">
+            <input type="date" class="form-control" id="start-date" disabled>
         </div>
 
         <div class="col-6">

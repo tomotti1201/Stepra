@@ -90,12 +90,6 @@
               <p class="mb-0 small fw-bold text-secondary">この調子で頑張りましょう！</p>
             </div>
           </div>
-          <div class="mb-2">
-            <button type="button" class="btn btn-primary w-100 py-3 shadow-sm" onclick="location.href='/logout'">
-              <div class="fw-bold fs-5">設定</div>
-              <div class="small opacity-75">ユーザー情報の変更・削除など</div>
-            </button>
-          </div>
         </div>
       </div>
     </div>

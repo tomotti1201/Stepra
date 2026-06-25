@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\ScheduleController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -38,6 +39,8 @@ Route::get('/taskedit', function () {
 Route::get('/schedules',function(){
     return view('schedules');
 });
+
+Route::get('/scheduleDetail', [ScheduleController::class, 'detail']);
 
 Route::get('/group',function(){
     return view('group');

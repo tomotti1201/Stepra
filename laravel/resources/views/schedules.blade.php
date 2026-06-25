@@ -56,7 +56,11 @@
         </div>
 
     </div>
+</div>
 
+    <x-menubar />
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // 現在表示している月
         const now = new Date();
@@ -216,9 +220,14 @@
             const year = currentViewDate.getFullYear();
             const month = currentViewDate.getMonth() + 1;
 
-            window.location.href =
-                `kiroku.html?year=${year}&month=${month}&day=${date}`;
+            const fullDate =
+                `${year}-${String(month).padStart(2,'0')}-${String(date).padStart(2,'0')}`;
+
+            window.location.href = `/scheduleDetail?date=${fullDate}`;
         }
+function goTask(taskId) {
+    window.location.href = `/tasks/show?id=${taskId}`;
+}
 
         /**
          * 初期描画

@@ -333,7 +333,7 @@ while ($date->lte($endLimit)) {
             'required_minutes' => $requiredMinutes,
             'priority' => $priority,
             'color' => $request->color,
-            'start_date' => $request->start_date,
+            'start_date' => $task->start_date,
             'end_date' => $endDate,
         ]);
 
@@ -343,7 +343,7 @@ while ($date->lte($endLimit)) {
             ->where('scheduled_date', '>=', $today)
             ->delete();
 
-            $start = Carbon::parse($startDate);
+            $start = Carbon::today();
             $endLimit = (clone $start)->addMonth();
 
             $date = $start->copy();

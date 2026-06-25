@@ -29,7 +29,7 @@
         <button
             class="btn {{ request()->is('continuity') ? 'btn-success' : 'btn-outline-secondary' }}"
             onclick="location.href='/continuity'">
-            ⚙️ 継続率
+            📈 継続率
         </button>
 
         <button

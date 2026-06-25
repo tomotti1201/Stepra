@@ -111,4 +111,43 @@ class ScheduleController extends Controller
             'message' => 'deleted'
         ]);
     }
+    public function getDailySchedules(Request $request)
+    {
+        $date = $request->query('date');
+        $userId = $request->query('user_id', Auth::id());
+
+        if (!$date) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'date is required'
+            ], 400);
+        }
+
+        $schedules = Schedule::query()
+            ->whereDate('scheduled_date', $date)
+            ->when($userId, fn($q) => $q->where('user_id', $userId))
+            ->orderBy('start_time')
+            ->get()
+            ->map(function ($s) {
+                return [
+                    'id' => $s->id,
+                    'title' => $s->title,
+                    'start_time' => $s->start_time,
+                    'required_minutes' => $s->required_minutes,
+                    'color' => $s->color ?? '#198754',
+                    'status' => $s->status,
+                    'scheduled_date' => $s->scheduled_date->format('Y-m-d'),
+                ];
+            });
+        
+        return response()->json([
+            'status' => 'success',
+            'date' => $date,
+            'schedules' => $schedules
+        ]);
+    }
+    public function detail(Request $request)
+    {
+        return view('scheduleDetail');
+    }
 }

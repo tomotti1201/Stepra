@@ -50,26 +50,6 @@
 
   </div>
 
-  <nav class="navbar navbar-light bg-light border-top fixed-bottom py-2">
-    <div class="container-fluid justify-content-around">
-      <a href="kiroku.html" class="text-decoration-none text-secondary text-center" style="font-size: 12px;">
-        <div>📅</div><div>記録</div>
-      </a>
-      <a href="rireki.html" class="text-decoration-none text-secondary text-center" style="font-size: 12px;">
-        <div>🔄</div><div>履歴</div>
-      </a>
-      <a href="gekkankarenda.html" class="text-decoration-none text-secondary text-center" style="font-size: 12px;">
-        <div>📊</div><div>分析</div>
-      </a>
-      <a href="mokuhyouitiran.html" class="text-decoration-none text-secondary text-center" style="font-size: 12px;">
-        <div>✅</div><div>目標</div>
-      </a>
-      <a href="guru-pu.html" class="text-decoration-none text-primary fw-bold text-center" style="font-size: 12px;">
-        <div>◉</div><div>グループ</div>
-      </a>
-    </div>
-  </nav>
-
 </div>
 
 <x-menubar />
