@@ -284,11 +284,11 @@ body{
        class="group-input"
        id="groupName"
        placeholder="グループ名"
-       oninput="checkGroupName()">
+       oninput="checkGroupName()" aria-label="Group name" title="Group name">
 
     <textarea class="group-textarea"
           placeholder="グループ説明(任意)"
-          oninput="autoResize(this)"></textarea>
+          oninput="autoResize(this)" aria-label="Group description" title="Group description"></textarea>
     
     <button class="create-btn disabled-btn"
         id="createGroupBtn"
