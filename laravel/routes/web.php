@@ -72,3 +72,27 @@ Route::get('/tasks/{id}', [TaskController::class, 'show']);
 
 Route::put('/tasks/{id}', [TaskController::class, 'update']);
 Route::delete('/tasks/{id}', [TaskController::class, 'destroy']);
+
+Route::get('/gurupu', function () {
+    return response()->file(resource_path('views/frontend/gurupu.html'));
+});
+
+Route::get('/gtaskukuitiran', function () {
+    return response()->file(resource_path('views/frontend/gtasutkuitiran.html'));
+});
+
+Route::get('/gurupujouhouhensyu', function () {
+    return response()->file(resource_path('views/frontend/gurupjouhouhensyu.html'));
+});
+
+Route::get('/gurupumokuhyosinki', function () {
+    return response()->file(resource_path('views/frontend/gurupumokuhyosinki.html'));
+});
+
+Route::get('/gurupusyu', function () {
+    return response()->file(resource_path('views/frontend/gurupusyu.html'));
+});
+
+Route::get('/gurutaskukuhen', function () {
+    return response()->file(resource_path('views/frontend/gurutasukuhen.html'));
+});
