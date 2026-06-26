@@ -107,7 +107,9 @@
         document.addEventListener("DOMContentLoaded", loadTodayGoals);
         document.addEventListener("DOMContentLoaded", loadChart);
 
+        // 切替ボタンでの切替で使用
         let currentTaskId = null;
+        let isGroupMode = false;
 
         async function loadTodayGoals() {
             const userId = localStorage.getItem("user_id");
@@ -399,6 +401,19 @@
             `;
 
             chart.appendChild(center);
+        }
+        async function changeGoal() {   // 切替ボタンでの切替で使用
+            isGroupMode = !isGroupMode;
+
+            const title = document.getElementById("goalTitle");
+
+            if (isGroupMode) {
+                title.textContent = "本日のグループ目標一覧";
+                loadGroupGoals();
+            } else {
+                title.textContent = "本日の目標一覧";
+                loadGroupGoals(personalGoals);
+            }
         }
     </script>
 </body>

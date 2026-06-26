@@ -47,13 +47,15 @@
                         <span class="fs-6 fw-normal text-muted">作成・編集</span>
                     </h2>
 
-                    <div id="target-list" class="d-flex flex-column gap-2"></div>
-
                     <div class="mt-4">
                         <a href="/taskCreate" class="btn btn-success w-100 py-3 fw-bold fs-5 shadow-sm">
                             ＋ 新規目標作成
                         </a>
                     </div>
+
+                    <div id="target-list" class="d-flex flex-column gap-2"></div>
+
+                    
 
                 </div>
 
