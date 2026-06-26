@@ -115,17 +115,25 @@
   </div>
 
 
-  <div id="main-menu-bar" class="border-top pt-2 pb-3 bg-white fixed-bottom shadow-lg w-100 z-3">
-    <div class="container-fluid px-0">
-      <div class="d-flex justify-content-between gap-2 px-2">
-        <a href="task.html" class="btn bg-white text-dark border flex-fill py-2 fw-bold text-nowrap">📋 <span class="d-none d-sm-inline">タスク</span></a>
-        <a href="history.html" class="btn bg-white text-dark border flex-fill py-2 fw-bold text-nowrap">⏱️ <span class="d-none d-sm-inline">履歴</span></a>
-        <a href="note.html" class="btn bg-white text-dark border flex-fill py-2 fw-bold text-nowrap">📓 <span class="d-none d-sm-inline">ノート</span></a>
-        <a href="analysis.html" class="btn bg-white text-dark border flex-fill py-2 fw-bold text-nowrap">📊 <span class="d-none d-sm-inline">分析</span></a>
-        <a href="retention.html" class="btn bg-white text-dark border flex-fill py-2 fw-bold text-nowrap">📈 <span class="d-none d-sm-inline">継続率</span></a>
-      </div>
+  <nav id="main-menu-bar" class="navbar bg-white border-top fixed-bottom">
+    <div class="container d-flex justify-content-around">
+      <button class="btn btn-outline-secondary" onclick="location.href='/home'">
+        🏠 ホーム
+      </button>
+      <button class="btn btn-outline-secondary" onclick="location.href='/mokuhyouitiran'">
+        🎯 目標
+      </button>
+      <button class="btn btn-outline-secondary" onclick="location.href='/gekkankarenda'">
+        📅 月間カレンダー
+      </button>
+      <button class="btn btn-success" onclick="location.href='/gurupu'">
+        👥 グループ
+      </button>
+      <button class="btn btn-outline-secondary" onclick="location.href='/setting'">
+        ⚙️ 設定・継続率
+      </button>
     </div>
-  </div>
+  </nav>
 
 
   <script>

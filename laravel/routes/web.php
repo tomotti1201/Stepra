@@ -39,10 +39,6 @@ Route::get('/schedules',function(){
     return view('schedules');
 });
 
-Route::get('/group',function(){
-    return view('group');
-});
-
 Route::get('/continuity',function(){
     return view('continuity');
 });
@@ -77,8 +73,16 @@ Route::get('/gurupu', function () {
     return response()->file(resource_path('views/frontend/gurupu.html'));
 });
 
+Route::get('/gtasutkuitiran', function () {
+    return response()->file(resource_path('views/frontend/gtasutkuitiran.html'));
+});
+
 Route::get('/gtaskukuitiran', function () {
     return response()->file(resource_path('views/frontend/gtasutkuitiran.html'));
+});
+
+Route::get('/gurupjouhouhensyu', function () {
+    return response()->file(resource_path('views/frontend/gurupjouhouhensyu.html'));
 });
 
 Route::get('/gurupujouhouhensyu', function () {
@@ -96,3 +100,31 @@ Route::get('/gurupusyu', function () {
 Route::get('/gurutaskukuhen', function () {
     return response()->file(resource_path('views/frontend/gurutasukuhen.html'));
 });
+
+Route::get('/sinnkiguru', function () {
+    return response()->file(resource_path('views/frontend/sinnkiguru.html'));
+});
+
+Route::get('/kiroku', function () {
+    return response()->file(dirname(base_path()) . '/tokuhiduke.html');
+});
+
+Route::get('/rireki', function () {
+    return response()->file(dirname(base_path()) . '/keizoku.html');
+});
+
+Route::get('/gekkankarenda', function () {
+    return response()->file(dirname(base_path()) . '/gekkankarenda.html');
+});
+
+Route::get('/mokuhyouitiran', function () {
+    return response()->file(dirname(base_path()) . '/mokuhyouitiran.html');
+});
+
+Route::get('/im/{filename}', function (string $filename) {
+    $imagePath = dirname(base_path()) . '/im/' . $filename;
+
+    abort_unless(is_file($imagePath), 404);
+
+    return response()->file($imagePath);
+})->where('filename', '[A-Za-z0-9_.-]+');

@@ -20,7 +20,7 @@
 
     <!-- タイトル画像 -->
 
-    <img src="im/tit.png"
+    <img src="/image/tit.png"
          alt="STEPRA"
          class="mb-3"
          style="width:200px;">
@@ -375,7 +375,7 @@
 
             <button
                 class="btn btn-secondary w-100"
-                onclick="location.href='gtasutkuitiran.html'">
+                onclick="location.href='/gtasutkuitiran'">
 
                 戻る
 
@@ -393,23 +393,23 @@
 
     <div class="container d-flex justify-content-around">
 
-        <button class="btn btn-outline-secondary">
+        <button class="btn btn-outline-secondary" onclick="location.href='/home'">
             🏠 ホーム
         </button>
 
-        <button class="btn btn-outline-secondary">
+        <button class="btn btn-outline-secondary" onclick="location.href='/mokuhyouitiran'">
             🎯 目標
         </button>
 
-        <button class="btn btn-outline-secondary">
+        <button class="btn btn-outline-secondary" onclick="location.href='/gekkankarenda'">
             📅 月間カレンダー
         </button>
 
-        <button class="btn btn-success">
+        <button class="btn btn-success" onclick="location.href='/gurupu'">
             👥 グループ
         </button>
 
-        <button class="btn btn-outline-secondary">
+        <button class="btn btn-outline-secondary" onclick="location.href='/setting'">
             ⚙️ 設定・継続率
         </button>
 
@@ -747,7 +747,7 @@ document.querySelector(
     );
 
     location.href =
-        "gtasutkuitiran.html";
+        "/gtasutkuitiran";
 }
 
 document

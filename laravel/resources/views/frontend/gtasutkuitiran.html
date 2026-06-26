@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ja">
 <head>
 
@@ -20,7 +20,7 @@
 
     <!-- タイトル -->
 
-    <img src="im/tit.png"
+    <img src="/image/tit.png"
         alt="STEPRA"
         class="mb-3"
         style="width:200px;"
@@ -40,7 +40,7 @@
 
                 </h5>
 
-                <a href="gurupumokuhyosinki.html"
+                     <a href="/gurupumokuhyosinki"
                    class="btn btn-success">
 
                     ＋追加
@@ -65,23 +65,23 @@
 
     <div class="container d-flex justify-content-around">
 
-        <button class="btn btn-outline-secondary">
+        <button class="btn btn-outline-secondary" onclick="location.href='/home'">
             🏠 ホーム
         </button>
 
-        <button class="btn btn-outline-secondary">
+        <button class="btn btn-outline-secondary" onclick="location.href='/mokuhyouitiran'">
             🎯 目標
         </button>
 
-        <button class="btn btn-outline-secondary">
+        <button class="btn btn-outline-secondary" onclick="location.href='/gekkankarenda'">
             📅 月間カレンダー
         </button>
 
-        <button class="btn btn-success">
+        <button class="btn btn-success" onclick="location.href='/gurupu'">
             👥 グループ
         </button>
 
-        <button class="btn btn-outline-secondary">
+        <button class="btn btn-outline-secondary" onclick="location.href='/setting'">
             ⚙️ 設定・継続率
         </button>
 
@@ -178,7 +178,7 @@ function renderGoals(){
                     <div class="col-4">
                        
                         <button
-                            class="btn btn-primary w-100 md-2"
+                            class="btn btn-primary w-100 mb-2"
                             onclick="editTask(${goal.id})">
 
                             編集
@@ -214,7 +214,7 @@ function editTask(id){
     );
 
     location.href =
-        "gurutasukuhen.html";
+        "/gurutaskukuhen";
 }
 
 /* =====================================
@@ -223,14 +223,8 @@ function editTask(id){
 
 function deleteGoal(id){
 
-    if(
-        !confirm(
-            "この目標を削除しますか？"
-        )
-    ){
-
+    if(!confirm("この目標を削除しますか？")){
         return;
-
     }
 
     let goals =
@@ -309,3 +303,4 @@ renderGoals();
 
 </body>
 </html>
+
