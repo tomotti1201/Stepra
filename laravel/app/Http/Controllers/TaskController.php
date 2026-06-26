@@ -403,30 +403,39 @@ while ($date->lte($endLimit)) {
     }
     public function updateStatus(Request $request, $id)
 {
-    $task = Task::find($id);
+    // スケジュールを取得
+    $schedule = Schedule::findOrFail($id);
 
-    if (!$task) {
+    // リクエストからステータスを取得
+    $status = $request->input('status');
+
+    // ステータスのバリデーション
+    if (!in_array($status, ['active', 'completed', 'failed'])) {
         return response()->json([
             'status' => 'error',
-            'message' => 'タスクが見つかりません'
-        ], 404);
-    }
-
-    $status = $request->status;
-
-    if (!in_array($status, ['done', 'fail', 'active'])) {
-        return response()->json([
-            'status' => 'error',
-            'message' => 'ステータスが不正です'
+            'message' => 'invalid status'
         ], 400);
     }
 
-    $task->status = $status;
-    $task->save();
+    // ステータス更新
+    $schedule->status = $status;
+
+    // 未達成理由の保存
+    if ($status === 'failed') {
+        $schedule->content = $request->input('content');
+    } else {
+        // active・completed のときは理由を消す
+        $schedule->content = null;
+    }
+
+    // 保存
+    $schedule->save();
 
     return response()->json([
         'status' => 'success',
-        'task' => $task
+        'message' => 'ステータスを更新しました',
+        'schedule' => $schedule
     ]);
 }
+
 }
