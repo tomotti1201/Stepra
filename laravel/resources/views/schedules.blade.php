@@ -42,15 +42,25 @@
                         <div class="text-primary">土</div>
                     </div>
 
-                    <div id="calendar-days" class="d-grid gap-1 text-center fs-6" style="grid-template-columns: repeat(7, 1fr); align-items: stretch;"></div>
-
+                    <div id="calendar-days"
+                        class="d-grid gap-1 text-center fs-6"
+                        style="
+                            grid-template-columns: repeat(7, 1fr);
+                            grid-auto-rows: 95px;
+                            align-items: stretch;
+                        ">
+                    </div>
                 </div>
 
             </div>
         </div>
 
     </div>
+</div>
 
+    <x-menubar />
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // 現在表示している月
         const now = new Date();
@@ -109,7 +119,9 @@
 
             // 空白
             for (let i = 0; i < firstDayOfWeek; i++) {
-                daysContainer.appendChild(document.createElement("div"));
+                const empty = document.createElement("div");
+
+                daysContainer.appendChild(empty);
             }
 
             // 日付生成
@@ -149,9 +161,8 @@
 
                 // タスク一覧（横バー）
                 const tasksHtml = schedulesForDay.map(s => {
-                    const task = s.task;
-                    const color = task?.color || "#198754";
-                    const title = task?.title || "task";
+                    const color = s.color || "#198754";
+                    const title = s.title || "task";
 
                     return `
                         <div
@@ -184,6 +195,14 @@
 
                 daysContainer.appendChild(dayEl);
             }
+            const totalCells = firstDayOfWeek + lastDate;
+            const remainCells = 42 - totalCells;
+
+            for (let i = 0; i < remainCells; i++) {
+                const empty = document.createElement("div");
+                empty.style.height = "95px";
+                daysContainer.appendChild(empty);
+            }
         }
 
         /**
@@ -201,9 +220,14 @@
             const year = currentViewDate.getFullYear();
             const month = currentViewDate.getMonth() + 1;
 
-            window.location.href =
-                `kiroku.html?year=${year}&month=${month}&day=${date}`;
+            const fullDate =
+                `${year}-${String(month).padStart(2,'0')}-${String(date).padStart(2,'0')}`;
+
+            window.location.href = `/scheduleDetail?date=${fullDate}`;
         }
+function goTask(taskId) {
+    window.location.href = `/tasks/show?id=${taskId}`;
+}
 
         /**
          * 初期描画

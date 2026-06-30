@@ -165,10 +165,23 @@ while ($date->lte($endLimit)) {
     if (in_array($dow, $weekDays)) {
 
         Schedule::create([
-            'task_id' => $task->id,
-            'user_id' => $request->user_id ?? Auth::id(),
-            'scheduled_date' => $date->format('Y-m-d'),
-        ]);
+    'task_id' => $task->id,
+    'user_id' => $request->user_id ?? Auth::id(),
+    'scheduled_date' => $date->format('Y-m-d'),
+
+    'title' => $task->title,
+    'content' => $task->content,
+    'week_days' => $task->week_days,
+    'start_time' => $task->start_time,
+    'required_minutes' => $task->required_minutes,
+    'priority' => $task->priority,
+    'color' => $task->color,
+    'period' => $task->period,
+    'notification_enabled' => $task->notification_enabled,
+    'start_date' => $task->start_date,
+    'end_date' => $task->end_date,
+    'status' => $task->status,
+]);
     }
 
     // ⭐⭐⭐これが絶対必要（進める）
@@ -320,10 +333,49 @@ while ($date->lte($endLimit)) {
             'required_minutes' => $requiredMinutes,
             'priority' => $priority,
             'color' => $request->color,
-            'start_date' => $request->start_date,
+            'start_date' => $task->start_date,
             'end_date' => $endDate,
         ]);
 
+        $today = now()->toDateString();
+
+        Schedule::where('task_id', $task->id)
+            ->where('scheduled_date', '>=', $today)
+            ->delete();
+
+            $start = Carbon::today();
+            $endLimit = (clone $start)->addMonth();
+
+            $date = $start->copy();
+
+            while ($date->lte($endLimit)) {
+
+                $dow = $date->dayOfWeekIso;
+
+                if (in_array($dow, $weekDays)) {
+
+                    Schedule::create([
+                        'task_id' => $task->id,
+                        'user_id' => $task->user_id,
+                        'scheduled_date' => $date->format('Y-m-d'),
+
+                        'title' => $title,
+                        'content' => $request->content,
+                        'week_days' => json_encode($weekDays),
+                        'start_time' => $start_time,
+                        'required_minutes' => $requiredMinutes,
+                        'priority' => $priority,
+                        'color' => $request->color,
+                        'period' => $request->period,
+                        'notification_enabled' => 1,
+                        'start_date' => $startDate,
+                        'end_date' => $endDate,
+                        'status' => 'active'
+                    ]);
+                }
+
+                $date->addDay();
+            }
         return response()->json([
             'status' => 'success',
             'message' => '更新しました',
@@ -341,8 +393,9 @@ while ($date->lte($endLimit)) {
             ], 404);
         }
 
-        $task->delete();
+        Schedule::where('task_id', $task->id)->delete();
 
+        $task->delete();
         return response()->json([
             'status' => 'success',
             'message' => '削除しました'
@@ -350,30 +403,39 @@ while ($date->lte($endLimit)) {
     }
     public function updateStatus(Request $request, $id)
 {
-    $task = Task::find($id);
+    // スケジュールを取得
+    $schedule = Schedule::findOrFail($id);
 
-    if (!$task) {
+    // リクエストからステータスを取得
+    $status = $request->input('status');
+
+    // ステータスのバリデーション
+    if (!in_array($status, ['active', 'completed', 'failed'])) {
         return response()->json([
             'status' => 'error',
-            'message' => 'タスクが見つかりません'
-        ], 404);
-    }
-
-    $status = $request->status;
-
-    if (!in_array($status, ['done', 'fail', 'active'])) {
-        return response()->json([
-            'status' => 'error',
-            'message' => 'ステータスが不正です'
+            'message' => 'invalid status'
         ], 400);
     }
 
-    $task->status = $status;
-    $task->save();
+    // ステータス更新
+    $schedule->status = $status;
+
+    // 未達成理由の保存
+    if ($status === 'failed') {
+        $schedule->content = $request->input('content');
+    } else {
+        // active・completed のときは理由を消す
+        $schedule->content = null;
+    }
+
+    // 保存
+    $schedule->save();
 
     return response()->json([
         'status' => 'success',
-        'task' => $task
+        'message' => 'ステータスを更新しました',
+        'schedule' => $schedule
     ]);
 }
+
 }
