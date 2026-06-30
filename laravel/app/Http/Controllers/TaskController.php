@@ -154,8 +154,14 @@ class TaskController extends Controller
         ]);
 
         $start = Carbon::parse($startDate);
-$endLimit = (clone $start)->addMonth();
 
+        if ($endDate) {
+            // 終了日が入力されている場合は終了日まで
+            $endLimit = Carbon::parse($endDate);
+        } else {
+            // 未入力なら30日後まで
+            $endLimit = (clone $start)->addMonth();
+        }
 $date = $start->copy();
 
 while ($date->lte($endLimit)) {
@@ -184,7 +190,6 @@ while ($date->lte($endLimit)) {
 ]);
     }
 
-    // ⭐⭐⭐これが絶対必要（進める）
     $date->addDay();
 }
 
@@ -344,7 +349,11 @@ while ($date->lte($endLimit)) {
             ->delete();
 
             $start = Carbon::today();
-            $endLimit = (clone $start)->addMonth();
+            if ($endDate) {
+                $endLimit = Carbon::parse($endDate);
+            } else {
+                $endLimit = (clone $start)->addMonth();
+            }
 
             $date = $start->copy();
 
