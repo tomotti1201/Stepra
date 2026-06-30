@@ -76,8 +76,11 @@
             <h3 class="text-center fw-bold fs-5 mb-2 text-secondary">現在のステータス</h3>
             
             <div class="text-center py-2">
-              <div class="display-1 fw-bold text-success">85<span class="fs-4">%</span></div>
-              <p class="text-muted small mb-0">現在の継続率</p>
+                <div id="rate" class="display-1 fw-bold text-success">
+                    0<span class="fs-4">%</span>
+                </div>
+
+                <p class="text-muted small mb-0">現在の継続率</p>
             </div>
 
             <div class="bg-light rounded p-3 mb-3">
@@ -130,13 +133,18 @@
 
     reader.readAsDataURL(file);
   }
+  document.addEventListener("DOMContentLoaded", loadContinuity);
 
-  /* =======================================
-     設定画面へ
-  ======================================= */
-  function goSetting(){
-    window.location.href = "settei.html";
-  }
+async function loadContinuity() {
+    const userId = localStorage.getItem("user_id");
+
+    const res = await fetch(`/api/continuity?user_id=${userId}`);
+    const data = await res.json();
+console.log(data);
+
+    document.getElementById("rate").innerHTML =
+    `${Number(data.rate).toFixed(1)}<span class="fs-4">%</span>`;
+}
 </script>
 
 </body>
