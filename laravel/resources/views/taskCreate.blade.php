@@ -219,6 +219,7 @@
     <x-menubar />
 
     <script>
+        // JavaScript functions for handling UI interactions
         function selectMode(element) {
             selectSingle(element);
 
