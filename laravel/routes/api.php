@@ -7,6 +7,7 @@ use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\ContinuityController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\GroupTaskController;
 
@@ -15,6 +16,8 @@ Route::post('/login', [LoginController::class, 'login']);
 Route::post('/passwordReset', [PasswordResetController::class, 'passwordReset']);
 
 Route::get('/home/tasks', [HomeController::class, 'todayTasks']);
+
+Route::get('/continuity', [ContinuityController::class, 'index']);
 
 Route::prefix('tasks')->group(function () {
     Route::get('/', [TaskController::class, 'index']);
