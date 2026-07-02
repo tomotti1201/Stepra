@@ -58,30 +58,50 @@
             transform: scale(1.15);
             border: 3px solid black;
         }
+
+        .page-title{
+            font-size: clamp(1.5rem, 2vw, 2.2rem);
+        }
+
+        .form-label{
+            font-size: clamp(0.95rem, 1.2vw, 1.2rem);
+        }
+
+        .form-control{
+            font-size: clamp(1rem, 1.2vw, 1.2rem);
+        }
+
+        .btn{
+            font-size: clamp(1rem, 1.3vw, 1.2rem);
+        }
+
+        .small{
+            font-size: clamp(0.9rem, 1vw, 1.1rem) !important;
+        }
     </style>
 </head>
 
 
-    <div class="container-fluid py-4">
+    <div class="container py-4 mb-5">
 
         <img src="{{ asset('image/tit.png') }}" class="mb-3" style="width:200px;">
 
-        <div class="row justify-content-center">
+        <!--<div class="row justify-content-center">-->
 
-            <div class="col-12 col-md-8 col-lg-5">
+            <!--<div class="col-12 col-md-8 col-lg-5"> -->
 
-                <div class="card-body p-4">
+                <div class="card-body">
 
-                    <h2 class="text-center fw-bold mb-4 fs-4">目標新規作成</h2>
+                    <h2 class="text-center fw-bold ">目標新規作成</h2>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold small">目標名</label>
+                        <label class="form-label fw-bold ">目標名</label>
                         <input type="text" class="form-control" id="goal-name" placeholder="目標名を入力">
                     </div>
 
                     <div class="mb-3">
 
-                        <label class="form-label fw-bold small">頻度</label>
+                        <label class="form-label fw-bold ">頻度</label>
 
                         <div class="d-flex gap-2 mb-2">
 
@@ -103,13 +123,13 @@
                     <div class="row g-2 mb-3">
 
                         <div class="col-6">
-                            <label class="form-label fw-bold small">開始時間</label>
+                            <label class="form-label fw-bold ">開始時間</label>
                             <input type="time" class="form-control" id="start-timing" placeholder="10:00" value="10:00">
                         </div>
 
                         <div class="col-6">
 
-                            <label class="form-label fw-bold small">所要時間</label>
+                            <label class="form-label fw-bold ">所要時間</label>
 
                             <div class="d-flex gap-1">
                                 <input type="number" class="form-control" id="duration-hours" placeholder="0" min="0" value="0">
@@ -124,7 +144,7 @@
 
                     <div class="mb-3 border p-3 rounded bg-light">
 
-                        <label class="form-label fw-bold small">モード設定</label>
+                        <label class="form-label fw-bold ">モード設定</label>
 
                         <div class="btn-group w-100 mb-2" id="mode-group">
                             <button type="button" class="btn btn-outline-secondary day active" onclick="selectMode(this)">自由設定</button>
@@ -133,7 +153,7 @@
 
                         <div id="priority-box" class="disabled-group">
 
-                            <label class="form-label small">優先度</label>
+                            <label class="form-label ">優先度</label>
 
                             <div class="btn-group w-100" id="priority-group">
                                 <button type="button" class="btn btn-outline-secondary day" onclick="selectSingle(this)">高</button>
@@ -148,12 +168,12 @@
                     <div class="row g-2 mb-3">
 
                         <div class="col-6">
-                            <label class="form-label fw-bold small">開始日</label>
+                            <label class="form-label fw-bold ">開始日</label>
                             <input type="date" class="form-control" id="start-date">
                         </div>
 
                         <div class="col-6">
-                            <label class="form-label fw-bold small">終了日</label>
+                            <label class="form-label fw-bold ">終了日</label>
                             <input type="date" class="form-control" id="end-date">
                         </div>
 
