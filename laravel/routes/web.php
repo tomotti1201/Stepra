@@ -79,3 +79,15 @@ Route::get('/tasks/{id}', [TaskController::class, 'show']);
 
 Route::put('/tasks/{id}', [TaskController::class, 'update']);
 Route::delete('/tasks/{id}', [TaskController::class, 'destroy']);
+
+Route::prefix('setting')->group(function () {
+
+    Route::view('/user', 'setting.settingUser');
+
+    Route::view('/notification', 'setting.settingNotification');
+
+    Route::view('/design', 'setting.settingDesign');
+
+    Route::view('/logout', 'setting.settingLogout');
+
+});

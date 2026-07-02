@@ -10,6 +10,8 @@ use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\ContinuityController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\GroupTaskController;
+use App\Http\Controllers\SettingController;
+
 
 Route::post('/signup', [SignupController::class, 'signup']);
 Route::post('/login', [LoginController::class, 'login']);
@@ -55,3 +57,18 @@ Route::prefix('grouptasks')->group(function () {
     Route::post('/', [GroupTaskController::class, 'store']);
     Route::delete('/{id}', [GroupTaskController::class, 'destroy']);
 });
+
+Route::get('/user/{id}', [SettingController::class, 'user']);
+Route::post(
+    '/user/{id}/name',
+    [SettingController::class,'updateName']
+);
+
+Route::post(
+    '/user/{id}/email',
+    [SettingController::class,'updateMail']
+);
+Route::post(
+    '/user/{id}/password/check',
+    [SettingController::class, 'checkPassword']
+);
