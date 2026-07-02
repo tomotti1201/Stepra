@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>グループ詳細 | STEPRA</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container-fluid py-4 mb-5">
+  <img src="/image/tit.png" alt="STEPRA" class="mb-3" style="width:200px;">
+  
+  <div class="row">
+    <div class="col-12">
+
+      <div class="card shadow border-0 mb-4">
+        <div class="card-body p-3 p-md-4">
+          
+          <h2 class="text-center fw-bold mb-4 display-6">
+            グループ詳細
+          </h2>
+
+          <div class="row g-2 mb-4">
+            <div class="col-7 d-flex flex-column gap-2">
+              <button class="btn btn-outline-dark w-100 py-2 fw-bold text-start btn-sm" onclick="openTaskList({{ $group->id }})">
+                📋 グループタスクを表示
+              </button>
+              <button class="btn btn-outline-dark w-100 py-2 fw-bold text-start btn-sm" onclick="goTaskContinue()">
+                📈 グループタスクの継続率
+              </button>
+            </div>
+            <div class="col-5">
+              <button class="btn btn-primary w-100 h-100 fw-bold d-flex align-items-center justify-content-center" onclick="editGroup()">
+                グループ<br>編集
+              </button>
+            </div>
+          </div>
+
+          <div class="border rounded p-3 bg-light">
+            
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <button class="btn btn-secondary px-3 py-1 fw-bold" onclick="changeMonth(-1)" aria-label="Previous month" title="Previous month">◀</button>
+              <div class="fs-4 fw-bold text-dark px-3 py-1 bg-white border rounded shadow-sm" style="cursor: pointer;" onclick="openCalendarModal()" id="calendarTitle">
+                2026年1月
+              </div>
+              <button class="btn btn-secondary px-3 py-1 fw-bold" onclick="changeMonth(1)" aria-label="Next month" title="Next month">▶</button>
+            </div>
+
+            <div class="d-flex text-center fw-bold mb-2 small">
+              <div class="text-danger" style="width: 14.285%;">日</div>
+              <div class="text-dark" style="width: 14.285%;">月</div>
+              <div class="text-dark" style="width: 14.285%;">火</div>
+              <div class="text-dark" style="width: 14.285%;">水</div>
+              <div class="text-dark" style="width: 14.285%;">木</div>
+              <div class="text-dark" style="width: 14.285%;">金</div>
+              <div class="text-primary" style="width: 14.285%;">土</div>
+            </div>
+
+            <div id="calendarGrid" class="d-flex flex-wrap g-1">
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="calendarModal" tabindex="-1" aria-labelledby="calendarModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered px-3">
+    <div class="modal-content shadow border-0">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold" id="calendarModalLabel">移動する年月</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" title="Close"></button>
+      </div>
+      <div class="modal-body p-4 text-center">
+        <div class="d-flex gap-2 mb-4">
+          <select id="yearSelect" class="form-control py-2 fw-bold text-center" aria-label="Year" title="Year"></select>
+          <select id="monthSelect" class="form-control py-2 fw-bold text-center" aria-label="Month" title="Month"></select>
+        </div>
+        <button type="button" class="btn btn-success w-100 py-2 fw-bold" onclick="changeCalendar()">
+          移動する
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<nav class="navbar bg-white border-top fixed-bottom">
+  <div class="container d-flex justify-content-around">
+    <button class="btn btn-outline-secondary" onclick="location.href='/home'">
+      🏠 ホーム
+    </button>
+    <button class="btn btn-outline-secondary" onclick="location.href='/mokuhyouitiran'">
+      🎯 目標
+    </button>
+    <button class="btn btn-outline-secondary" onclick="location.href='/gekkankarenda'">
+      📅 月間カレンダー
+    </button>
+    <button class="btn btn-success" onclick="location.href='/gurupu'">
+      👥 グループ
+    </button>
+    <button class="btn btn-outline-secondary" onclick="location.href='/setting'">
+      ⚙️ 設定・継続率
+    </button>
+  </div>
+</nav>
+
+<div class="py-5"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+const today = new Date();
+let currentYear = today.getFullYear();
+let currentMonth = today.getMonth() + 1;
+const todayDate = today.getDate();
+
+const taskData = [
+  {
+    startDate: "20260528",
+    endDate: "20260710",
+    weekdays: ["月", "水", "金"],
+    color: "red"
+  },
+  {
+    startDate: "20260601",
+    endDate: "20260620",
+    weekdays: ["火", "木"],
+    color: "blue"
+  }
+];
+
+const weekMap = { "日": 0 , "月": 1, "火": 2 , "水": 3, "木": 4, "金": 5, "土": 6 };
+
+function stringToDate(dateString){
+  const year = Number(dateString.slice(0,4));
+  const month = Number(dateString.slice(4,6));
+  const day = Number(dateString.slice(6,8));
+  return new Date(year, month - 1, day);
+}
+
+function updateCalendarTitle(){
+  document.getElementById("calendarTitle").textContent = currentYear + "年" + currentMonth + "月";
+}
+
+function createCalendar(){
+  const calendar = document.getElementById("calendarGrid");
+  calendar.innerHTML = "";
+
+  const firstDay = new Date(currentYear, currentMonth - 1, 1).getDay();
+  const lastDate = new Date(currentYear, currentMonth, 0).getDate();
+
+  // 空白埋め（幅を1つあたり14.285%に固定して横並びを維持）
+  for(let i = 0; i < firstDay; i++){
+    const empty = document.createElement("div");
+    // 幅指定をクラスの代わりに行う
+    empty.style.width = "14.285%";
+    calendar.appendChild(empty);
+  }
+
+  // 日付埋め
+  for(let day = 1; day <= lastDate; day++){
+    const dayBox = document.createElement("div");
+    
+    const currentDate = new Date(currentYear, currentMonth - 1, day);
+    const currentWeek = currentDate.getDay();
+
+    let colorClasses = "bg-white text-dark";
+
+    if (currentYear === today.getFullYear() && currentMonth === today.getMonth() + 1 && day === todayDate) {
+      colorClasses = "bg-success bg-opacity-25 border border-success text-success fw-bold";
+    } else if (currentWeek === 0) {
+      colorClasses = "bg-danger bg-opacity-10 text-danger";
+    } else if (currentWeek === 6) {
+      colorClasses = "bg-primary bg-opacity-10 text-primary";
+    }
+
+    // 各マスの横幅を 14.285% (100 ÷ 7) に強制指定して自動で7列ごとに折り返させる
+    dayBox.className = `btn border py-3 d-flex flex-column align-items-center justify-content-between ${colorClasses}`;
+    dayBox.style.width = "14.285%";
+
+    const dayNum = document.createElement("span");
+    dayNum.className = "small fw-bold mb-2";
+    dayNum.textContent = day;
+    dayBox.appendChild(dayNum);
+
+    dayBox.onclick = () => {
+      alert(currentMonth + "月" + day + "日をタップ");
+    };
+    
+    const dotContainer = document.createElement("div");
+    dotContainer.className = "d-flex gap-1 justify-content-center w-100 pb-1";
+
+    taskData.forEach(task => {
+      const start = stringToDate(task.startDate);
+      const end = stringToDate(task.endDate);
+
+      if(currentDate >= start && currentDate <= end){
+        const week = currentDate.getDay();
+        const match = task.weekdays.some(dayText => weekMap[dayText] === week);
+
+        if(match){
+          const dot = document.createElement("div");
+          dot.className = "rounded-circle border border-dark";
+          dot.style.width = "10px";
+          dot.style.height = "10px";
+          dot.style.backgroundColor = task.color;
+          dotContainer.appendChild(dot);
+        }
+      }
+    });
+
+    dayBox.appendChild(dotContainer);
+    calendar.appendChild(dayBox);
+  }
+}
+
+function changeMonth(move){
+  currentMonth += move;
+  if(currentMonth < 1){ currentMonth = 12; currentYear--; }
+  if(currentMonth > 12){ currentMonth = 1; currentYear++; }
+  updateCalendarTitle();
+  createCalendar();
+}
+
+function openCalendarModal(){
+  createSelectOptions();
+  const modal = new bootstrap.Modal(document.getElementById('calendarModal'));
+  modal.show();
+}
+
+function createSelectOptions(){
+  const yearSelect = document.getElementById("yearSelect");
+  const monthSelect = document.getElementById("monthSelect");
+  yearSelect.innerHTML = "";
+  monthSelect.innerHTML = "";
+
+  for(let year = 2020; year <= 2035; year++){
+    const option = document.createElement("option");
+    option.value = year;
+    option.textContent = year + "年";
+    yearSelect.appendChild(option);
+  }
+
+  for(let month = 1; month <= 12; month++){
+    const option = document.createElement("option");
+    option.value = month;
+    option.textContent = month + "月";
+    monthSelect.appendChild(option);
+  }
+
+  yearSelect.value = currentYear;
+  monthSelect.value = currentMonth;
+}
+
+function changeCalendar(){
+  currentYear = Number(document.getElementById("yearSelect").value);
+  currentMonth = Number(document.getElementById("monthSelect").value);
+
+  updateCalendarTitle();
+  createCalendar();
+
+  const modalElement = document.getElementById('calendarModal');
+  const modalInstance = bootstrap.Modal.getInstance(modalElement);
+  if (modalInstance) {
+    modalInstance.hide();
+  }
+}
+
+function openTaskList(id) { 
+      alert("タスク一覧");
+      window.location.href = `/gtasutkuitiran/${id}`; 
+ }
+function goTaskContinue() { alert("継続率画面"); }
+function editGroup() { alert("グループ編集"); }
+
+updateCalendarTitle();
+createCalendar();
+</script>
+
+</body>
+</html>

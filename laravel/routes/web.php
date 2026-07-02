@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\TaskController;
+use App\Models\Group;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -24,7 +25,7 @@ Route::get('/taskCreate',function(){
 });
 
 Route::get('/schedule', function () {
-    return response()->file(resource_path('views/frontend/schedule.html'));
+    return view('schedules');
 });
 
 Route::get('/task',function(){
@@ -69,56 +70,64 @@ Route::get('/tasks/{id}', [TaskController::class, 'show']);
 Route::put('/tasks/{id}', [TaskController::class, 'update']);
 Route::delete('/tasks/{id}', [TaskController::class, 'destroy']);
 
-Route::get('/gurupu', function () {
-    return response()->file(resource_path('views/frontend/gurupu.html'));
+Route::get('/gurupu',function(){
+    $groups = Group::all();
+    return view('group', ['groups' => $groups]);
 });
 
-Route::get('/gtasutkuitiran', function () {
-    return response()->file(resource_path('views/frontend/gtasutkuitiran.html'));
-});
-
-Route::get('/gtaskukuitiran', function () {
-    return response()->file(resource_path('views/frontend/gtasutkuitiran.html'));
+Route::get('/gtasutkuitiran/{id}', function ($id) {
+    $group = Group::findOrFail($id);
+    return view('gtasutkuitiran',[
+        'group' => $group
+    ]);
 });
 
 Route::get('/gurupjouhouhensyu', function () {
-    return response()->file(resource_path('views/frontend/gurupjouhouhensyu.html'));
+    return view('gurupjouhouhensyu');
 });
 
 Route::get('/gurupujouhouhensyu', function () {
-    return response()->file(resource_path('views/frontend/gurupjouhouhensyu.html'));
+    return view('gurupjouhouhensyu');
 });
 
-Route::get('/gurupumokuhyosinki', function () {
-    return response()->file(resource_path('views/frontend/gurupumokuhyosinki.html'));
+Route::get('/gurupumokuhyosinki/{id}', function ($id) {
+   
+    return view('gurupumokuhyosinki');
 });
 
-Route::get('/gurupusyu', function () {
-    return response()->file(resource_path('views/frontend/gurupusyu.html'));
+Route::get('/gurupusyu/{id}', function ($id) {
+    $group = Group::findOrFail($id);
+    return view('gurupusyu',[
+    'group' => $group
+    ]);
+
 });
 
-Route::get('/gurutaskukuhen', function () {
-    return response()->file(resource_path('views/frontend/gurutasukuhen.html'));
+Route::get('/gurutaskukuhen/{id}', function ($id) {
+    $group = Group::findOrFail($id);
+    return view('gurutasukuhen',[
+        'group' => $group 
+    ]);
 });
 
 Route::get('/sinnkiguru', function () {
-    return response()->file(resource_path('views/frontend/sinnkiguru.html'));
+    return view('sinnkiguru');
 });
 
 Route::get('/kiroku', function () {
-    return response()->file(dirname(base_path()) . '/tokuhiduke.html');
+    return view('tokuhiduke');
 });
 
 Route::get('/rireki', function () {
-    return response()->file(dirname(base_path()) . '/keizoku.html');
+    return view('keizoku');
 });
 
 Route::get('/gekkankarenda', function () {
-    return response()->file(dirname(base_path()) . '/gekkankarenda.html');
+    return view('gekkankarenda');
 });
 
 Route::get('/mokuhyouitiran', function () {
-    return response()->file(dirname(base_path()) . '/mokuhyouitiran.html');
+    return view('mokuhyouitiran');
 });
 
 Route::get('/im/{filename}', function (string $filename) {

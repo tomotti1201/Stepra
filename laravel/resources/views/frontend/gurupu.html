@@ -40,8 +40,8 @@
 
           <div class="mb-2">
             <p class="fw-bold mb-2 text-muted small">グループ一覧</p>
-            
-            <div class="d-flex flex-column gap-2" style="max-height: 350px; overflow-y: auto;">
+                        
+            <!-- <div class="d-flex flex-column gap-2" style="max-height: 350px; overflow-y: auto;">
               <button class="btn btn-light border text-start p-3 fw-bold" onclick="openGroup(1)">
                 グループ1
               </button>
@@ -56,7 +56,7 @@
               </button>
               <button class="btn btn-light border text-start p-3 fw-bold" onclick="openGroup(5)">
                 グループ5
-              </button>
+              </button> -->
             </div>
           </div>
 
@@ -118,6 +118,30 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
+
+  document.addEventListener("DOMContentLoaded", async () => {
+  console.log("DOMContentLoaded 動いた");
+
+  const response = await fetch("/api/groups");
+
+  const group = await response.json();
+
+  if (!response.ok) {
+    console.log("APIエラー");
+    console.log(await response.text());
+    return;
+  }
+
+  const groupList = document.getElementByTd("groupList")
+  groupList.innerHTML=""
+  groups.forEach(group=>{
+    const button = document.createElement("button");
+    button.textContent = group.name;
+    
+  })
+
+  console.log("取得データ:", data);
+});
   /* ===================================================== */
   /* 新規グループ作成画面へ遷移 */
   /* ===================================================== */
