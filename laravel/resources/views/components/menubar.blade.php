@@ -34,7 +34,7 @@
 
         <button
             class="btn {{ request()->is('setting') ? 'btn-success' : 'btn-outline-secondary' }}"
-            onclick="location.href='/setting'">
+            onclick="location.href='/setting/user'">
             ⚙️ 設定
         </button>
 
