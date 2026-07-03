@@ -380,7 +380,7 @@
 
             <button
                 class="btn btn-secondary w-100"
-                onclick="location.href='/gtasutkuitiran'">
+                onclick="openTaskList({{ $group->id }})">
 
                 戻る
 
@@ -427,17 +427,27 @@
 <script>
 
 /* =====================================
-   保存キー
-===================================== */
-
-const storageKey =
-    "groupGoals";
-
-/* =====================================
    保存
 ===================================== */
 
-function saveGoal(){
+async function saveGoal(){
+
+const userId =
+    localStorage.getItem(
+        "user_id"
+    );
+
+if(!userId){
+
+    alert(
+        "ログインしてください"
+    );
+
+    location.href =
+        "/login";
+
+    return;
+}
 
 const goalName =
 document.getElementById(
@@ -452,12 +462,20 @@ document.getElementById(
 const selectedDays = [];
 
 document
-.querySelectorAll(".day.active")
-.forEach(day=>{
+.querySelectorAll(".day")
+.forEach((day, index)=>{
 
-    selectedDays.push(
-        day.textContent.trim()
-    );
+    if(
+        day.classList.contains(
+            "active"
+        )
+    ){
+
+        selectedDays.push(
+            String(index)
+        );
+
+    }
 
 });
 
@@ -519,6 +537,15 @@ if(startDate === ""){
     return;
 }   
 
+if(selectedDays.length === 0){
+
+    alert(
+        "頻度を選択してください"
+    );
+
+    return;
+}
+
     const startTime =
         document.getElementById(
             "start-timing"
@@ -543,6 +570,18 @@ if(startDate === ""){
             "end-date"
         ).value;
 
+    if(
+        endDate &&
+        endDate < startDate
+    ){
+
+        alert(
+            "終了日は開始日以降の日付を選択してください"
+        );
+
+        return;
+    }
+
     if(goalName === ""){
 
         alert(
@@ -552,75 +591,69 @@ if(startDate === ""){
         return;
     }
 
-    document
-        .querySelectorAll(".day")
-        .forEach(btn=>{
+    const requiredMinutes =
+        (hours * 60) +
+        minutes;
 
-            if(
-                btn.classList.contains(
-                    "active"
-                )
-            ){
+    try{
 
-                selectedDays.push(
-                    btn.textContent
-                );
+        const response =
+            await fetch(
+                "/api/grouptasks",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
+                    },
+                    body: JSON.stringify({
+                        group_id: {{ $group->id }},
+                        title: goalName,
+                        content: "",
+                        week_days: selectedDays,
+                        start_time: startTime,
+                        required_minutes: requiredMinutes,
+                        priority: priority,
+                        color: color,
+                        period: mode,
+                        notification_enabled: true,
+                        start_date: startDate,
+                        end_date: endDate || null,
+                        status: "active",
+                        created_by: userId
+                    })
+                }
+            );
 
-            }
+        const data =
+            await response
+                .json()
+                .catch(()=>({}));
 
-        });
+        if(!response.ok){
 
+            alert(
+                data.message || "グループタスクの登録に失敗しました"
+            );
 
-    const goal = {
+            return;
+        }
 
-    id: Date.now(),
+        alert(
+            "グループタスクを登録しました"
+        );
 
-    name: goalName,
+        location.href =
+            "/gtasutkuitiran/{{ $group->id }}";
 
-    mode: mode,
+    }catch(error){
 
-    priority: priority,
+        console.error(error);
 
-    startDate: startDate,
-
-    endDate: endDate,
-
-    startTime: startTime,
-
-    durationHours: hours,
-
-    durationMinutes: minutes,
-
-    color: color,
-
-    days: selectedDays
-
-};
-
-    let goals =
-        JSON.parse(
-            localStorage.getItem(
-                storageKey
-            )
-        ) || [];
-
-    goals.push(
-        goal
-    );
-
-    localStorage.setItem(
-        storageKey,
-        JSON.stringify(
-            goals
-        )
-    );
-
-    alert(
-        "グループタスクを登録しました"
-    );
-
-    location.href =
-        "/gtasutkuitiran";
+        alert(
+            "グループタスクの登録に失敗しました"
+        );
+    }
 
 }
 
@@ -679,6 +712,11 @@ document
     );
 
 });
+
+function openTaskList(id) {
+  window.location.href = `/gtasutkuitiran/${id}`;
+}
+
 
 function togglePriorityArea(){
 

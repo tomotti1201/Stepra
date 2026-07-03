@@ -94,160 +94,261 @@
 <script>
 
 /* =====================================
-   保存キー
-===================================== */
-
-const storageKey =
-    "groupGoals";
-
-/* =====================================
    一覧表示
 ===================================== */
 
-function renderGoals(){
+async function renderGoals(){
 
     const goalList =
         document.getElementById(
             "goalList"
         );
 
-    let goals =
-        localStorage.getItem(
-            storageKey
-        );
-
-    goals =
-        goals
-        ? JSON.parse(goals)
-        : [];
-
-    goalList.innerHTML = "";
-
-    /* データなし */
-
-    if(goals.length === 0){
-
-        goalList.innerHTML =
-
+    goalList.innerHTML =
         `
         <div class="card shadow">
 
             <div class="card-body text-center text-muted">
 
-                登録されたグループ目標がありません
+                読み込み中...
 
             </div>
 
         </div>
         `;
 
-        return;
-    }
+    try{
 
-    /* 一覧生成 */
+        const response =
+            await fetch(
+                "/api/grouptasks?group_id={{ $group->id }}",
+                {
+                    headers: {
+                        "Accept": "application/json"
+                    }
+                }
+            );
 
-    goals.forEach(goal=>{
+        const data =
+            await response
+                .json()
+                .catch(()=>({}));
 
-        goalList.innerHTML +=
+        if(!response.ok){
 
-        `
-        <div class="card shadow mb-3">
+            goalList.innerHTML =
+                `
+                <div class="card shadow">
 
-            <div class="card-body">
+                    <div class="card-body text-center text-danger">
 
-                <div class="row align-items-center">
-
-                    <!-- 目標名 -->
-
-                    <div class="col-8">
-
-                        <div
-                            class="fw-bold p-2 rounded"
-                            style="
-                            border-left:8px solid ${goal.color || '#198754'};
-                            ">
-
-                            ${goal.name}
-
-                        </div>
+                        グループタスクの取得に失敗しました
 
                     </div>
 
-                    <!-- ボタン -->
+                </div>
+                `;
 
-                    <div class="col-4">
-                       
-                        <button
-                            class="btn btn-primary w-100 mb-2"
-                            onclick="editTask(${goal.id})">
+            return;
+        }
 
-                            編集
+        const goals =
+            Array.isArray(data)
+                ? data
+                : data.tasks || [];
 
-                        </button>
+        goalList.innerHTML = "";
 
-                        <button
-                            class="btn btn-danger w-100"
-                            onclick="deleteGoal(${goal.id})">
+        /* データなし */
 
-                            削除
+        if(goals.length === 0){
 
-                        </button>
+            goalList.innerHTML =
+
+            `
+            <div class="card shadow">
+
+                <div class="card-body text-center text-muted">
+
+                    登録されたグループ目標がありません
+
+                </div>
+
+            </div>
+            `;
+
+            return;
+        }
+
+        /* 一覧生成 */
+
+        goals.forEach(goal=>{
+
+            goalList.innerHTML +=
+
+            `
+            <div class="card shadow mb-3">
+
+                <div class="card-body">
+
+                    <div class="row align-items-center">
+
+                        <!-- 目標名 -->
+
+                        <div class="col-8">
+
+                            <div
+                                class="fw-bold p-2 rounded"
+                                style="
+                                border-left:8px solid ${goal.color || '#198754'};
+                                ">
+
+                                ${escapeHtml(goal.title)}
+
+                                <div class="small text-muted fw-normal mt-1">
+                                    ${formatTaskInfo(goal)}
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <!-- ボタン -->
+
+                        <div class="col-4">
+                        
+                            <button
+                                class="btn btn-primary w-100 mb-2"
+                                onclick="editTask(${goal.id})">
+
+                                編集
+
+                            </button>
+
+                            <button
+                                class="btn btn-danger w-100"
+                                onclick="deleteGoal(${goal.id})">
+
+                                削除
+
+                            </button>
+
+                        </div>
 
                     </div>
 
                 </div>
 
             </div>
+            `;
 
-        </div>
-        `;
+        });
 
-    });
+    }catch(error){
+
+        console.error(error);
+
+        goalList.innerHTML =
+            `
+            <div class="card shadow">
+
+                <div class="card-body text-center text-danger">
+
+                    グループタスクの取得に失敗しました
+
+                </div>
+
+            </div>
+            `;
+    }
 
 }
 
 function editTask(id){
 
-    localStorage.setItem(
-        "editTaskId",
-        id
-    );
-
     location.href =
-        "/gurutaskukuhen";
+        `/gurutaskukuhen/{{ $group->id }}?task_id=${id}`;
 }
 
 /* =====================================
    削除
 ===================================== */
 
-function deleteGoal(id){
+async function deleteGoal(id){
 
     if(!confirm("この目標を削除しますか？")){
         return;
     }
 
-    let goals =
-        JSON.parse(
-            localStorage.getItem(
-                storageKey
-            )
-        ) || [];
+    try{
 
-    goals =
-        goals.filter(
-            goal =>
-            goal.id !== id
+        const response =
+            await fetch(
+                `/api/grouptasks/${id}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        "Accept": "application/json"
+                    }
+                }
+            );
+
+        if(!response.ok){
+
+            alert(
+                "削除に失敗しました"
+            );
+
+            return;
+        }
+
+        renderGoals();
+
+    }catch(error){
+
+        console.error(error);
+
+        alert(
+            "削除に失敗しました"
         );
+    }
+}
 
-    localStorage.setItem(
-        storageKey,
-        JSON.stringify(
-            goals
-        )
-    );
+function formatTaskInfo(goal){
 
-    renderGoals();
+    const infos = [];
+
+    if(goal.start_time){
+        infos.push(
+            goal.start_time.slice(0, 5)
+        );
+    }
+
+    if(goal.required_minutes){
+        infos.push(
+            `${goal.required_minutes}分`
+        );
+    }
+
+    if(goal.priority){
+        infos.push(
+            goal.priority
+        );
+    }
+
+    return infos.length
+        ? escapeHtml(infos.join(" / "))
+        : "";
+}
+
+function escapeHtml(value){
+
+    return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
 }
 
 /* =====================================
@@ -303,4 +404,3 @@ renderGoals();
 
 </body>
 </html>
-

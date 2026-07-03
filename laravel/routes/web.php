@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\TaskController;
 use App\Models\Group;
+use App\Models\Grouptask;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -76,9 +77,11 @@ Route::get('/gurupu',function(){
 });
 
 Route::get('/gtasutkuitiran/{id}', function ($id) {
+    $tasklist = Grouptask::where('group_id', $id)->get();
     $group = Group::findOrFail($id);
     return view('gtasutkuitiran',[
-        'group' => $group
+        'group' => $group,
+        'tasklist' => $tasklist
     ]);
 });
 
@@ -91,14 +94,19 @@ Route::get('/gurupujouhouhensyu', function () {
 });
 
 Route::get('/gurupumokuhyosinki/{id}', function ($id) {
-   
-    return view('gurupumokuhyosinki');
+    $group = Group::findOrFail($id);
+    return view('gurupumokuhyosinki',[
+        'group' => $group
+    ]);
 });
 
 Route::get('/gurupusyu/{id}', function ($id) {
     $group = Group::findOrFail($id);
+    $tasklist = Grouptask::where('group_id', $id)->get();
+
     return view('gurupusyu',[
-    'group' => $group
+        'group' => $group,
+        'tasklist' => $tasklist
     ]);
 
 });
