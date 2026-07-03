@@ -18,7 +18,8 @@
 
     <img src="im/tit.png"
         class="mb-3"
-        style="width:200px;">
+        style="width:200px;"
+        alt="">
 
     <!-- スケジュール -->
 
@@ -104,7 +105,9 @@
                 <button
                     type="button"
                     class="btn-close"
-                    data-bs-dismiss="modal">
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                    title="Close">
                 </button>
 
             </div>
@@ -112,23 +115,23 @@
             <div class="modal-body">
 
                 <div class="form-check mb-2">
-                    <input class="form-check-input" type="radio" name="reason" value="急な用事">
-                    <label class="form-check-label">急な用事が入った</label>
+                    <input id="reason-urgent" class="form-check-input" type="radio" name="reason" value="急な用事" aria-label="急な用事が入った" title="急な用事が入った">
+                    <label class="form-check-label" for="reason-urgent">急な用事が入った</label>
                 </div>
 
                 <div class="form-check mb-2">
-                    <input class="form-check-input" type="radio" name="reason" value="仮眠">
-                    <label class="form-check-label">仮眠をしすぎた</label>
+                    <input id="reason-nap" class="form-check-input" type="radio" name="reason" value="仮眠" aria-label="仮眠をしすぎた" title="仮眠をしすぎた">
+                    <label class="form-check-label" for="reason-nap">仮眠をしすぎた</label>
                 </div>
 
                 <div class="form-check mb-2">
-                    <input class="form-check-input" type="radio" name="reason" value="忘れた">
-                    <label class="form-check-label">他ごとをしていて忘れていた</label>
+                    <input id="reason-forgot" class="form-check-input" type="radio" name="reason" value="忘れた" aria-label="他ごとをしていて忘れていた" title="他ごとをしていて忘れていた">
+                    <label class="form-check-label" for="reason-forgot">他ごとをしていて忘れていた</label>
                 </div>
 
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="reason" value="やる気">
-                    <label class="form-check-label">やる気がなかった</label>
+                    <input id="reason-unmotivated" class="form-check-input" type="radio" name="reason" value="やる気" aria-label="やる気がなかった" title="やる気がなかった">
+                    <label class="form-check-label" for="reason-unmotivated">やる気がなかった</label>
                 </div>
 
             </div>

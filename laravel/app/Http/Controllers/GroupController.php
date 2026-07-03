@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Group;
 use App\Models\Groupmember;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class GroupController extends Controller
 {
@@ -22,9 +23,9 @@ class GroupController extends Controller
         $group = Group::create([
             'name' => $request->name,
             'icon' => $request->icon,
-            'invite_code' => $request->invite_code,
+            'invite_code' => Str::upper(Str::random(8)),
             'description' => $request->description,
-            'is_public' => $request->is_public,
+            'is_public' => $request->is_public ?? 0,
         ]);
 
         return response()->json($group, 201);

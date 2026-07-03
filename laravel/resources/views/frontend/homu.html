@@ -572,6 +572,8 @@ body{
     </div>
 
     <button class="change-btn"
+            aria-label="Change goal"
+            title="Change goal"
             onclick="changeGoal()">
 
       ▶
@@ -623,6 +625,8 @@ body{
   <!-- 閉じるボタン -->
 
   <button class="close-modal-btn"
+          aria-label="Close modal"
+          title="Close modal"
           onclick="closeReasonModal()">
 
     ×
@@ -635,10 +639,15 @@ body{
 
     <div class="reason-list">
 
-      <label class="reason-item">
+      <label class="reason-item"
+             for="reason-urgent">
 
         <input type="radio"
-               name="reason">
+               id="reason-urgent"
+               name="reason"
+               value="urgent"
+               aria-label="Reason option 1"
+               title="Reason option 1">
 
         <span>
           急な用事が入った
@@ -646,10 +655,15 @@ body{
 
       </label>
 
-      <label class="reason-item">
+      <label class="reason-item"
+             for="reason-overslept">
 
         <input type="radio"
-               name="reason">
+               id="reason-overslept"
+               name="reason"
+               value="overslept"
+               aria-label="Reason option 2"
+               title="Reason option 2">
 
         <span>
           仮眠をしすぎた
@@ -657,10 +671,15 @@ body{
 
       </label>
 
-      <label class="reason-item">
+      <label class="reason-item"
+             for="reason-forgot">
 
         <input type="radio"
-               name="reason">
+               id="reason-forgot"
+               name="reason"
+               value="forgot"
+               aria-label="Reason option 3"
+               title="Reason option 3">
 
         <span>
           他ごとをしていて忘れていた
@@ -668,10 +687,15 @@ body{
 
       </label>
 
-      <label class="reason-item">
+      <label class="reason-item"
+             for="reason-unmotivated">
 
         <input type="radio"
-               name="reason">
+               id="reason-unmotivated"
+               name="reason"
+               value="unmotivated"
+               aria-label="Reason option 4"
+               title="Reason option 4">
 
         <span>
           やる気がなかった
@@ -915,11 +939,15 @@ function createGoals(){
         </button>
 
         <button class="circle-btn"
+                aria-label="Mark goal as done"
+                title="Mark goal as done"
                 onclick="doneGoal(this)">
           ○
         </button>
 
         <button class="delete-btn"
+                aria-label="Delete goal"
+                title="Delete goal"
                 onclick="openReasonModal(this)">
           ×
         </button>

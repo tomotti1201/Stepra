@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>目標一覧 | STEPRA</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body { background-color: #f8f9fa; }
+
+    /* 目標アイテムの枠線と背景 */
+    .target-item {
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      overflow: hidden;
+      background-color: #fff;
+    }
+    .target-content {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container-fluid py-4">
+  <img src="im/tit.png" class="mb-3" style="width:200px;">
+  <div class="row justify-content-center">
+    
+    <div class="col-12 px-3 px-md-4">
+
+      <div class="card-body">
+        
+        <h2 class="text-center fw-bold mb-4 fs-4">
+          目標一覧<br>
+          <span class="fs-6 fw-normal text-muted">作成・編集</span>
+        </h2>
+
+        <div id="target-list" class="d-flex flex-column gap-2">
+        </div>
+
+        <div class="mt-4">
+          <a href="mokuhyosinki.html" class="btn btn-success w-100 py-3 fw-bold fs-5 shadow-sm">
+            ＋ 新規目標作成
+          </a>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<nav class="navbar navbar-light bg-light border-top fixed-bottom py-2">
+  <div class="container-fluid justify-content-around">
+    <a href="/kiroku" class="text-decoration-none text-secondary text-center" style="font-size: 12px;">
+      <div>📅</div><div>記録</div>
+    </a>
+    <a href="/rireki" class="text-decoration-none text-secondary text-center" style="font-size: 12px;">
+      <div>🔄</div><div>履歴</div>
+    </a>
+    <a href="/gekkankarenda" class="text-decoration-none text-secondary text-center" style="font-size: 12px;">
+      <div>📊</div><div>分析</div>
+    </a>
+    <a href="/mokuhyouitiran" class="text-decoration-none text-primary fw-bold text-center" style="font-size: 12px;">
+      <div>✅</div><div>目標</div>
+    </a>
+  </div>
+</nav>
+
+<div style="height: 100px;"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  const storageKey = 'goals';
+
+  // 画面に目標一覧を組み立てて表示する関数
+  function renderList() {
+    const listContainer = document.getElementById('target-list');
+    
+    // 1. ブラウザから最新の保存データを読み込む
+    let goals = localStorage.getItem(storageKey);
+    goals = goals ? JSON.parse(goals) : [];
+
+    // 2. 一度リストの中身をすべて空っぽにする
+    listContainer.innerHTML = ''; 
+
+    // データが無いときの案内
+    if (goals.length === 0) {
+      listContainer.innerHTML = '<div class="text-center text-muted small py-4">登録された目標がありません</div>';
+      return;
+    }
+
+    // 3. 登録データでリストを組み立てる
+    goals.forEach((goal) => {
+      const item = document.createElement('div');
+      item.className = 'target-item d-flex row g-0 align-items-center mb-2 shadow-sm';
+
+      // 左側：目標名表示エリア
+      const content = document.createElement('div');
+      content.className = 'target-content col-8 p-3 text-start d-flex align-items-center';
+      content.textContent = goal.name; 
+
+      if (goal.color) {
+        content.style.borderLeft = `8px solid ${goal.color}`;
+      }
+
+      // 右側：編集ボタンエリア
+      const editBtnWrapper = document.createElement('div');
+      editBtnWrapper.className = 'col-4 px-3 text-end';
+
+      const editLink = document.createElement('a');
+      editLink.className = 'btn btn-primary w-100 py-2 fw-bold';
+      editLink.textContent = '編集';
+      editLink.href = `mokuhyohensyu.html?id=${goal.id}`;
+
+      editBtnWrapper.appendChild(editLink);
+      item.appendChild(content);
+      item.appendChild(editBtnWrapper);
+      listContainer.appendChild(item);
+    });
+  }
+
+  // 画面が表示されたタイミングに、最新データを読み込んで一覧を表示する
+  document.addEventListener('DOMContentLoaded', renderList);
+</script>
+</body>
+</html>
