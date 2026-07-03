@@ -58,15 +58,7 @@
       <div class="card shadow border-0 mb-5">
         <div class="card-body p-4">
           
-          <h2 class="text-center fw-bold mb-4 fs-4">ユーザー情報</h2>
-
-          <div class="d-flex align-items-center gap-3 mb-4">
-            <button type="button" class="user-icon-circle shadow-sm" onclick="selectImage()">
-              <img id="iconImage" src="" alt="ユーザーアイコン">
-              <span id="iconText" class="small fw-bold text-white">画像選択</span>
-            </button>
-            <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="changeIcon(event)">
-
+          <div class="d-flex align-items-center gap-3 mb-4">  
             <div class="form-control d-flex align-items-center justify-content-center fw-bold bg-light" style="height: 80px; font-size: 1.1rem;">
               ユーザー名
             </div>
