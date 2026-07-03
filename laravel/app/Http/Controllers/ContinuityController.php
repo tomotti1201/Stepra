@@ -47,13 +47,72 @@ $rate = $total > 0
     ? round(($completed / $total) * 100, 1)
     : 0;
 
+$schedules = Schedule::where('user_id', $userId)
+    ->orderBy('scheduled_date')
+    ->get();
+$streak = 0;
+
+$date = Carbon::today();
+
+while (true) {
+
+    $schedule = Schedule::where('user_id', $userId)
+        ->whereDate('scheduled_date', $date)
+        ->first();
+
+    if (!$schedule) {
+        break;
+    }
+
+    if ($schedule->status != 'completed') {
+        break;
+    }
+
+    $streak++;
+
+    $date->subDay();
+}
+$monthSchedules = Schedule::where('user_id', $userId)
+    ->whereYear('scheduled_date', Carbon::now()->year)
+    ->whereMonth('scheduled_date', Carbon::now()->month)
+    ->get();
+
+$monthTotal = $monthSchedules->count();
+
+$monthCompleted = $monthSchedules
+    ->where('status', 'completed')
+    ->count();
+if ($rate >= 90) {
+
+    $medal = "platinum-medal.png";
+
+} elseif ($rate >= 80) {
+
+    $medal = "gold-medal.png";
+
+} elseif ($rate >= 70) {
+
+    $medal = "silver-medal.png";
+
+} elseif ($rate >= 60) {
+
+    $medal = "bronze-medal.png";
+
+} else {
+
+    $medal = "Beginner";
+}
     return response()->json([
-        'status' => 'success',
-        'rate' => $rate,
-        'total' => $total,
-        'completed' => $completed,
-        'start_date' => $startDate,
-        'today' => $today->toDateString()
-    ]);
+    'status' => 'success',
+    'rate' => $rate,
+    'total' => $total,
+    'completed' => $completed,
+    'streak' => $streak,
+    'month_total' => $monthTotal,
+    'month_completed' => $monthCompleted,
+    'medal' => $medal,
+    'start_date' => $startDate,
+    'today' => $today->toDateString()
+]);
 }
 }

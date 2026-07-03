@@ -46,6 +46,9 @@
       color: #0d6efd;
       font-weight: bold;
     }
+    .status-card {
+        min-height: 150px; /* ランクカードと同じくらいの高さ */
+    }
   </style>
 </head>
 <body>
@@ -65,25 +68,47 @@
           </div>
 
           <div class="border rounded bg-white p-3 mb-4 shadow-sm">
-            <h3 class="text-center fw-bold fs-5 mb-2 text-secondary">現在のステータス</h3>
+            <h3 class="text-center fw-bold fs-5 mb-2 text-secondary">現在の継続率</h3>
             
             <div class="text-center py-2">
                 <div id="rate" class="display-1 fw-bold text-success">
                     0<span class="fs-4">%</span>
                 </div>
 
-                <p class="text-muted small mb-0">現在の継続率</p>
+                <p class="text-muted small mb-0">仮</p>
             </div>
 
             <div class="bg-light rounded p-3 mb-3">
-              <div class="d-flex align-items-center justify-content-center" style="height: 180px;">
-                <p class="text-secondary mb-0">📊 グラフ描画エリア</p>
-              </div>
-            </div>
+              <div class="row g-3 mt-2">
 
-            <div class="p-2 bg-light rounded text-center">
-              <p class="mb-0 small fw-bold text-secondary">この調子で頑張りましょう！</p>
-            </div>
+                  <div class="col-4">
+<div class="border rounded text-center p-2 bg-light status-card d-flex flex-column justify-content-center">                          <div class="fs-3">🔥</div>
+                          <div id="streak" class="fw-bold">0日</div>
+                          <small>連続達成</small>
+                      </div>
+                  </div>
+
+                  <div class="col-4">
+<div class="border rounded text-center p-2 bg-light status-card d-flex flex-column justify-content-center">                          <div class="fs-3">✔</div>
+                          <div id="month" class="fw-bold">0/0</div>
+                          <small>今月</small>
+                      </div>
+                  </div>
+
+                  <div class="col-4">
+<div class="border rounded text-center p-2 bg-light h-100 d-flex flex-column justify-content-center align-items-center">                          <div class="text-center">
+                              <img id="medal"
+                                  src="{{ asset('image/bronze-medal.png') }}"
+                                  width="85"
+                                  class="mb-2"
+                                  alt="ランク">
+                          </div>
+                          <small>ランク</small>
+                      </div>
+                  </div>
+
+              </div>
+</div>
           </div>
         </div>
       </div>
@@ -97,45 +122,29 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-  /* ===================================================== */
-  /* 画像選択を開く */
-  /* ===================================================== */
-  function selectImage(){
-    document.getElementById("imageInput").click();
-  }
-
-  /* ===================================================== */
-  /* アイコン変更 */
-  /* ===================================================== */
-  function changeIcon(event){
-    const file = event.target.files[0];
-    if(!file){
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = function(e){
-      const image = document.getElementById("iconImage");
-      const text = document.getElementById("iconText");
-
-      image.src = e.target.result;
-      image.style.display = "block";
-      text.style.display = "none";
-    };
-
-    reader.readAsDataURL(file);
-  }
   document.addEventListener("DOMContentLoaded", loadContinuity);
 
 async function loadContinuity() {
+
     const userId = localStorage.getItem("user_id");
 
     const res = await fetch(`/api/continuity?user_id=${userId}`);
+
     const data = await res.json();
-console.log(data);
 
     document.getElementById("rate").innerHTML =
-    `${Number(data.rate).toFixed(1)}<span class="fs-4">%</span>`;
+        `${Number(data.rate).toFixed(1)}<span class="fs-4">%</span>`;
+
+    document.getElementById("streak").textContent =
+        `${data.streak}日`;
+
+    document.getElementById("month").textContent =
+        `${data.month_completed}/${data.month_total}`;
+
+    const medal = data.medal.split(" ");
+
+    document.getElementById("medal").src =
+        `/image/${data.medal}`;
 }
 </script>
 
