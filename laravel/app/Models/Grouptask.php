@@ -15,6 +15,16 @@ class Grouptask extends Model
         'group_id',
         'title',
         'content',
+        'week_days',
+        'start_time',
+        'required_minutes',
+        'priority',
+        'color',
+        'period',
+        'notification_enabled',
+        'start_date',
+        'end_date',
+        'status',
         'created_by',
     ];
 
