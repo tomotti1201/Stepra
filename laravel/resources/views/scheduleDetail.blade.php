@@ -18,21 +18,36 @@
     <div class="card shadow mb-4">
         <div class="card-body text-center">
 
-            <h4 id="scheduleTitle" class="fw-bold mb-4">
-                スケジュール
-            </h4>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+
+                <button
+                    class="btn btn-secondary px-4 py-2"
+                    onclick="moveDate(-1)"
+                >
+                    &lt;
+                </button>
+
+                <h4 id="scheduleTitle" class="fw-bold mb-0">
+                    スケジュール
+                </h4>
+
+                <button
+                    class="btn btn-secondary px-4 py-2"
+                    onclick="moveDate(1)"
+                >
+                    &gt;
+                </button>
+
+            </div>
 
             <div class="d-flex justify-content-center">
                 <div
                     id="circleChart"
                     class="position-relative"
-                    style="
-                        width:280px;
-                        height:280px;
-                        border-radius:50%;
-                    ">
+                    style="width:280px;height:280px;border-radius:50%;">
                 </div>
             </div>
+
         </div>
     </div>
 
@@ -77,28 +92,28 @@
             <div class="modal-body">
 
                 <div class="form-check mb-2">
-                    <input class="form-check-input" type="radio" name="reason">
+                    <input class="form-check-input" type="radio" name="reason" value="急な用事">
                     <label class="form-check-label">
                         急な用事が入った
                     </label>
                 </div>
 
                 <div class="form-check mb-2">
-                    <input class="form-check-input" type="radio" name="reason">
+                    <input class="form-check-input" type="radio" name="reason" value="仮眠">
                     <label class="form-check-label">
                         仮眠をしすぎた
                     </label>
                 </div>
 
                 <div class="form-check mb-2">
-                    <input class="form-check-input" type="radio" name="reason">
+                    <input class="form-check-input" type="radio" name="reason" value="忘れた">
                     <label class="form-check-label">
                         他ごとをしていて忘れていた
                     </label>
                 </div>
 
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="reason">
+                    <input class="form-check-input" type="radio" name="reason" value="やる気">
                     <label class="form-check-label">
                         やる気がなかった
                     </label>
@@ -118,38 +133,23 @@
     </div>
 </div>
 
-<!-- 下メニュー -->
-<nav class="navbar bg-white border-top fixed-bottom">
-    <div class="container d-flex justify-content-around">
-
-        <button class="btn btn-outline-secondary">
-            🏠 ホーム
-        </button>
-
-        <button class="btn btn-outline-secondary">
-            🎯 目標
-        </button>
-
-        <button class="btn btn-success">
-            📅 月間カレンダー
-        </button>
-
-        <button class="btn btn-outline-secondary">
-            👥 グループ
-        </button>
-
-        <button class="btn btn-outline-secondary">
-            ⚙️ 設定・継続率
-        </button>
-
-    </div>
-</nav>
-
     <x-menubar />
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
+function moveDate(diff){
+
+    const date = new Date(dateStr);
+
+    date.setDate(date.getDate() + diff);
+
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2,"0");
+    const d = String(date.getDate()).padStart(2,"0");
+
+    location.href = `/scheduleDetail?date=${y}-${m}-${d}`;
+}
 
 // ==========================
 // 日付取得（localStorage）
@@ -171,14 +171,17 @@ const today = new Date();
 
 clickedDate.setHours(0,0,0,0);
 today.setHours(0,0,0,0);
-// ==========================
+
+// 操作可能判定（今日・昨日・一昨日のみ）
+const diffDays = (today - clickedDate) / (1000 * 60 * 60 * 24);
+
+// 今日～2日前までだけ操作可能
+const canEdit = diffDays >= 0 && diffDays <= 2;
+
 // 初期ロード
-// ==========================
 document.addEventListener("DOMContentLoaded", loadDayData);
 
-// ==========================
 // データ取得（API）
-// ==========================
 async function loadDayData() {
 
     const userId = localStorage.getItem("user_id");
@@ -195,9 +198,7 @@ async function loadDayData() {
     createGoals(tasks);
 }
 
-// ==========================
 // 時間変換
-// ==========================
 function timeToMinutes(time) {
     const [h, m] = time.split(":").map(Number);
     return h * 60 + m;
@@ -212,9 +213,7 @@ function minutesToTime(minutes) {
     return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 }
 
-// ==========================
 // 円グラフ
-// ==========================
 function timeToMin(t) {
     if (!t) return 0;
 
@@ -332,9 +331,7 @@ function createChart(tasks) {
     chart.appendChild(center);
 }
 
-// ==========================
 // 目標表示（ホームUI流用）
-// ==========================
 function createGoals(tasks) {
 
     const goalList = document.getElementById("goalList");
@@ -348,10 +345,12 @@ function createGoals(tasks) {
         `;
         return;
     }
+    const active = tasks.filter(t => t.status === "active");
+    const completed = tasks.filter(t => t.status === "completed");
+    const failed = tasks.filter(t => t.status === "failed");
+    function createCard(task){
 
-    tasks.forEach(task => {
-
-        goalList.innerHTML += `
+        return `
         <div class="d-flex align-items-center justify-content-between bg-white shadow-sm rounded mb-2 overflow-hidden"
             data-id="${task.id}">
 
@@ -367,39 +366,75 @@ function createGoals(tasks) {
                     <div class="fw-bold">${task.title}</div>
 
                     <div class="small text-muted">
-                        ${task.start_time.slice(0,5)} / ${task.required_minutes}分 / ${task.priority ?? "未設定"}
+                        ${task.start_time.slice(0,5)}
+                        /
+                        ${task.required_minutes}分
+                        /
+                        ${task.priority ?? "未設定"}
                     </div>
+
+                    ${
+                        task.status === "failed"
+                        ? `<div class="text-danger small mt-1">
+                            理由：${task.content ?? ""}
+                        </div>`
+                        : ""
+                    }
+
                 </div>
 
             </div>
 
             <div class="d-flex gap-2 px-3">
+            ${
+                canEdit
+                ? (
+                    task.status === "active"
+                    ? `
+                        <button class="btn btn-success btn-sm"
+                            onclick="doneTask(this)">○</button>
 
-                <button class="btn btn-success btn-sm done-btn"
-                    onclick="doneTask(this)">
-                    ○
-                </button>
-
-                <button class="btn btn-danger btn-sm fail-btn"
-                    onclick="openReasonModal(this)">
-                    ×
-                </button>
-
-                <button class="btn btn-secondary btn-sm cancel-btn d-none"
-                    onclick="cancelTask(this)">
-                    取消
-                </button>
-
-            </div>
+                        <button class="btn btn-danger btn-sm"
+                            onclick="openReasonModal(this)">×</button>
+                    `
+                    : `
+                        <button class="btn btn-secondary btn-sm"
+                            onclick="cancelTask(this)">取消</button>
+                    `
+                )
+                : `
+                    <button class="btn btn-secondary btn-sm disabled">
+                        操作不可
+                    </button>
+                `
+            }
+        </div>
 
         </div>
         `;
+        
+    }
+    goalList.innerHTML += `<h5 class="mt-3">タスク</h5>`;
+
+    active.forEach(task=>{
+        goalList.innerHTML += createCard(task);
+    });
+
+    goalList.innerHTML += `<hr><h5>達成済み</h5>`;
+
+    completed.forEach(task=>{
+        goalList.innerHTML += createCard(task);
+    });
+
+    goalList.innerHTML += `<hr><h5>未達成</h5>`;
+
+    failed.forEach(task=>{
+        goalList.innerHTML += createCard(task);
     });
 }
 
-// ==========================
+
 // 完了処理
-// ==========================
 async function doneTask(btn) {
 
     const card = btn.closest("[data-id]");
@@ -410,15 +445,10 @@ async function doneTask(btn) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: "completed" })
     });
-
-    btn.classList.add("d-none");
-    card.querySelector(".fail-btn").classList.add("d-none");
-    card.querySelector(".cancel-btn").classList.remove("d-none");
+    await loadDayData();
 }
 
-// ==========================
 // 未達成理由
-// ==========================
 let currentTaskId = null;
 
 function openReasonModal(btn) {
@@ -444,26 +474,20 @@ async function registerReason() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             status: "failed",
-            reason: selected.value
+            content: selected.value
         })
     });
 
-    const card = document.querySelector(`[data-id="${currentTaskId}"]`);
-
-    card.querySelector(".done-btn").classList.add("d-none");
-    card.querySelector(".fail-btn").classList.add("d-none");
-    card.querySelector(".cancel-btn").classList.remove("d-none");
-
     bootstrap.Modal.getInstance(
-        document.getElementById("reasonModal")
+    document.getElementById("reasonModal")
     ).hide();
 
     selected.checked = false;
+
+    await loadDayData();
 }
 
-// ==========================
 // 取消
-// ==========================
 async function cancelTask(btn) {
 
     const card = btn.closest("[data-id]");
@@ -475,14 +499,10 @@ async function cancelTask(btn) {
         body: JSON.stringify({ status: "active" })
     });
 
-    card.querySelector(".done-btn").classList.remove("d-none");
-    card.querySelector(".fail-btn").classList.remove("d-none");
-    card.querySelector(".cancel-btn").classList.add("d-none");
+    await loadDayData();
 }
 
-// ==========================
 // モーダルリセット
-// ==========================
 document.getElementById("reasonModal")
 .addEventListener("hidden.bs.modal", () => {
 

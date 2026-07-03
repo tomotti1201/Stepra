@@ -132,6 +132,7 @@ class ScheduleController extends Controller
                 return [
                     'id' => $s->id,
                     'title' => $s->title,
+                    'content' => $s->content,
                     'start_time' => $s->start_time,
                     'required_minutes' => $s->required_minutes,
                     'color' => $s->color ?? '#198754',
