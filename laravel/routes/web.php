@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\ScheduleController;
+use App\Models\Group;
+use App\Models\Grouptask;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -25,7 +27,7 @@ Route::get('/taskCreate',function(){
 });
 
 Route::get('/schedule', function () {
-    return response()->file(resource_path('views/frontend/schedule.html'));
+    return view('schedules');
 });
 
 Route::get('/task',function(){
@@ -91,3 +93,77 @@ Route::prefix('setting')->group(function () {
     Route::view('/logout', 'setting.settingLogout');
 
 });
+Route::get('/gurupu',function(){
+    $groups = Group::all();
+    return view('group', ['groups' => $groups]);
+});
+
+Route::get('/gtasutkuitiran/{id}', function ($id) {
+    $tasklist = Grouptask::where('group_id', $id)->get();
+    $group = Group::findOrFail($id);
+    return view('gtasutkuitiran',[
+        'group' => $group,
+        'tasklist' => $tasklist
+    ]);
+});
+
+Route::get('/gurupjouhouhensyu', function () {
+    return view('gurupjouhouhensyu');
+});
+
+Route::get('/gurupujouhouhensyu', function () {
+    return view('gurupjouhouhensyu');
+});
+
+Route::get('/gurupumokuhyosinki/{id}', function ($id) {
+    $group = Group::findOrFail($id);
+    return view('gurupumokuhyosinki',[
+        'group' => $group
+    ]);
+});
+
+Route::get('/gurupusyu/{id}', function ($id) {
+    $group = Group::findOrFail($id);
+    $tasklist = Grouptask::where('group_id', $id)->get();
+
+    return view('gurupusyu',[
+        'group' => $group,
+        'tasklist' => $tasklist
+    ]);
+
+});
+
+Route::get('/gurutaskukuhen/{id}', function ($id) {
+    $group = Group::findOrFail($id);
+    return view('gurutasukuhen',[
+        'group' => $group 
+    ]);
+});
+
+Route::get('/sinnkiguru', function () {
+    return view('sinnkiguru');
+});
+
+Route::get('/kiroku', function () {
+    return view('tokuhiduke');
+});
+
+Route::get('/rireki', function () {
+    return view('keizoku');
+});
+
+Route::get('/gekkankarenda', function () {
+    return view('gekkankarenda');
+});
+
+Route::get('/mokuhyouitiran', function () {
+    return view('mokuhyouitiran');
+});
+
+Route::get('/im/{filename}', function (string $filename) {
+    $imagePath = dirname(base_path()) . '/im/' . $filename;
+
+    abort_unless(is_file($imagePath), 404);
+
+    return response()->file($imagePath);
+})->where('filename', '[A-Za-z0-9_.-]+');
