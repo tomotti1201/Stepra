@@ -61,9 +61,9 @@
                     個人目標一覧
                 </h5>
 
-                <button class="btn btn-success" onclick="changeGoal()">
+                <!--<button class="btn btn-success" onclick="changeGoal()">
                     切替
-                </button>
+                </button>-->
 
             </div>
         </div>
