@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>&#12464;&#12523;&#12540;&#12503;&#35443;&#32048; | STEPRA</title>
+  <title>グループ詳細 | STEPRA</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
@@ -35,17 +35,17 @@
       <div class="row g-2 mb-4">
         <div class="col-7 d-flex flex-column gap-2">
           <button class="btn btn-outline-dark w-100 py-2 fw-bold text-start btn-sm" onclick="openTaskList({{ $group->id }})">
-            &#12464;&#12523;&#12540;&#12503;&#12479;&#12473;&#12463;&#12434;&#34920;&#31034;
+            グループタスクを表示
           </button>
 
           <button class="btn btn-outline-dark w-100 py-2 fw-bold text-start btn-sm" onclick="openTaskContinue({{ $group->id }})">
-            &#12464;&#12523;&#12540;&#12503;&#12479;&#12473;&#12463;&#12398;&#32153;&#32154;
+            グループタスクの継続
           </button>
         </div>
 
         <div class="col-5">
           <button class="btn btn-primary w-100 h-100 fw-bold d-flex align-items-center justify-content-center" onclick="editGroup()">
-            &#12464;&#12523;&#12540;&#12503;<br>&#32232;&#38598;
+            グループ<br>編集
           </button>
         </div>
       </div>
@@ -58,20 +58,20 @@
         </div>
 
         <div class="d-flex text-center fw-bold mb-2 small">
-          <div class="text-danger" style="width:14.285%;">&#26085;</div>
-          <div class="text-dark" style="width:14.285%;">&#26376;</div>
-          <div class="text-dark" style="width:14.285%;">&#28779;</div>
-          <div class="text-dark" style="width:14.285%;">&#27700;</div>
-          <div class="text-dark" style="width:14.285%;">&#26408;</div>
-          <div class="text-dark" style="width:14.285%;">&#37329;</div>
-          <div class="text-primary" style="width:14.285%;">&#22303;</div>
+          <div class="text-danger" style="width:14.285%;">日</div>
+          <div class="text-dark" style="width:14.285%;">月</div>
+          <div class="text-dark" style="width:14.285%;">火</div>
+          <div class="text-dark" style="width:14.285%;">水</div>
+          <div class="text-dark" style="width:14.285%;">木</div>
+          <div class="text-dark" style="width:14.285%;">金</div>
+          <div class="text-primary" style="width:14.285%;">土</div>
         </div>
 
         <div id="calendarGrid" class="d-flex flex-wrap"></div>
       </div>
 
       <div class="mt-4 border rounded p-3 bg-white">
-        <p class="fw-bold mb-3">&#12464;&#12523;&#12540;&#12503;&#12479;&#12473;&#12463;&#19968;&#35239;</p>
+        <p class="fw-bold mb-3">グループタスク一覧</p>
 
         @forelse ($tasklist as $task)
           <div class="border rounded p-3 mb-2">
@@ -82,7 +82,7 @@
             @endif
           </div>
         @empty
-          <p class="text-muted small mb-0">&#12414;&#12384;&#12464;&#12523;&#12540;&#12503;&#12479;&#12473;&#12463;&#12364;&#12354;&#12426;&#12414;&#12379;&#12435;</p>
+          <p class="text-muted small mb-0">まだグループタスクがありません</p>
         @endforelse
       </div>
     </div>
@@ -93,7 +93,7 @@
   <div class="modal-dialog modal-dialog-centered px-3">
     <div class="modal-content shadow border-0">
       <div class="modal-header border-0 pb-0">
-        <h5 class="modal-title fw-bold" id="calendarModalLabel">&#31227;&#21205;&#12377;&#12427;&#24180;&#26376;</h5>
+        <h5 class="modal-title fw-bold" id="calendarModalLabel">移動する年月</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" title="Close"></button>
       </div>
 
@@ -104,7 +104,7 @@
         </div>
 
         <button type="button" class="btn btn-success w-100 py-2 fw-bold" onclick="changeCalendar()">
-          &#31227;&#21205;&#12377;&#12427;
+          移動する
         </button>
       </div>
     </div>
@@ -113,11 +113,11 @@
 
 <nav class="navbar bg-white border-top fixed-bottom">
   <div class="container d-flex justify-content-around">
-    <button class="btn btn-outline-secondary" onclick="location.href='/home'">&#12507;&#12540;&#12512;</button>
-    <button class="btn btn-outline-secondary" onclick="location.href='/mokuhyouitiran'">&#30446;&#27161;</button>
-    <button class="btn btn-outline-secondary" onclick="location.href='/gekkankarenda'">&#12459;&#12524;&#12531;&#12480;&#12540;</button>
-    <button class="btn btn-success" onclick="location.href='/gurupu'">&#12464;&#12523;&#12540;&#12503;</button>
-    <button class="btn btn-outline-secondary" onclick="location.href='/setting'">&#35373;&#23450;</button>
+    <button class="btn btn-outline-secondary" onclick="location.href='/home'">ホーム</button>
+    <button class="btn btn-outline-secondary" onclick="location.href='/mokuhyouitiran'">目標</button>
+    <button class="btn btn-outline-secondary" onclick="location.href='/gekkankarenda'">カレンダー</button>
+    <button class="btn btn-success" onclick="location.href='/gurupu'">グループ</button>
+    <button class="btn btn-outline-secondary" onclick="location.href='/setting'">設定</button>
   </div>
 </nav>
 
@@ -133,13 +133,13 @@
   let currentMonth = today.getMonth() + 1;
 
   const weekMap = {
-    "\u65e5": 0,
-    "\u6708": 1,
-    "\u706b": 2,
-    "\u6c34": 3,
-    "\u6728": 4,
-    "\u91d1": 5,
-    "\u571f": 6
+    "日": 0,
+    "月": 1,
+    "火": 2,
+    "水": 3,
+    "木": 4,
+    "金": 5,
+    "土": 6
   };
 
   function parseDate(value) {
@@ -158,7 +158,7 @@
 
   function updateCalendarTitle() {
     document.getElementById("calendarTitle").textContent =
-      `${currentYear}\u5e74${currentMonth}\u6708`;
+      `${currentYear}年${currentMonth}月`;
   }
 
   function taskMatchesDate(task, date) {
@@ -252,7 +252,7 @@
 
       dayBox.onclick = () => {
         if (matchedTasks.length === 0) {
-          alert(`${currentMonth}\u6708${day}\u65e5\u306e\u30bf\u30b9\u30af\u306f\u3042\u308a\u307e\u305b\u3093`);
+          alert(`${currentMonth}月${day}日のタスクはありません`);
           return;
         }
 
@@ -274,14 +274,14 @@
     for (let year = 2020; year <= 2035; year++) {
       const option = document.createElement("option");
       option.value = year;
-      option.textContent = `${year}\u5e74`;
+      option.textContent = `${year}年`;
       yearSelect.appendChild(option);
     }
 
     for (let month = 1; month <= 12; month++) {
       const option = document.createElement("option");
       option.value = month;
-      option.textContent = `${month}\u6708`;
+      option.textContent = `${month}月`;
       monthSelect.appendChild(option);
     }
 
@@ -336,7 +336,7 @@
   };
 
   window.editGroup = () => {
-    alert("\u30b0\u30eb\u30fc\u30d7\u7de8\u96c6\u306f\u672a\u5b9f\u88c5\u3067\u3059");
+    alert("グループ編集は未実装です");
   };
 
   updateCalendarTitle();
