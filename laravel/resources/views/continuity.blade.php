@@ -47,7 +47,7 @@
       font-weight: bold;
     }
     .status-card {
-        min-height: 150px; /* ランクカードと同じくらいの高さ */
+        min-height: 150px; 
     }
   </style>
 </head>
@@ -62,8 +62,7 @@
         <div class="card-body p-4">
           
           <div class="d-flex align-items-center gap-3 mb-4">  
-            <div class="form-control d-flex align-items-center justify-content-center fw-bold bg-light" style="height: 80px; font-size: 1.1rem;">
-              ユーザー名
+            <div id="userName" class="form-control d-flex align-items-center justify-content-center fw-bold bg-light" style="height: 80px; font-size: 1.1rem;">
             </div>
           </div>
 
@@ -118,7 +117,6 @@
 
 <x-menubar />
 
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
@@ -131,6 +129,8 @@ async function loadContinuity() {
     const res = await fetch(`/api/continuity?user_id=${userId}`);
 
     const data = await res.json();
+
+    document.getElementById("userName").textContent = data.name;
 
     document.getElementById("rate").innerHTML =
         `${Number(data.rate).toFixed(1)}<span class="fs-4">%</span>`;

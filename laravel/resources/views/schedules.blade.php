@@ -145,11 +145,20 @@
                 dayEl.style.flexDirection = "column";
 
                 const dayOfWeek = new Date(year, month, date).getDay();
+                
+                const today = new Date();
 
+                const isToday =
+                    year === today.getFullYear() &&
+                    month === today.getMonth() &&
+                    date === today.getDate();
                 if (dayOfWeek === 0) {
                     dayEl.className = "btn btn-danger-subtle border border-danger-subtle text-danger fw-bold rounded-3 py-1 shadow-sm w-100 h-100";
                 } else if (dayOfWeek === 6) {
                     dayEl.className = "btn btn-primary-subtle border border-primary-subtle text-primary fw-bold rounded-3 py-1 shadow-sm w-100 h-100";
+                }
+                if (isToday) {
+                    dayEl.classList.add("border-1", "border-dark");
                 }
 
                 // 日付
