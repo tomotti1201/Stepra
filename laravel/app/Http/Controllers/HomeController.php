@@ -3,37 +3,32 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Task;
+use App\Models\Schedule;
+use Carbon\Carbon;
 
 class HomeController extends Controller
 {
     public function todayTasks(Request $request)
     {
         $userId = $request->query('user_id');
+        $today = Carbon::today()->format('Y-m-d');
 
-        // 今日の曜日（1=月 ... 7=日）
-        $todayWeekDay = date('N');
-
-        $tasks = Task::where('user_id', $userId)
-            ->where('status', 'active')
+        $tasks = Schedule::where('user_id', $userId)
+            ->where('scheduled_date', $today)
+            ->orderBy('start_time')
             ->get()
-            ->filter(function ($task) use ($todayWeekDay) {
-
-                $weekDays = json_decode($task->week_days, true) ?? [];
-
-                return in_array($todayWeekDay, $weekDays);
-            })
-            ->map(function ($task) {
+            ->map(function ($schedule) {
                 return [
-                    'id' => $task->id,
-                    'title' => $task->title,
-                    'start_time' => $task->start_time,
-                    'required_minutes' => $task->required_minutes,
-                    'priority' => $task->priority,
-                    'color' => $task->color,
+                    'id' => $schedule->id,
+                    'title' => $schedule->title,
+                    'start_time' => $schedule->start_time,
+                    'required_minutes' => $schedule->required_minutes,
+                    'priority' => $schedule->priority,
+                    'color' => $schedule->color,
+                    'status' => $schedule->status,
+                    'content' => $schedule->content,
                 ];
-            })
-            ->values();
+            });
 
         return response()->json([
             'status' => 'success',

@@ -121,59 +121,91 @@
         }
 
         function createGoals(tasks) {
-            const goalList = document.getElementById("goalList");
-            goalList.innerHTML = "";
 
-            tasks.forEach(task => {
-                goalList.innerHTML += `
-                <div class="d-flex align-items-center justify-content-between bg-white shadow-sm rounded mb-2 overflow-hidden"
-                    data-id="${task.id}">
+    const goalList = document.getElementById("goalList");
+    goalList.innerHTML = "";
 
-                    <!-- 左：色 + 内容（目標一覧と同じ構造） -->
-                    <div class="d-flex align-items-center flex-grow-1">
+    const active = tasks.filter(t => t.status === "active");
+    const completed = tasks.filter(t => t.status === "completed");
+    const failed = tasks.filter(t => t.status === "failed");
 
-                        <!-- 左色バー（目標一覧と完全統一） -->
-                        <div style="
-                            width:8px;
-                            align-self:stretch;
-                            background:${task.color ?? '#198754'};
-                        "></div>
+    function createCard(task){
 
-                        <!-- タスク内容 -->
-                        <div class="p-3">
-                            <div class="fw-bold">${task.title}</div>
+        return `
+        <div class="d-flex align-items-center justify-content-between bg-white shadow-sm rounded mb-2 overflow-hidden"
+            data-id="${task.id}">
 
-                            <div class="small text-muted">
-                                ${task.start_time.slice(0,5)} / ${task.required_minutes}分 / ${task.priority ?? "未設定"}
-                            </div>
-                        </div>
+            <div class="d-flex align-items-center flex-grow-1">
 
+                <div style="
+                    width:8px;
+                    align-self:stretch;
+                    background:${task.color ?? '#198754'};
+                "></div>
+
+                <div class="p-3">
+                    <div class="fw-bold">${task.title}</div>
+
+                    <div class="small text-muted">
+                        ${task.start_time.slice(0,5)}
+                        /
+                        ${task.required_minutes}分
+                        /
+                        ${task.priority ?? "未設定"}
                     </div>
 
-                    <!-- 右：ボタン -->
-                    <div class="d-flex gap-2 px-3">
-
-                        <button class="btn btn-success btn-sm done-btn"
-                            onclick="doneTask(this)">
-                            ○
-                        </button>
-
-                        <button class="btn btn-danger btn-sm fail-btn"
-                            onclick="openReasonModal(this)">
-                            ×
-                        </button>
-
-                        <button class="btn btn-secondary btn-sm cancel-btn d-none"
-                            onclick="cancelTask(this)">
-                            取消
-                        </button>
-
-                    </div>
+                    ${
+                        task.status === "failed"
+                        ? `<div class="text-danger small mt-1">
+                               理由：${task.content ?? ""}
+                           </div>`
+                        : ""
+                    }
 
                 </div>
-                `;
-            });
-        }
+
+            </div>
+
+            <div class="d-flex gap-2 px-3">
+                ${
+                    task.status === "active"
+                    ? `
+                        <button class="btn btn-success btn-sm"
+                            onclick="doneTask(this)">○</button>
+
+                        <button class="btn btn-danger btn-sm"
+                            onclick="openReasonModal(this)">×</button>
+                      `
+                    : `
+                        <button class="btn btn-secondary btn-sm"
+                            onclick="cancelTask(this)">取消</button>
+                      `
+                }
+            </div>
+
+        </div>
+        `;
+    }
+
+    goalList.innerHTML += `<h5 class="mt-3">今日のタスク</h5>`;
+
+    active.forEach(task=>{
+        goalList.innerHTML += createCard(task);
+    });
+
+    goalList.innerHTML += `<hr><h5>達成済み</h5>`;
+
+    completed.forEach(task=>{
+        goalList.innerHTML += createCard(task);
+    });
+
+    goalList.innerHTML += `<hr><h5>未達成</h5>`;
+
+    failed.forEach(task=>{
+        goalList.innerHTML += createCard(task);
+    });
+
+}
 
         function formatTime(time) {
             if (!time) return '';
@@ -186,17 +218,11 @@
 
             await fetch(`/api/tasks/${id}/status`, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    status: "completed"
-                })
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: "completed" })
             });
 
-            btn.classList.add("d-none");
-            card.querySelector(".fail-btn").classList.add("d-none");
-            card.querySelector(".cancel-btn").classList.remove("d-none");
+            await loadTodayGoals();
         }
 
         function openReasonModal(btn) {
@@ -223,21 +249,17 @@
                 },
                 body: JSON.stringify({
                     status: "failed",
-                    reason: selected.value
+                    content: selected.value
                 })
             });
-
-            const card = document.querySelector(`[data-id="${currentTaskId}"]`);
-
-            card.querySelector(".done-btn").classList.add("d-none");
-            card.querySelector(".fail-btn").classList.add("d-none");
-            card.querySelector(".cancel-btn").classList.remove("d-none");
 
             bootstrap.Modal.getInstance(
                 document.getElementById("reasonModal")
             ).hide();
 
             selected.checked = false;
+
+            await loadTodayGoals();
         }
 
         async function cancelTask(btn) {
@@ -246,17 +268,11 @@
 
             await fetch(`/api/tasks/${id}/status`, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    status: "active"
-                })
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: "active" })
             });
 
-            card.querySelector(".done-btn").classList.remove("d-none");
-            card.querySelector(".fail-btn").classList.remove("d-none");
-            card.querySelector(".cancel-btn").classList.add("d-none");
+            await loadTodayGoals();
         }
 
         async function loadChart() {

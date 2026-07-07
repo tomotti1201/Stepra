@@ -237,7 +237,7 @@
 
       <div class="input-group">
         <label>ユーザー名</label>
-        <input type="text" id="username" placeholder="ユーザー名を入力">
+        <input type="text" id="username" placeholder="ユーザー名を入力" aria-label="Username" title="Username">
       </div>
 
       <div class="input-group">
@@ -246,12 +246,12 @@
           type="email"
           id="email"
           placeholder="メールアドレスを入力"
-        >
+         aria-label="Email address" title="Email address">
       </div>
 
       <div class="input-group">
         <label>パスワード</label>
-        <input type="password" id="password" placeholder="パスワードを入力">
+        <input type="password" id="password" placeholder="パスワードを入力" aria-label="Password" title="Password">
       </div>
 
       <button class="login-btn" onclick="login()">
