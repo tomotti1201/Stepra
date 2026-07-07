@@ -37,10 +37,10 @@
 
     <button class="btn btn-success w-100 mb-3 py-3 fw-bold fs-5" 
             id="createGroupBtn" 
-            onclick="createGroup()" 
-            disabled>
+            onclick="createGroup()" >
       グループ作成
     </button>
+</dib>
 
     <button class="btn btn-secondary w-100 py-3 fw-bold fs-5" 
             onclick="goBack()">
@@ -49,27 +49,8 @@
 
   </div>
 
-  <nav class="navbar bg-white border-top fixed-bottom">
-    <div class="container d-flex justify-content-around">
-      <button class="btn btn-outline-secondary" onclick="location.href='/home'">
-        🏠 ホーム
-      </button>
-      <button class="btn btn-outline-secondary" onclick="location.href='/mokuhyouitiran'">
-        🎯 目標
-      </button>
-      <button class="btn btn-outline-secondary" onclick="location.href='/gekkankarenda'">
-        📅 月間カレンダー
-      </button>
-      <button class="btn btn-success" onclick="location.href='/gurupu'">
-        👥 グループ
-      </button>
-      <button class="btn btn-outline-secondary" onclick="location.href='/setting'">
-        ⚙️ 設定・継続率
-      </button>
-    </div>
-  </nav>
-
 </div>
+  <x-menubar />
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 

@@ -4,12 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>グループ一覧 | STEPRA</title>
-
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body { background-color: #f8f9fa; }
-  </style>
 </head>
+
 <body>
 
 <div class="container-fluid py-4">
@@ -84,25 +81,8 @@
   </div>
 </div>
 
-<nav class="navbar bg-white border-top fixed-bottom">
-  <div class="container d-flex justify-content-around">
-    <button class="btn btn-outline-secondary" onclick="location.href='/home'">
-      ホーム
-    </button>
-    <button class="btn btn-outline-secondary" onclick="location.href='/mokuhyouitiran'">
-      目標
-    </button>
-    <button class="btn btn-outline-secondary" onclick="location.href='/gekkankarenda'">
-      カレンダー
-    </button>
-    <button class="btn btn-success" onclick="location.href='/gurupu'">
-      グループ
-    </button>
-    <button class="btn btn-outline-secondary" onclick="location.href='/setting'">
-      設定
-    </button>
-  </div>
-</nav>
+  <x-menubar />
+
 
 <div style="height: 80px;"></div>
 
