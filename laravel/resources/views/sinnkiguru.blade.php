@@ -9,10 +9,12 @@
 </head>
 <body class="bg-light">
 
-<div class="container-fluid min-vh-100 d-flex flex-column justify-content-between p-0">
+<div class="container py-4 mb-5">
   
-  <div class="p-4 flex-grow-1 mb-5">
-    
+      <!-- タイトル -->
+      <img src="{{ asset('image/tit.png') }}" class="mb-3" style="width:200px;">
+
+
     <h2 class="text-center fw-bold display-6 mb-5 fs-4">
       新規作成
     </h2>
@@ -75,6 +77,7 @@ async function createGroup(){
   if(response.ok){
     const data = await response.json();
     alert("グループを作成しました");
+    location.href = "/gurupu";
   }
   else{
     alert("グループ作成に失敗しました");
