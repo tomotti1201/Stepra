@@ -9,13 +9,23 @@
 
 <body>
 
-<div class="container-fluid py-4">
+<div class="container py-4 mb-5">
+
+        <!--<div class="row justify-content-center">-->
+
+            <!--<div class="col-12 col-md-8 col-lg-5"> -->
+
+                <div class="card-body">
+
+    <script>
+        if (!localStorage.getItem("user_id")) {
+            location.href = "/login";
+        }
+    </script>
+
   <img src="/image/tit.png" alt="STEPRA" class="mb-3" style="width:200px;">
 
-  <div class="row justify-content-center">
-    <div class="col-12 col-md-8 col-lg-5">
-
-      <div class="card shadow border-0 mb-4">
+      <!--<div class="card shadow border-0 mb-4">-->
         <div class="card-body p-4">
 
           <h2 class="text-center fw-bold mb-4 fs-4">
@@ -24,27 +34,27 @@
 
           <div class="row g-2 mb-4">
             <div class="col-6">
-              <button class="btn btn-success w-100 py-3 fw-bold small" onclick="goCreateGroup()">
+              <button class="btn btn-success w-100 py-3 fw-bold" onclick="goCreateGroup()">
                 新規<br>グループ作成
               </button>
             </div>
             <div class="col-6">
-              <button class="btn btn-outline-primary w-100 py-3 fw-bold small" data-bs-toggle="modal" data-bs-target="#joinModal">
+              <button class="btn btn-outline-primary w-100 py-3 fw-bold" data-bs-toggle="modal" data-bs-target="#joinModal">
                 グループに<br>入る
               </button>
             </div>
           </div>
 
           <div class="mb-2">
-            <p class="fw-bold mb-2 text-muted small">グループ一覧</p>
+            <p class="fw-bold mb-2 text-muted">グループ一覧</p>
 
-            <div class="d-flex flex-column gap-2" style="max-height: 350px; overflow-y: auto;">
+            <div class="d-flex flex-column gap-3">
               @forelse ($groups as $group)
                 <button class="btn btn-light border text-start p-3 fw-bold" onclick="openGroup({{ $group->id }})">
                   {{ $group->name }}
                 </button>
               @empty
-                <p class="text-muted small mb-0">まだグループがありません</p>
+                <p class="text-muted mb-0">まだグループがありません</p>
               @endforelse
             </div>
           </div>
