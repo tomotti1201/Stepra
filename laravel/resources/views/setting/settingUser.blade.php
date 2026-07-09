@@ -17,35 +17,19 @@
 </script>
 
 <div class="container py-4 mb-5">
-
-    <!-- タイトル -->
-    <img
-        src="{{ asset('image/tit.png') }}"
-        class="mb-4"
-        style="width:200px;"
-    >
+    <img src="{{ asset('image/tit.png') }}" class="mb-4" style="width:200px;">
 
     <div class="row">
-
-        <!-- 左メニュー -->
         <div class="col-md-3 mb-3">
-
             @include('components.settingmenubar')
-
         </div>
-
-        <!-- 右側 -->
         <div class="col-md-9">
-
             <div class="card shadow">
-
                 <div class="card-body">
-
                     <h4 class="fw-bold mb-4">
                         ユーザー情報
                     </h4>
 
-                    <!-- ユーザー名 -->
                     <div class="mb-4">
 
                         <label class="form-label fw-bold">
@@ -54,16 +38,11 @@
 
                         <div class="input-group">
 
-                            <input
-                                type="text"
-                                id="currentUserName"
-                                class="form-control"
-                                readonly
-                            >
+                            <input type="text" id="currentUserName" class="form-control" readonly>
 
                             <button
                                 id="userNameBtn"
-                                class="btn btn-success"
+                                class="btn btn-success rounded-end"
                                 onclick="changeUserName()"
                             >
                                 変更
@@ -76,12 +55,8 @@
                             >
                                 キャンセル
                             </button>
-
                         </div>
-
                     </div>
-
-                    <!-- メールアドレス -->
                     <div class="mb-4">
 
                         <label class="form-label fw-bold">
@@ -99,7 +74,7 @@
 
                             <button
                                 id="mailBtn"
-                                class="btn btn-success"
+                                class="btn btn-success rounded-end"
                                 onclick="changeMail()"
                             >
                                 変更
@@ -112,12 +87,8 @@
                             >
                                 キャンセル
                             </button>
-
                         </div>
-
                     </div>
-
-                    <!-- パスワード -->
                     <div class="mb-4">
 
                         <label class="form-label fw-bold">
@@ -141,26 +112,18 @@
                             >
                                 表示
                             </button>
-
                         </div>
-                        
                         <button
                             class="btn btn-link p-0 mt-2"
                             onclick="location.href='/passwordReset'"
                         >
                             パスワードを忘れた場合
                         </button>
-
                     </div>
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
-
 </div>
 
 <x-menubar />
@@ -174,16 +137,13 @@ document.addEventListener(
 
 async function loadUser(){
 
-    const userId =
-        localStorage.getItem("user_id");
+    const userId = localStorage.getItem("user_id");
 
-    const response =
-        await fetch(
+    const response = await fetch(
             `http://localhost:8000/api/user/${userId}`
         );
 
-    const data =
-        await response.json();
+    const data = await response.json();
 
     if(data.status === "success"){
 
@@ -219,6 +179,7 @@ async function changeUserName(){
 
         button.textContent = "保存";
         button.classList.remove("btn-success");
+        button.classList.remove("rounded-end");
         button.classList.add("btn-primary");
 
         document.getElementById("cancelUserNameBtn")
@@ -230,25 +191,17 @@ async function changeUserName(){
 
     // 保存
     const userId = localStorage.getItem("user_id");
-
     const response = await fetch(
-
         `/api/user/${userId}/name`,
-
         {
             method:"POST",
-
             headers:{
                 "Content-Type":"application/json"
             },
-
             body:JSON.stringify({
-
                 name:input.value
-
             })
         }
-
     );
 
     const data = await response.json();
@@ -262,13 +215,13 @@ async function changeUserName(){
         button.textContent = "変更";
         button.classList.remove("btn-primary");
         button.classList.add("btn-success");
+        button.classList.add("rounded-end");
 
         document.getElementById("cancelUserNameBtn")
             .classList.add("d-none");
 
         editingUserName = false;
     }
-
 }
 function cancelUserName() {
 
@@ -282,6 +235,7 @@ function cancelUserName() {
         button.textContent = "変更";
         button.classList.remove("btn-primary");
         button.classList.add("btn-success");
+        button.classList.add("rounded-end");
 
         cancel.classList.add("d-none");
 
@@ -307,6 +261,7 @@ async function changeMail(){
         button.textContent = "保存";
 
         button.classList.remove("btn-success");
+        button.classList.remove("rounded-end");
         button.classList.add("btn-primary");
 
         document.getElementById("cancelMailBtn")
@@ -315,15 +270,11 @@ async function changeMail(){
         editingMail = true;
 
         return;
-
     }
 
     const userId = localStorage.getItem("user_id");
-
     const response = await fetch(
-
         `/api/user/${userId}/email`,
-
         {
             method:"POST",
 
@@ -337,7 +288,6 @@ async function changeMail(){
 
             })
         }
-
     );
 
     const data = await response.json();
@@ -352,12 +302,12 @@ async function changeMail(){
 
         button.classList.remove("btn-primary");
         button.classList.add("btn-success");
+        button.classList.add("rounded-end");
 
         document.getElementById("cancelMailBtn")
         .classList.add("d-none");
 
         editingMail = false;
-
     }
 }
 function cancelMail(){
@@ -372,6 +322,7 @@ function cancelMail(){
         button.textContent = "変更";
         button.classList.remove("btn-primary");
         button.classList.add("btn-success");
+        button.classList.add("rounded-end");
 
         cancel.classList.add("d-none");
 
@@ -394,7 +345,6 @@ async function togglePassword() {
         }
 
         const userId = localStorage.getItem("user_id");
-
         const response = await fetch(
             `/api/user/${userId}/password/check`,
             {
@@ -436,9 +386,7 @@ async function togglePassword() {
         button.classList.add("btn-success");
 
         passwordVisible = false;
-
     }
-
 }
 </script>
 

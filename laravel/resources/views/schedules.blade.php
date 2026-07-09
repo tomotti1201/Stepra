@@ -46,7 +46,7 @@
                         class="d-grid gap-1 text-center fs-6"
                         style="
                             grid-template-columns: repeat(7, 1fr);
-                            grid-auto-rows: 95px;
+                            grid-auto-rows: 120px;
                             align-items: stretch;
                         ">
                     </div>
@@ -139,7 +139,7 @@
                 dayEl.className =
                     "btn w-100 border rounded-3 p-1 shadow-sm";
 
-                dayEl.style.height = "95px";
+                dayEl.style.height = "120px";
                 dayEl.style.overflow = "hidden";
                 dayEl.style.display = "flex";
                 dayEl.style.flexDirection = "column";
@@ -209,7 +209,7 @@
 
             for (let i = 0; i < remainCells; i++) {
                 const empty = document.createElement("div");
-                empty.style.height = "95px";
+                empty.style.height = "120px";
                 daysContainer.appendChild(empty);
             }
         }
