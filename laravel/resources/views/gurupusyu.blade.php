@@ -7,6 +7,19 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
+  <div class="container py-4 mb-5">
+
+        <!--<div class="row justify-content-center">-->
+
+            <!--<div class="col-12 col-md-8 col-lg-5"> -->
+
+                <div class="card-body">
+
+    <script>
+        if (!localStorage.getItem("user_id")) {
+            location.href = "/login";
+        }
+    </script>
 
 @php
   $calendarTasks = $tasklist->map(function ($task) {
@@ -23,11 +36,8 @@
   })->values();
 @endphp
 
-<div class="container-fluid py-4 mb-5">
   <img src="/image/tit.png" alt="STEPRA" class="mb-3" style="width:200px;">
 
-  <div class="card shadow border-0 mb-4">
-    <div class="card-body p-3 p-md-4">
       <h2 class="text-center fw-bold mb-4 display-6">
         {{ $group->name }}
       </h2>

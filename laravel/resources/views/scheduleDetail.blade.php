@@ -165,7 +165,7 @@ if (!dateStr) {
 // 日付表示
 // ==========================
 document.getElementById("scheduleTitle").textContent =
-`${dateStr} のスケジュール`;
+`${dateStr} `;
 const clickedDate = new Date(dateStr);
 const today = new Date();
 
