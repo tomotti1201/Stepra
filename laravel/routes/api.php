@@ -10,6 +10,7 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\GroupTaskController;
+use App\Http\Controllers\GroupmemberController;
 
 
 
@@ -17,6 +18,7 @@ use App\Http\Controllers\GroupTaskController;
 
 Route::post('/signup', [SignupController::class, 'signup']);
 Route::post('/login', [LoginController::class, 'login']);
+Route::get('/current-user', [LoginController::class, 'currentUser']);
 Route::post('/passwordReset', [PasswordResetController::class, 'passwordReset']);
 Route::get('/home/tasks', [HomeController::class, 'todayTasks']);
 
@@ -33,8 +35,13 @@ Route::delete('/schedules/{id}', [ScheduleController::class, 'destroy']);
 Route::get('/groups', [GroupController::class, 'index']);
 Route::post('/groups', [GroupController::class, 'store']);
 Route::post('/groups/join', [GroupController::class, 'join']);
+Route::put('/groups/{id}', [GroupController::class, 'update']);
 Route::delete('/groups/{id}', [GroupController::class, 'destroy']);
 Route::get('/grouptasks', [GroupTaskController::class, 'index']);
 Route::post('/grouptasks', [GroupTaskController::class, 'store']);
 Route::delete('/grouptasks/{id}', [GroupTaskController::class, 'destroy']);
+Route::get('/groupmembers', [GroupmemberController::class, 'index']);
+Route::get('/groupmembers/{id}', [GroupmemberController::class, 'show']);
+Route::delete('/groupmembers/{id}', [GroupmemberController::class, 'destroy']);
+
 ?>

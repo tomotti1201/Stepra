@@ -61,13 +61,28 @@ class GroupTaskController extends Controller
             'start_date' => ['nullable', 'date'],
             'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
             'status' => ['nullable', 'string', 'max:20'],
+            'user_id' => ['nullable', 'integer'],
             'created_by' => ['required', 'integer'],
         ]);
 
         $weekDays = $validated['week_days'];
+        $priority = match ($validated['priority'] ?? 'middle') {
+            '高' => 'high',
+            '中' => 'middle',
+            '低' => 'low',
+            default => $validated['priority'] ?? 'middle',
+        };
+        $period = match ($validated['period']) {
+            '毎週' => 'weekly',
+            '毎月' => 'monthly',
+            '毎年' => 'yearly',
+            '自由設定' => 'weekly',
+            default => $validated['period'],
+        };
 
         $task = Grouptask::create([
             'group_id' => $validated['group_id'],
+            'user_id' => $validated['user_id'] ?? $validated['created_by'],
             'title' => $validated['title'],
             'content' => $validated['content'] ?? null,
             'week_days' => is_array($weekDays)
@@ -75,9 +90,9 @@ class GroupTaskController extends Controller
                 : $weekDays,
             'start_time' => $validated['start_time'] ?? null,
             'required_minutes' => $validated['required_minutes'] ?? null,
-            'priority' => $validated['priority'] ?? 'middle',
+            'priority' => $priority,
             'color' => $validated['color'],
-            'period' => $validated['period'],
+            'period' => $period,
             'notification_enabled' => $validated['notification_enabled'] ?? 1,
             'start_date' => $validated['start_date'] ?? null,
             'end_date' => $validated['end_date'] ?? null,
