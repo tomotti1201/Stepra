@@ -62,12 +62,24 @@
             border: 3px solid black;
         }
 
-        .page-title,
-        .form-label,
-        .form-control,
-        .btn,
-        .small {
+        .page-title{
+            font-size: clamp(1.5rem, 2vw, 2.2rem);
+        }
+
+        .form-label{
+            font-size: clamp(0.95rem, 1.2vw, 1.2rem);
+        }
+
+        .form-control{
             font-size: clamp(1rem, 1.2vw, 1.2rem);
+        }
+
+        .btn{
+            font-size: clamp(1rem, 1.3vw, 1.2rem);
+        }
+
+        .small{
+            font-size: clamp(0.9rem, 1vw, 1.1rem) !important;
         }
     </style>
 </head>
@@ -81,18 +93,18 @@
         <div class="card-body">
 
             <h2 class="text-center fw-bold">
-                グループタスク新規作成
+                グループ目標新規作成
             </h2>
 
             <div class="mb-3">
                 <label class="form-label fw-bold">
-                    グループタスク名
+                    目標名
                 </label>
 
                 <input type="text"
                        class="form-control"
                        id="goal-name"
-                       placeholder="グループタスク名を入力">
+                       placeholder="目標名を入力">
             </div>
 
 
@@ -266,7 +278,7 @@
 <div class="mb-4">
 
     <label class="form-label fw-bold small">
-        タスクカラー
+        目標カラー
     </label>
 
 
