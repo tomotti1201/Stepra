@@ -60,24 +60,32 @@
         </div>
       </div>
 
-      <div class="border rounded p-3 bg-light">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <button class="btn btn-secondary px-3 py-1 fw-bold" onclick="changeMonth(-1)" aria-label="previous month" title="previous month">&lt;</button>
           <div class="fs-4 fw-bold text-dark px-3 py-1 bg-white border rounded shadow-sm" style="cursor:pointer;" onclick="openCalendarModal()" id="calendarTitle"></div>
           <button class="btn btn-secondary px-3 py-1 fw-bold" onclick="changeMonth(1)" aria-label="next month" title="next month">&gt;</button>
         </div>
 
-        <div class="d-flex text-center fw-bold mb-2 small">
-          <div class="text-danger" style="width:14.285%;">日</div>
-          <div class="text-dark" style="width:14.285%;">月</div>
-          <div class="text-dark" style="width:14.285%;">火</div>
-          <div class="text-dark" style="width:14.285%;">水</div>
-          <div class="text-dark" style="width:14.285%;">木</div>
-          <div class="text-dark" style="width:14.285%;">金</div>
-          <div class="text-primary" style="width:14.285%;">土</div>
+        <div
+            class="d-grid text-center fw-bold border-bottom pb-3 mb-3 fs-5"
+            style="grid-template-columns:repeat(7,1fr);">
+            <div class="text-danger">日</div>
+            <div>月</div>
+            <div>火</div>
+            <div>水</div>
+            <div>木</div>
+            <div>金</div>
+            <div class="text-primary">土</div>
         </div>
 
-        <div id="calendarGrid" class="d-flex flex-wrap"></div>
+       <div
+          id="calendarGrid"
+          class="d-grid gap-1 text-center fs-6"
+          style="
+              grid-template-columns: repeat(7,1fr);
+              grid-auto-rows:95px;
+              align-items:stretch;
+          ">
       </div>
 
       <div class="mt-4 border rounded p-3 bg-white">
@@ -192,12 +200,11 @@
 
     for (let i = 0; i < firstDay; i++) {
       const empty = document.createElement("div");
-      empty.style.width = "14.285%";
       calendar.appendChild(empty);
     }
 
     for (let day = 1; day <= lastDate; day++) {
-      const dayBox = document.createElement("div");
+      const dayBox = document.createElement("button");
       const currentDate = new Date(currentYear, currentMonth - 1, day);
       const currentWeek = currentDate.getDay();
       const matchedTasks = getTasksForDate(currentDate);
@@ -217,10 +224,10 @@
       }
 
       dayBox.className =
-        `border rounded p-1 d-flex flex-column ${colorClasses}`;
-      dayBox.style.width = "14.285%";
-      dayBox.style.minHeight = "108px";
-      dayBox.style.cursor = "pointer";
+        "btn w-100 border rounded-3 p-1 shadow-sm";
+      dayBox.style.height = "95px";
+      dayBox.style.display = "flex";
+      dayBox.style.flexDirection = "column";
       dayBox.style.overflow = "hidden";
 
       const dayNum = document.createElement("span");
@@ -301,7 +308,6 @@
 
     if (currentMonth > 12) {
       currentMonth = 1;
-      currentYear++;
     }
 
     updateCalendarTitle();
