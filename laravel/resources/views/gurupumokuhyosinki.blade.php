@@ -348,7 +348,6 @@
 </div>
 
 
-<x-menubar />
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
@@ -490,7 +489,9 @@ document.getElementById("start-date")
 });
 async function saveGoal(){
 
-    const userId=localStorage.getItem("user_id");
+    const userId = localStorage.getItem("user_id");
+
+    const groupId = {{ $group->id }};
 
     if(!userId){
         alert("ログインしてください");
