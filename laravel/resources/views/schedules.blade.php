@@ -152,15 +152,44 @@
                     year === today.getFullYear() &&
                     month === today.getMonth() &&
                     date === today.getDate();
-                if (dayOfWeek === 0) {
-                    dayEl.className = "btn btn-danger-subtle border border-danger-subtle text-danger fw-bold rounded-3 py-1 shadow-sm w-100 h-100";
-                } else if (dayOfWeek === 6) {
-                    dayEl.className = "btn btn-primary-subtle border border-primary-subtle text-primary fw-bold rounded-3 py-1 shadow-sm w-100 h-100";
-                }
-                if (isToday) {
-                    dayEl.classList.add("border-1", "border-dark");
-                }
 
+                if (isToday) {
+
+                    // 今日
+                    dayEl.className =
+                        "btn border border-success text-success fw-bold rounded-3 py-1 shadow-sm w-100 h-100";
+
+                    dayEl.style.setProperty(
+                        "background-color",
+                        "rgba(25,135,84,0.25)",
+                        "important"
+                    );
+
+                } else {
+
+                    // 全曜日共通
+                    dayEl.className =
+                        "btn border rounded-3 p-1 shadow-sm w-100 h-100";
+
+                    // 日曜
+                    if (dayOfWeek === 0) {
+                        dayEl.classList.add(
+                            "text-danger",
+                            "bg-danger",
+                            "bg-opacity-10"
+                        );
+                    }
+
+                    // 土曜
+                    if (dayOfWeek === 6) {
+                        dayEl.classList.add(
+                            "text-primary",
+                            "bg-primary",
+                            "bg-opacity-10"
+                        );
+                    }
+
+                }
                 // 日付
                 const header = `
                     <div style="font-size:13px; font-weight:bold;">
@@ -243,8 +272,6 @@ function goTask(taskId) {
          */
         document.addEventListener("DOMContentLoaded", renderCalendar);
     </script>
-
-    <x-menubar />
 
     <div style="height:100px;"></div>
 
