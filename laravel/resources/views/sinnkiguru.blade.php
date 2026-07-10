@@ -35,6 +35,14 @@
                 oninput="autoResize(this)"></textarea>
     </div>
 
+    <div class="mb-5">
+      <label for="groupRole" class="form-label fw-bold">ロール</label>
+      <select id="groupRole" class="form-select form-select-lg">
+        <option value="admin">管理者</option>
+        <option value="member">メンバー</option>
+      </select>
+    </div>
+
     <button class="btn btn-success w-100 mb-3 py-3 fw-bold fs-5" 
             id="createGroupBtn" 
             onclick="createGroup()" 
@@ -60,7 +68,7 @@
       <button class="btn btn-outline-secondary" onclick="location.href='/gekkankarenda'">
         📅 月間カレンダー
       </button>
-      <button class="btn btn-success" onclick="location.href='/gurupu'">
+      <button class="btn btn-success" onclick="location.href='/gurupu?user_id=' + encodeURIComponent(localStorage.getItem('user_id') || '')">
         👥 グループ
       </button>
       <button class="btn btn-outline-secondary" onclick="location.href='/setting'">
@@ -80,6 +88,7 @@
 async function createGroup() {
   const description = document.getElementById("groupDesc").value;
   const groupname = document.getElementById("groupName").value;
+  const role = document.getElementById("groupRole").value;
 
   const userResponse = await fetch("/api/current-user");
 
@@ -116,6 +125,7 @@ async function createGroup() {
     body: JSON.stringify({
       group_id: data.id,
       user_id: currentUser.user.id,
+      role: role,
     }),
   });
 
@@ -159,7 +169,7 @@ function checkGroupName(){
 /* 戻る */
 /* ===================================================== */
 function goBack(){
-  window.location.href = "/gurupu";
+  window.location.href = "/gurupu?user_id=" + encodeURIComponent(localStorage.getItem("user_id") || "");
 }
 </script>
 

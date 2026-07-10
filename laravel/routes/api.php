@@ -41,6 +41,7 @@ Route::get('/grouptasks', [GroupTaskController::class, 'index']);
 Route::post('/grouptasks', [GroupTaskController::class, 'store']);
 Route::delete('/grouptasks/{id}', [GroupTaskController::class, 'destroy']);
 Route::get('/groupmembers', [GroupmemberController::class, 'index']);
+Route::post('/groupmembers/join-by-invite', [GroupmemberController::class, 'joinByInviteCode']);
 Route::get('/groupmembers/{id}', [GroupmemberController::class, 'show']);
 Route::delete('/groupmembers/{id}', [GroupmemberController::class, 'destroy']);
 

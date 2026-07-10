@@ -73,7 +73,14 @@ Route::put('/tasks/{id}', [TaskController::class, 'update']);
 Route::delete('/tasks/{id}', [TaskController::class, 'destroy']);
 
 Route::get('/gurupu',function(){
+    $userId = request('user_id');
     $groups = Group::all();
+
+    if ($userId) {
+        $groupIds = Groupmember::where('user_id', $userId)->pluck('group_id');
+        $groups = Group::whereIn('id', $groupIds)->get();
+    }
+
     return view('group', ['groups' => $groups]);
 });
 

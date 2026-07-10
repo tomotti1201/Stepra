@@ -3,23 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>グループ管理画面</title>
+  <title>グループ管理</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
 
-  <div id="screen-main" class="container-fluid py-4" style="padding-bottom: 80px;">
+  <div id="screen-main" class="container-fluid py-4" style="padding-bottom: 120px;">
     <div class="row justify-content-center">
-      
       <div class="col-12">
         <div class="card shadow p-3 bg-body-tertiary">
-          
           <div class="row g-2 mb-3 align-items-center">
             <div class="col-12 col-md-9">
-              <h1 class="text-center fw-bold display-6 m-0 border py-2 bg-white rounded fs-4">グループ(管理者)</h1>
+              <h1 class="text-center fw-bold display-6 m-0 border py-2 bg-white rounded fs-4">グループ管理</h1>
             </div>
             <div class="col-12 col-md-3">
-              <button class="btn btn-outline-secondary w-100 py-2" onclick="Showinvate({{ $group->id }})">招待ID</button>
+              <button class="btn btn-outline-secondary w-100 py-2" onclick="showInviteCode()">招待ID</button>
             </div>
           </div>
 
@@ -31,89 +29,51 @@
 
           <div class="card shadow mb-3">
             <div class="card-body bg-white rounded p-0" style="height: 280px; overflow-y: auto;">
-              <div id="member-list" class="list-group list-group-flush">
-                
-                <button type="button" class="list-group-item list-group-item-action p-3 d-flex align-items-center" 
-                        onclick="selectMember('👨‍💻', '山田 太郎', '趣味はプログラミングです。よろしくお願いします！')">
-                  <div class="rounded-circle border bg-light text-center me-3" style="width: 40px; height: 40px; line-height: 40px;">👨‍💻</div>
-                  <span class="fw-bold">山田 太郎</span>
-                </button>
-                
-                <button type="button" class="list-group-item list-group-item-action p-3 d-flex align-items-center" 
-                        onclick="selectMember('👩‍🎨', '佐藤 花子', 'デザインとイラスト作成を担当しています。')">
-                  <div class="rounded-circle border bg-light text-center me-3" style="width: 40px; height: 40px; line-height: 40px;">👩‍🎨</div>
-                  <span class="fw-bold">佐藤 花子</span>
-                </button>
-                
-                <button type="button" class="list-group-item list-group-item-action p-3 d-flex align-items-center" 
-                        onclick="selectMember('🏃‍♂️', '鈴木 一郎', '毎朝ランニングをしています。目標達成に向けて頑張ります！')">
-                  <div class="rounded-circle border bg-light text-center me-3" style="width: 40px; height: 40px; line-height: 40px;">🏃‍♂️</div>
-                  <span class="fw-bold">鈴木 一郎</span>
-                </button>
-
-                <button type="button" class="list-group-item list-group-item-action p-3 d-flex align-items-center" 
-                        onclick="selectMember('🐱', '高橋 次郎', '猫を飼っています。バックエンド開発が得意です。')">
-                  <div class="rounded-circle border bg-light text-center me-3" style="width: 40px; height: 40px; line-height: 40px;">🐱</div>
-                  <span class="fw-bold">高橋 次郎</span>
-                </button>
-
-              </div>
+              <div id="member-list" class="list-group list-group-flush"></div>
             </div>
           </div>
 
-          <div class="row g-2 mb-3">
+          <div class="row g-3 mt-4 mb-5">
             <div class="col-12 col-md-6">
-              <button class="btn btn-primary w-100 py-3 fw-bold" onclick="openGroupEdit()">グループの編集</button>
+              <button id="group-edit-button" class="btn btn-primary w-100 py-3 fw-bold shadow-sm" onclick="openGroupEdit()" disabled>
+                グループの編集
+              </button>
             </div>
             <div class="col-12 col-md-6">
-              <button class="btn btn-success w-100 py-3 fw-bold" onclick="openGroupTasks()">グループタスクの追加・編集</button>
+              <button class="btn btn-success w-100 py-3 fw-bold shadow-sm" onclick="openGroupTasks()">
+                グループタスクの追加・編集
+              </button>
             </div>
           </div>
-
-          <div class="text-center">
-            <button id="admin-mode-button" class="btn btn-secondary w-100 py-2 fw-bold" onclick="toggleAdminMode()">管理者モード切り替え</button>
-          </div>
-          
         </div>
       </div>
-
     </div>
   </div>
 
-
   <div id="screen-detail" class="container py-4 mx-auto d-none" style="max-width: 800px; margin-bottom: 80px;">
     <div class="card shadow p-4 bg-white" style="min-height: 85vh;">
-      
       <div class="text-start mb-5">
-        <button class="btn btn-secondary px-4" onclick="navigateBack()">← 戻る</button>
+        <button class="btn btn-secondary px-4" onclick="navigateBack()">戻る</button>
       </div>
 
       <div class="container-fluid">
         <div class="row g-3 align-items-center justify-content-center mb-4 mx-auto" style="max-width: 600px;">
           <div class="col-4 text-center">
-            <div id="mobile-profile-icon" class="rounded-circle border d-flex align-items-center justify-content-center bg-secondary-subtle fw-bold mx-auto display-4 shadow-sm" style="width: 100px; height: 100px;">
-              ？
-            </div>
+            <div id="mobile-profile-icon" class="rounded-circle border d-flex align-items-center justify-content-center bg-secondary-subtle fw-bold mx-auto display-4 shadow-sm" style="width: 100px; height: 100px;">👤</div>
           </div>
           <div class="col-8">
-            <div id="mobile-profile-username" class="border p-3 rounded bg-white text-center fw-bold fs-3 shadow-sm">
-              ユーザー名
-            </div>
+            <div id="mobile-profile-username" class="border p-3 rounded bg-white text-center fw-bold fs-3 shadow-sm">ユーザー名</div>
           </div>
         </div>
-        
+
         <hr class="my-5 text-muted mx-auto" style="max-width: 600px;">
 
         <div class="text-center py-4 mx-auto" style="max-width: 600px;">
-          <p id="mobile-profile-text" class="text-secondary fs-4 lh-lg">
-            プロフィール内容
-          </p>
+          <p id="mobile-profile-text" class="text-secondary fs-4 lh-lg">プロフィール内容</p>
         </div>
       </div>
-
     </div>
   </div>
-
 
   <div class="modal fade" id="groupEditModal" tabindex="-1" aria-labelledby="groupEditModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -124,12 +84,12 @@
         </div>
         <div class="modal-body">
           <div class="mb-3">
-            <label for="edit-group-icon" class="form-label fw-bold">アイコン</label>
-            <input id="edit-group-icon" type="text" class="form-control" maxlength="20">
-          </div>
-          <div class="mb-3">
             <label for="edit-group-name" class="form-label fw-bold">グループ名</label>
             <input id="edit-group-name" type="text" class="form-control" maxlength="255">
+          </div>
+          <div class="mb-3">
+            <label for="edit-group-icon" class="form-label fw-bold">アイコン</label>
+            <input id="edit-group-icon" type="text" class="form-control" maxlength="20">
           </div>
           <div class="mb-3">
             <label for="edit-group-description" class="form-label fw-bold">説明</label>
@@ -147,7 +107,6 @@
       </div>
     </div>
   </div>
-
 
   <div class="modal fade" id="inviteCodeModal" tabindex="-1" aria-labelledby="inviteCodeModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -168,30 +127,20 @@
     </div>
   </div>
 
-
-  <nav id="main-menu-bar" class="navbar bg-white border-top fixed-bottom">
-    <div class="container d-flex justify-content-around">
-      <button class="btn btn-outline-secondary" onclick="location.href='/home'">
-        🏠 ホーム
-      </button>
-      <button class="btn btn-outline-secondary" onclick="location.href='/mokuhyouitiran'">
-        🎯 目標
-      </button>
-      <button class="btn btn-outline-secondary" onclick="location.href='/gekkankarenda'">
-        📅 月間カレンダー
-      </button>
-      <button class="btn btn-success" onclick="location.href='/gurupu'">
-        👥 グループ
-      </button>
-      <button class="btn btn-outline-secondary" onclick="location.href='/setting'">
-        ⚙️ 設定・継続率
-      </button>
+  <nav id="main-menu-bar" class="navbar bg-white border-top fixed-bottom py-3 shadow-sm">
+    <div class="container d-flex justify-content-center gap-4 flex-wrap">
+      <button class="btn btn-outline-secondary px-3 py-2" onclick="location.href='/home'">ホーム</button>
+      <button class="btn btn-outline-secondary px-3 py-2" onclick="location.href='/mokuhyouitiran'">目標</button>
+      <button class="btn btn-outline-secondary px-3 py-2" onclick="location.href='/gekkankarenda'">月間カレンダー</button>
+      <button class="btn btn-success px-3 py-2" onclick="location.href='/gurupu?user_id=' + encodeURIComponent(localStorage.getItem('user_id') || '')">グループ</button>
+      <button class="btn btn-outline-secondary px-3 py-2" onclick="location.href='/setting'">設定・継続率</button>
     </div>
   </nav>
 
-
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     const groupId = @json($group->id);
+    const currentUserId = localStorage.getItem('user_id');
     const groupData = {
       name: @json($group->name),
       icon: @json($group->icon),
@@ -199,18 +148,31 @@
       invite_code: @json($group->invite_code),
       is_public: @json((bool) $group->is_public),
     };
-    let adminMode = true;
+    let currentUserRole = null;
+
+    function isCurrentUserAdmin() {
+      return currentUserRole === 'admin';
+    }
 
     function openGroupEdit() {
-      document.getElementById('edit-group-icon').value = groupData.icon || '';
+      if (!isCurrentUserAdmin()) {
+        alert('管理者だけがグループ名を変更できます');
+        return;
+      }
+
       document.getElementById('edit-group-name').value = groupData.name || '';
+      document.getElementById('edit-group-icon').value = groupData.icon || '';
       document.getElementById('edit-group-description').value = groupData.description || '';
       document.getElementById('edit-group-public').checked = groupData.is_public;
-
       bootstrap.Modal.getOrCreateInstance(document.getElementById('groupEditModal')).show();
     }
 
     async function saveGroup() {
+      if (!isCurrentUserAdmin()) {
+        alert('管理者だけがグループ名を変更できます');
+        return;
+      }
+
       const name = document.getElementById('edit-group-name').value.trim();
 
       if (!name) {
@@ -220,12 +182,11 @@
 
       const response = await fetch(`/api/groups/${groupId}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          icon: document.getElementById('edit-group-icon').value.trim() || null,
+          request_user_id: currentUserId,
           name,
+          icon: document.getElementById('edit-group-icon').value.trim() || null,
           description: document.getElementById('edit-group-description').value.trim() || null,
           is_public: document.getElementById('edit-group-public').checked ? 1 : 0,
         }),
@@ -243,7 +204,7 @@
       location.href = `/gtasutkuitiran/${groupId}`;
     }
 
-    function Showinvate() {
+    function showInviteCode() {
       document.getElementById('invite-code-text').textContent = groupData.invite_code || '招待コードがありません';
       bootstrap.Modal.getOrCreateInstance(document.getElementById('inviteCodeModal')).show();
     }
@@ -259,22 +220,6 @@
       } catch (error) {
         alert(`招待コード: ${groupData.invite_code}`);
       }
-    }
-
-    function toggleAdminMode() {
-      adminMode = !adminMode;
-      /*
-      document.getElementById('admin-mode-button').textContent = adminMode
-        ? '管理者モード切り替え'
-        : '管理者モードに戻す';
-      */
-      document.getElementById('admin-mode-button').textContent = adminMode
-        ? '管理者モード切り替え'
-        : '管理者モードに戻す';
-      document.querySelectorAll('#screen-main .btn-primary, #screen-main .btn-success')
-        .forEach((button) => {
-          button.disabled = !adminMode;
-        });
     }
 
     async function loadMembers() {
@@ -295,25 +240,36 @@
         memberList.innerHTML = '<div class="list-group-item p-3 text-center text-danger">メンバーを取得できませんでした</div>';
       }
     }
-//メンバー表示
+
     function renderMembers(members) {
       const memberList = document.getElementById('member-list');
       memberList.innerHTML = '';
 
       if (!members.length) {
+        currentUserRole = null;
+        updateAdminControls();
         memberList.innerHTML = '<div class="list-group-item p-3 text-center text-secondary">メンバーがいません</div>';
         return;
       }
+
+      const currentMember = members.find((member) => String(member.user_id) === String(currentUserId));
+      currentUserRole = currentMember?.role || null;
+      updateAdminControls();
+
+      const canDeleteMembers = isCurrentUserAdmin();
 
       members.forEach((member) => {
         const icon = member.icon || '👤';
         const username = member.name || `ユーザー${member.user_id}`;
         const info = member.profile_text || `ロール: ${member.role}`;
 
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = 'list-group-item list-group-item-action p-3 d-flex align-items-center';
-        button.addEventListener('click', () => selectMember(icon, username, info));
+        const row = document.createElement('div');
+        row.className = 'list-group-item p-3 d-flex align-items-center gap-2';
+
+        const profileButton = document.createElement('button');
+        profileButton.type = 'button';
+        profileButton.className = 'btn btn-light flex-grow-1 d-flex align-items-center text-start border-0 p-0';
+        profileButton.addEventListener('click', () => selectMember(icon, username, info));
 
         const iconElement = document.createElement('div');
         iconElement.className = 'rounded-circle border bg-light text-center me-3';
@@ -326,18 +282,51 @@
         nameElement.className = 'fw-bold';
         nameElement.textContent = username;
 
-        button.append(iconElement, nameElement);
-        memberList.appendChild(button);
+        profileButton.append(iconElement, nameElement);
+        row.appendChild(profileButton);
+
+        if (canDeleteMembers && String(member.user_id) !== String(currentUserId)) {
+          const deleteButton = document.createElement('button');
+          deleteButton.type = 'button';
+          deleteButton.className = 'btn btn-outline-danger btn-sm fw-bold';
+          deleteButton.textContent = '削除';
+          deleteButton.addEventListener('click', () => deleteMember(member.id, username));
+          row.appendChild(deleteButton);
+        }
+
+        memberList.appendChild(row);
       });
     }
 
-   
+    function updateAdminControls() {
+      const editButton = document.getElementById('group-edit-button');
+      editButton.disabled = !isCurrentUserAdmin();
+      editButton.title = isCurrentUserAdmin()
+        ? ''
+        : '管理者だけがグループ名を変更できます';
+    }
+
+    async function deleteMember(memberId, username) {
+      if (!confirm(`${username} をグループから削除しますか？`)) {
+        return;
+      }
+
+      const response = await fetch(`/api/groupmembers/${memberId}?request_user_id=${encodeURIComponent(currentUserId || '')}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        alert('メンバーを削除できませんでした');
+        return;
+      }
+
+      await loadMembers();
+    }
 
     function selectMember(icon, username, info) {
       document.getElementById('mobile-profile-icon').innerText = icon;
       document.getElementById('mobile-profile-username').innerText = username;
       document.getElementById('mobile-profile-text').innerText = info;
-
       document.getElementById('screen-main').classList.add('d-none');
       document.getElementById('main-menu-bar').classList.add('d-none');
       document.getElementById('screen-detail').classList.remove('d-none');
@@ -352,7 +341,5 @@
 
     document.addEventListener('DOMContentLoaded', loadMembers);
   </script>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

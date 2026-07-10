@@ -22,7 +22,7 @@
 
         <button
             class="btn {{ request()->is('gurupu') ? 'btn-success' : 'btn-outline-secondary' }}"
-            onclick="location.href='/gurupu'">
+            onclick="location.href='/gurupu?user_id=' + encodeURIComponent(localStorage.getItem('user_id') || '')">
             👥 グループ
         </button>
 

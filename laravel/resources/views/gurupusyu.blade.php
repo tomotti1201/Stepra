@@ -116,7 +116,7 @@
     <button class="btn btn-outline-secondary" onclick="location.href='/home'">ホーム</button>
     <button class="btn btn-outline-secondary" onclick="location.href='/mokuhyouitiran'">目標</button>
     <button class="btn btn-outline-secondary" onclick="location.href='/gekkankarenda'">カレンダー</button>
-    <button class="btn btn-success" onclick="location.href='/gurupu'">グループ</button>
+    <button class="btn btn-success" onclick="location.href='/gurupu?user_id=' + encodeURIComponent(localStorage.getItem('user_id') || '')">グループ</button>
     <button class="btn btn-outline-secondary" onclick="location.href='/setting'">設定</button>
   </div>
 </nav>
