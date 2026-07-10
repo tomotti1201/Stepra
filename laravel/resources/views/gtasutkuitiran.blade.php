@@ -1,246 +1,231 @@
 ﻿<!DOCTYPE html>
 <html lang="ja">
+
 <head>
+    <meta charset="UTF-8">
 
-<meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+    <title>グループ目標一覧 | STEPRA</title>
 
-<title>STEPRA グループ目標一覧</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-      rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
 
+        .target-item {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #fff;
+        }
+
+        .target-content {
+            font-weight: bold;
+        }
+    </style>
 </head>
 
-<body class="bg-light">
+<body>
 
 <div class="container py-4 mb-5">
 
-    <!-- タイトル -->
+    <script>
+        if (!localStorage.getItem("user_id")) {
+            location.href = "/login";
+        }
+    </script>
 
-    <img src="/image/tit.png"
-        alt="STEPRA"
-        class="mb-3"
-        style="width:200px;"
-        alt="">
+    <div class="container-fluid">
 
-    <!-- タイトル -->
+        <img src="{{ asset('image/tit.png') }}"
+             class="mb-3"
+             style="width:200px;">
 
-    <div class="card shadow mb-4">
+        <div class="row justify-content-center">
 
-        <div class="card-body">
+            <div class="col-12 px-3 px-md-4">
 
-            <div class="d-flex justify-content-between align-items-center">
+                <div class="card-body">
 
-                <h5 class="fw-bold mb-0">
+                    <h2 class="text-center fw-bold mb-4 fs-4">
+                        グループ目標一覧<br>
+                        <span class="fs-6 fw-normal text-muted">
+                            作成・編集
+                        </span>
+                    </h2>
 
-                    グループ目標一覧
+                    <div class="mt-4">
+                        <a href="/gurupumokuhyosinki/{{ $group->id }}"
+                           class="btn btn-success w-100 py-3 fw-bold fs-5 shadow-sm">
+                            ＋ 新規グループ目標作成
+                        </a>
+                    </div>
 
-                </h5>
+                    <div id="target-list"
+                         class="d-flex flex-column gap-2">
+                    </div>
 
-                     <a href="/gurupumokuhyosinki/{{ $group->id }}"
-                   class="btn btn-success">
-
-                    ＋追加
-
-                </a>
+                </div>
 
             </div>
 
         </div>
 
     </div>
-
-    <!-- 目標一覧 -->
-
-    <div id="goalList"></div>
 
 </div>
 
-<!-- 下メニュー -->
 
-<nav class="navbar bg-white border-top fixed-bottom">
+<x-menubar />
 
-    <div class="container d-flex justify-content-around">
 
-        <button class="btn btn-outline-secondary" onclick="location.href='/home'">
-            🏠 ホーム
-        </button>
+<div style="height:100px;"></div>
 
-        <button class="btn btn-outline-secondary" onclick="location.href='/mokuhyouitiran'">
-            🎯 目標
-        </button>
-
-        <button class="btn btn-outline-secondary" onclick="location.href='/gekkankarenda'">
-            📅 月間カレンダー
-        </button>
-
-        <button class="btn btn-success" onclick="location.href='/gurupu?user_id=' + encodeURIComponent(localStorage.getItem('user_id') || '')">
-            👥 グループ
-        </button>
-
-        <button class="btn btn-outline-secondary" onclick="location.href='/setting'">
-            ⚙️ 設定・継続率
-        </button>
-
-    </div>
-
-</nav>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
+
 <script>
 
-/* =====================================
-   一覧表示
-===================================== */
+const weekDayMapReverse = {
+    1:"月",
+    2:"火",
+    3:"水",
+    4:"木",
+    5:"金",
+    6:"土",
+    7:"日"
+};
 
-async function renderGoals(){
 
-    const goalList =
-        document.getElementById(
-            "goalList"
-        );
+async function renderList(){
 
-    goalList.innerHTML =
-        `
-        <div class="card shadow">
+    const listContainer =
+        document.getElementById("target-list");
 
-            <div class="card-body text-center text-muted">
-
-                読み込み中...
-
-            </div>
-
-        </div>
-        `;
+    listContainer.innerHTML =
+    `
+    <div class="text-center py-3">
+        読み込み中...
+    </div>
+    `;
 
     try{
 
         const response =
             await fetch(
-                "/api/grouptasks?group_id={{ $group->id }}",
-                {
-                    headers: {
-                        "Accept": "application/json"
-                    }
-                }
+                "/api/grouptasks?group_id={{ $group->id }}"
             );
 
         const data =
-            await response
-                .json()
-                .catch(()=>({}));
+            await response.json();
 
-        if(!response.ok){
+        let goals =
+            data.tasks || [];
 
-            goalList.innerHTML =
-                `
-                <div class="card shadow">
+        goals.sort((a,b)=>
+            new Date(b.start_date) -
+            new Date(a.start_date)
+        );
 
-                    <div class="card-body text-center text-danger">
-
-                        グループタスクの取得に失敗しました
-
-                    </div>
-
-                </div>
-                `;
-
-            return;
-        }
-
-        const goals =
-            Array.isArray(data)
-                ? data
-                : data.tasks || [];
-
-        goalList.innerHTML = "";
-
-        /* データなし */
+        listContainer.innerHTML = "";
 
         if(goals.length === 0){
 
-            goalList.innerHTML =
-
+            listContainer.innerHTML =
             `
-            <div class="card shadow">
-
-                <div class="card-body text-center text-muted">
-
-                    登録されたグループ目標がありません
-
-                </div>
-
+            <div class="text-center text-muted small py-4">
+                登録されたグループ目標がありません
             </div>
             `;
 
             return;
         }
 
-        /* 一覧生成 */
+        let currentDate = null;
 
         goals.forEach(goal=>{
 
-            goalList.innerHTML +=
+            const taskDate =
+                formatDate(goal.start_date);
+            if(taskDate !== currentDate){
 
+                currentDate = taskDate;
+
+                const header =
+                    document.createElement("div");
+
+                header.className =
+                    "mt-3 mb-2 fw-bold text-secondary";
+
+                header.textContent =
+                    formatDate(currentDate);
+
+                listContainer.appendChild(header);
+
+            }
+
+            const item =
+                document.createElement("div");
+
+            item.className =
+                "target-item d-flex row g-0 align-items-center mb-2 shadow-sm";
+
+            const content =
+                document.createElement("div");
+
+            content.className =
+                "target-content col-8 p-3 text-start";
+
+            content.innerHTML =
             `
-            <div class="card shadow mb-3">
+            <div class="fw-bold">
+                ${escapeHtml(goal.title)}
+            </div>
 
-                <div class="card-body">
-
-                    <div class="row align-items-center">
-
-                        <!-- 目標名 -->
-
-                        <div class="col-8">
-
-                            <div
-                                class="fw-bold p-2 rounded"
-                                style="
-                                border-left:8px solid ${goal.color || '#198754'};
-                                ">
-
-                                ${escapeHtml(goal.title)}
-
-                                <div class="small text-muted fw-normal mt-1">
-                                    ${formatTaskInfo(goal)}
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                        <!-- ボタン -->
-
-                        <div class="col-4">
-                        
-                            <button
-                                class="btn btn-primary w-100 mb-2"
-                                onclick="editTask(${goal.id})">
-
-                                編集
-
-                            </button>
-
-                            <button
-                                class="btn btn-danger w-100"
-                                onclick="deleteGoal(${goal.id})">
-
-                                削除
-
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
+            <div class="small text-muted">
+                曜日：${formatWeekDays(goal)}<br>
+                開始：${formatTime(goal.start_time)}
+                ${goal.priority ? "｜"+goal.priority : ""}
             </div>
             `;
+
+            if(goal.color){
+
+                content.style.borderLeft =
+                    `8px solid ${goal.color}`;
+
+            }
+
+            const editBtnWrapper =
+                document.createElement("div");
+
+            editBtnWrapper.className =
+                "col-4 px-3 text-end";
+
+            const editLink =
+                document.createElement("a");
+
+            editLink.className =
+                "btn btn-primary w-100 py-2 fw-bold";
+
+            editLink.textContent =
+                "編集";
+
+            editLink.href =
+                `/gurutaskukuhen/{{ $group->id }}?task_id=${goal.id}`;
+
+            editBtnWrapper.appendChild(editLink);
+
+            item.appendChild(content);
+            item.appendChild(editBtnWrapper);
+
+            listContainer.appendChild(item);
 
         });
 
@@ -248,159 +233,96 @@ async function renderGoals(){
 
         console.error(error);
 
-        goalList.innerHTML =
-            `
-            <div class="card shadow">
+        listContainer.innerHTML =
+        `
+        <div class="text-center text-danger py-4">
+            読み込みに失敗しました
+        </div>
+        `;
 
-                <div class="card-body text-center text-danger">
-
-                    グループタスクの取得に失敗しました
-
-                </div>
-
-            </div>
-            `;
     }
 
 }
 
-function editTask(id){
 
-    location.href =
-        `/gurutaskukuhen/{{ $group->id }}?task_id=${id}`;
-}
+function formatWeekDays(goal){
 
-/* =====================================
-   削除
-===================================== */
-
-async function deleteGoal(id){
-
-    if(!confirm("この目標を削除しますか？")){
-        return;
-    }
+    let days = [];
 
     try{
 
-        const response =
-            await fetch(
-                `/api/grouptasks/${id}`,
-                {
-                    method: "DELETE",
-                    headers: {
-                        "Accept": "application/json"
-                    }
-                }
+        days =
+            JSON.parse(
+                goal.week_days || "[]"
             );
 
-        if(!response.ok){
+    }catch(e){
 
-            alert(
-                "削除に失敗しました"
-            );
+        return "";
 
-            return;
-        }
-
-        renderGoals();
-
-    }catch(error){
-
-        console.error(error);
-
-        alert(
-            "削除に失敗しました"
-        );
     }
+
+    if(days.length === 7){
+
+        return "毎日";
+
+    }
+
+    if(days.length === 0){
+
+        return "未設定";
+
+    }
+
+    return days
+        .map(d => weekDayMapReverse[d])
+        .filter(Boolean)
+        .join("・");
+
 }
 
-function formatTaskInfo(goal){
 
-    const infos = [];
+function formatTime(time){
 
-    if(goal.start_time){
-        infos.push(
-            goal.start_time.slice(0, 5)
-        );
+    if(!time){
+
+        return "";
+
     }
 
-    if(goal.required_minutes){
-        infos.push(
-            `${goal.required_minutes}分`
-        );
-    }
+    return time.slice(0,5);
 
-    if(goal.priority){
-        infos.push(
-            goal.priority
-        );
-    }
-
-    return infos.length
-        ? escapeHtml(infos.join(" / "))
-        : "";
 }
+function formatDate(date){
+
+    if(!date){
+        return "";
+    }
+
+    return date.substring(0,10);
+
+}
+
 
 function escapeHtml(value){
 
     return String(value ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+
 }
 
-/* =====================================
-   下メニュー
-===================================== */
 
-const menuButtons =
-    document.querySelectorAll(
-        ".navbar button"
-    );
-
-menuButtons.forEach(button=>{
-
-    button.addEventListener(
-
-        "click",
-
-        ()=>{
-
-            menuButtons.forEach(btn=>{
-
-                btn.classList.remove(
-                    "btn-success"
-                );
-
-                btn.classList.add(
-                    "btn-outline-secondary"
-                );
-
-            });
-
-            button.classList.remove(
-                "btn-outline-secondary"
-            );
-
-            button.classList.add(
-                "btn-success"
-            );
-
-        }
-
-    );
-
-});
-
-/* =====================================
-   初期表示
-===================================== */
-
-renderGoals();
+document.addEventListener(
+    "DOMContentLoaded",
+    renderList
+);
 
 </script>
 
 </body>
+
 </html>

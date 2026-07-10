@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\ScheduleController;
 use App\Models\Group;
 use App\Models\Groupmember;
 use App\Models\Grouptask;
@@ -42,6 +43,16 @@ Route::get('/schedules',function(){
     return view('schedules');
 });
 
+Route::get('/scheduleDetail', [ScheduleController::class, 'detail']);
+
+Route::get('/group',function(){
+    return view('group');
+});
+
+Route::get('/groupCreate',function(){
+    return view('groupCreate');
+});
+
 Route::get('/continuity',function(){
     return view('continuity');
 });
@@ -72,8 +83,18 @@ Route::get('/tasks/{id}', [TaskController::class, 'show']);
 Route::put('/tasks/{id}', [TaskController::class, 'update']);
 Route::delete('/tasks/{id}', [TaskController::class, 'destroy']);
 
-Route::get('/gurupu',function(){
-    $userId = request('user_id');
+Route::prefix('setting')->group(function () {
+
+    Route::view('/user', 'setting.settingUser');
+
+    Route::view('/notification', 'setting.settingNotification');
+
+    Route::view('/design', 'setting.settingDesign');
+
+    Route::view('/logout', 'setting.settingLogout');
+
+});
+Route::get('/group',function(){
     $groups = Group::all();
 
     if ($userId) {

@@ -51,20 +51,16 @@ class ScheduleController extends Controller
             ->orderBy('scheduled_date')
             ->get()
             ->map(function ($schedule) {
-                return [
-                    'id' => $schedule->id,
-                    'task_id' => $schedule->task_id,
-                    'user_id' => $schedule->user_id,
-                    'scheduled_date' => $schedule->scheduled_date->format('Y-m-d'),
+    return [
+        'id' => $schedule->id,
+        'task_id' => $schedule->task_id,
+        'user_id' => $schedule->user_id,
+        'scheduled_date' => $schedule->scheduled_date->format('Y-m-d'),
 
-                    // ★JSで使うメイン部分
-                    'task' => $schedule->task ? [
-                        'id' => $schedule->task->id,
-                        'title' => $schedule->task->title,
-                        'color' => $schedule->task->color,
-                    ] : null,
-                ];
-            });
+        'title' => $schedule->title,
+        'color' => $schedule->color,
+    ];
+});
 
         return response()->json([
             'status' => 'success',
@@ -94,7 +90,7 @@ class ScheduleController extends Controller
      */
     public function show($id)
     {
-        $schedule = Schedule::with('task')->findOrFail($id);
+        $schedule = Schedule::query()->findOrFail($id);
 
         return response()->json([
             'status' => 'success',
@@ -114,5 +110,45 @@ class ScheduleController extends Controller
             'status' => 'success',
             'message' => 'deleted'
         ]);
+    }
+    public function getDailySchedules(Request $request)
+    {
+        $date = $request->query('date');
+        $userId = $request->query('user_id', Auth::id());
+
+        if (!$date) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'date is required'
+            ], 400);
+        }
+
+        $schedules = Schedule::query()
+            ->whereDate('scheduled_date', $date)
+            ->when($userId, fn($q) => $q->where('user_id', $userId))
+            ->orderBy('start_time')
+            ->get()
+            ->map(function ($s) {
+                return [
+                    'id' => $s->id,
+                    'title' => $s->title,
+                    'content' => $s->content,
+                    'start_time' => $s->start_time,
+                    'required_minutes' => $s->required_minutes,
+                    'color' => $s->color ?? '#198754',
+                    'status' => $s->status,
+                    'scheduled_date' => $s->scheduled_date->format('Y-m-d'),
+                ];
+            });
+        
+        return response()->json([
+            'status' => 'success',
+            'date' => $date,
+            'schedules' => $schedules
+        ]);
+    }
+    public function detail(Request $request)
+    {
+        return view('scheduleDetail');
     }
 }

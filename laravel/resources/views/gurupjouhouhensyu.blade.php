@@ -126,18 +126,8 @@
       </div>
     </div>
   </div>
+<x-menubar />
 
-  <nav id="main-menu-bar" class="navbar bg-white border-top fixed-bottom py-3 shadow-sm">
-    <div class="container d-flex justify-content-center gap-4 flex-wrap">
-      <button class="btn btn-outline-secondary px-3 py-2" onclick="location.href='/home'">ホーム</button>
-      <button class="btn btn-outline-secondary px-3 py-2" onclick="location.href='/mokuhyouitiran'">目標</button>
-      <button class="btn btn-outline-secondary px-3 py-2" onclick="location.href='/gekkankarenda'">月間カレンダー</button>
-      <button class="btn btn-success px-3 py-2" onclick="location.href='/gurupu?user_id=' + encodeURIComponent(localStorage.getItem('user_id') || '')">グループ</button>
-      <button class="btn btn-outline-secondary px-3 py-2" onclick="location.href='/setting'">設定・継続率</button>
-    </div>
-  </nav>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     const groupId = @json($group->id);
     const currentUserId = localStorage.getItem('user_id');

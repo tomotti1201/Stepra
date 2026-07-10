@@ -11,7 +11,10 @@ class Grouptask extends Model
 
     protected $table = 'group_tasks';
 
+    public $timestamps = false;
+
     protected $fillable = [
+
         'group_id',
         'user_id',
         'title',
@@ -26,8 +29,31 @@ class Grouptask extends Model
         'start_date',
         'end_date',
         'status',
-        'created_by',
+    ];
+    protected $casts = [
+
+        'notification_enabled' => 'boolean',
+
+        'start_date' => 'date',
+
+        'end_date' => 'date',
+
     ];
 
-    public $timestamps = false;
+    public function group()
+    {
+        return $this->belongsTo(
+            Group::class,
+            'group_id'
+        );
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(
+            User::class,
+            'user_id'
+        );
+    }
+
 }
