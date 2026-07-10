@@ -62,7 +62,34 @@
 
         <div class="d-flex justify-content-between align-items-center mb-3">
           <button class="btn btn-secondary px-3 py-1 fw-bold" onclick="changeMonth(-1)" aria-label="previous month" title="previous month">&lt;</button>
-          <div class="fs-4 fw-bold text-dark px-3 py-1 bg-white border rounded shadow-sm" style="cursor:pointer;" onclick="openCalendarModal()" id="calendarTitle"></div>
+    <div id="calendarArea">
+    <!-- 通常表示 -->
+    <button
+        id="calendarTitle"
+        type="button"
+        class="btn btn-light border shadow-sm fw-bold fs-3 px-4 py-2"
+        onclick="showSelect()">
+    </button>
+    <!-- 編集用 -->
+    <div id="calendarEditor" class="d-none">
+      <div class="d-flex align-items-center gap-2">
+
+          <select id="yearSelect" class="form-select"></select>
+
+          <select id="monthSelect" class="form-select"></select>
+
+          <button
+              class="btn btn-success ps-2 px-3"
+              style="width:138px;"
+              onclick="changeCalendar()">
+              決定
+          </button>
+
+      </div>
+
+    </div>
+
+</div>
           <button class="btn btn-secondary px-3 py-1 fw-bold" onclick="changeMonth(1)" aria-label="next month" title="next month">&gt;</button>
         </div>
 
@@ -107,27 +134,6 @@
   </div>
 </div>
 
-<div class="modal fade" id="calendarModal" tabindex="-1" aria-labelledby="calendarModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered px-3">
-    <div class="modal-content shadow border-0">
-      <div class="modal-header border-0 pb-0">
-        <h5 class="modal-title fw-bold" id="calendarModalLabel">移動する年月</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" title="Close"></button>
-      </div>
-
-      <div class="modal-body p-4 text-center">
-        <div class="d-flex gap-2 mb-4">
-          <select id="yearSelect" class="form-control py-2 fw-bold text-center" aria-label="year" title="year"></select>
-          <select id="monthSelect" class="form-control py-2 fw-bold text-center" aria-label="month" title="month"></select>
-        </div>
-
-        <button type="button" class="btn btn-success w-100 py-2 fw-bold" onclick="changeCalendar()">
-          移動する
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
 
   <x-menubar />
 
@@ -273,7 +279,7 @@
     }
   }
 
-  function createSelectOptions() {
+  window.createSelectOptions = function() {
     const yearSelect = document.getElementById("yearSelect");
     const monthSelect = document.getElementById("monthSelect");
 
@@ -308,6 +314,7 @@
 
     if (currentMonth > 12) {
       currentMonth = 1;
+      currentYear++;
     }
 
     updateCalendarTitle();
@@ -327,13 +334,14 @@
     updateCalendarTitle();
     createCalendar();
 
-    const modalElement = document.getElementById("calendarModal");
-    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+    document
+        .getElementById("calendarEditor")
+        .classList.add("d-none");
 
-    if (modalInstance) {
-      modalInstance.hide();
-    }
-  };
+    document
+        .getElementById("calendarTitle")
+        .classList.remove("d-none");
+};
 
   window.openTaskList = (id) => {
     window.location.href = `/gtasutkuitiran/${id}`;
@@ -350,6 +358,22 @@
   updateCalendarTitle();
   createCalendar();
 })();
+
+function showSelect(){
+
+    createSelectOptions();
+
+    document
+        .getElementById("calendarTitle")
+        .classList.add("d-none");
+
+    document
+        .getElementById("calendarEditor")
+        .classList.remove("d-none");
+
+}
+
+
 </script>
 
 </body>

@@ -32,10 +32,60 @@
                     <div class="text-center fw-bold mb-4 fs-4">月間カレンダー</div>
 
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <button class="btn btn-secondary px-4 py-2" onclick="changeMonth(-1)">&lt;</button>
-                        <span id="current-month-display" class="fw-bold fs-3">2026年 6月</span>
-                        <button class="btn btn-secondary px-4 py-2" onclick="changeMonth(1)">&gt;</button>
-                    </div>
+
+    <button class="btn btn-secondary px-4 py-2"
+            onclick="changeMonth(-1)">
+        &lt;
+    </button>
+
+    <div>
+
+        <!-- 通常表示 -->
+        <button
+            id="current-month-display"
+            type="button"
+            class="btn btn-light border shadow-sm fw-bold fs-3 px-4 py-2"
+            onclick="showSelect()">
+        </button>
+
+        <!-- 編集表示 -->
+        <div
+            id="calendarEditor"
+            class="d-none">
+
+            <div class="d-flex align-items-center gap-2">
+
+                <select
+                    id="yearSelect"
+                    class="form-select form-select-lg"
+                    style="width:140px;">
+                </select>
+
+                <select
+                    id="monthSelect"
+                    class="form-select form-select-lg"
+                    style="width:120px;">
+                </select>
+
+                <button
+                    class="btn btn-success px-3"
+                    style="min-width:80px;"
+                    onclick="changeCalendar()">
+                    決定
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <button class="btn btn-secondary px-4 py-2"
+            onclick="changeMonth(1)">
+        &gt;
+    </button>
+
+</div>
 
                     <div class="week d-grid text-center fw-bold border-bottom pb-3 mb-3 fs-5" style="grid-template-columns: repeat(7, 1fr);">
                         <div class="text-danger">日</div>
@@ -238,6 +288,82 @@ function goTask(taskId) {
          * 初期描画
          */
         document.addEventListener("DOMContentLoaded", renderCalendar);
+    
+        function createSelectOptions() {
+
+            const yearSelect = document.getElementById("yearSelect");
+            const monthSelect = document.getElementById("monthSelect");
+
+            yearSelect.innerHTML = "";
+            monthSelect.innerHTML = "";
+
+            const currentYear = currentViewDate.getFullYear();
+
+            for (let y = currentYear - 5; y <= currentYear + 5; y++) {
+
+                const option = document.createElement("option");
+                option.value = y;
+                option.textContent = `${y}年`;
+
+                if (y === currentYear) {
+                    option.selected = true;
+                }
+
+                yearSelect.appendChild(option);
+            }
+
+            const currentMonth = currentViewDate.getMonth() + 1;
+
+            for (let m = 1; m <= 12; m++) {
+
+                const option = document.createElement("option");
+                option.value = m;
+                option.textContent = `${m}月`;
+
+                if (m === currentMonth) {
+                    option.selected = true;
+                }
+
+                monthSelect.appendChild(option);
+            }
+        }
+
+        function showSelect() {
+
+            createSelectOptions();
+
+            document
+                .getElementById("current-month-display")
+                .classList.add("d-none");
+
+            document
+                .getElementById("calendarEditor")
+                .classList.remove("d-none");
+
+        }
+
+        function changeCalendar() {
+
+    const year =
+        Number(document.getElementById("yearSelect").value);
+
+    const month =
+        Number(document.getElementById("monthSelect").value);
+
+    currentViewDate = new Date(year, month - 1, 1);
+
+    renderCalendar();
+
+    document
+        .getElementById("calendarEditor")
+        .classList.add("d-none");
+
+    document
+        .getElementById("current-month-display")
+        .classList.remove("d-none");
+
+}
+    
     </script>
 
     <x-menubar />
