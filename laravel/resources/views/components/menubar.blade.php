@@ -21,8 +21,8 @@
         </button>
 
         <button
-            class="btn {{ request()->is('gurupu') ? 'btn-success' : 'btn-outline-secondary' }}"
-            onclick="location.href='/gurupu'">
+            class="btn {{ request()->is('group') ? 'btn-success' : 'btn-outline-secondary' }}"
+            onclick="location.href='/group'">
             👥 グループ
         </button>
 

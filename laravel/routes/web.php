@@ -94,7 +94,7 @@ Route::prefix('setting')->group(function () {
     Route::view('/logout', 'setting.settingLogout');
 
 });
-Route::get('/gurupu',function(){
+Route::get('/group',function(){
     $groups = Group::all();
     return view('group', ['groups' => $groups]);
 });
