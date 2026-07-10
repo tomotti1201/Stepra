@@ -254,7 +254,7 @@
 
     </div>
 
-    <div id="priorityArea">
+    <div id="priorityArea" style="display:none;">
 
     <label class="form-label fw-bold mt-3">
         優先度
@@ -533,9 +533,22 @@ if(selectedDays.length === 0){
             "#mode-group .active"
         ).textContent.trim();
     const priority =
-    document.querySelector(
-        ".priority.active"
-    ).textContent.trim();
+        document.querySelector(
+            ".priority.active"
+        ).textContent.trim();
+
+    const priorityMap = {
+        高: "high",
+        中: "middle",
+        低: "low"
+    };
+
+    const priorityValue =
+        mode === "優先順位"
+            ? priorityMap[priority] ?? priority
+            : null;
+
+    const periodValue = null;
 
     const endDate =
         document.getElementById(
@@ -585,9 +598,9 @@ if(selectedDays.length === 0){
                         week_days: selectedDays,
                         start_time: startTime,
                         required_minutes: requiredMinutes,
-                        priority: priority,
+                        priority: priorityValue,
                         color: color,
-                        period: mode,
+                        period: periodValue,
                         notification_enabled: true,
                         start_date: startDate,
                         end_date: endDate || null,

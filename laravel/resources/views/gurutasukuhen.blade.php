@@ -252,7 +252,7 @@
 
     </div>
 
-    <div id="priorityArea">
+    <div id="priorityArea" style="display:none;">
 
     <label class="form-label fw-bold mt-3">
         優先度
@@ -393,167 +393,201 @@
 
 <script>
 
-const editId =
-Number(
-    localStorage.getItem(
-        "editTaskId"
-    )
-);
+const urlParams =
+    new URLSearchParams(
+        window.location.search
+    );
 
-const goals =
-JSON.parse(
-    localStorage.getItem(
-        "groupGoals"
-    )
-) || [];
+const taskId =
+    Number(
+        urlParams.get(
+            "task_id"
+        )
+    );
 
-const goal =
-goals.find(
-    g => g.id === editId
-);
+async function loadTask(){
+    if(!taskId){
+        return;
+    }
 
-if(goal){
-
-    document.getElementById(
-        "goal-name"
-    ).value =
-        goal.name;
-
-    document.getElementById(
-        "start-timing"
-    ).value =
-        goal.startTime;
-
-    document.getElementById(
-        "duration-hours"
-    ).value =
-        goal.durationHours;
-
-    document.getElementById(
-        "duration-minutes"
-    ).value =
-        goal.durationMinutes;
-
-    if(goal.days){
-
-    document
-    .querySelectorAll(".day")
-    .forEach(btn=>{
-
-        btn.classList.remove(
-            "active"
-        );
-
-        btn.classList.remove(
-            "btn-success"
-        );
-
-        btn.classList.add(
-            "btn-outline-secondary"
-        );
-
-        if(
-            goal.days.includes(
-                btn.textContent.trim()
-            )
-        ){
-
-            btn.classList.add(
-                "active"
+    try{
+        const response =
+            await fetch(
+                `/api/grouptasks/${taskId}`,
+                {
+                    headers: {
+                        "Accept": "application/json"
+                    }
+                }
             );
 
+        const data =
+            await response
+                .json()
+                .catch(() => ({}));
+
+        if(!response.ok || !data.task){
+            throw new Error(
+                data.message ||
+                "タスクの取得に失敗しました"
+            );
+        }
+
+        const goal = data.task;
+
+        document.getElementById(
+            "goal-name"
+        ).value =
+            goal.title ?? "";
+
+        document.getElementById(
+            "start-timing"
+        ).value =
+            goal.start_time ?? "";
+
+        const totalMinutes =
+            Number(goal.required_minutes) || 0;
+
+        document.getElementById(
+            "duration-hours"
+        ).value =
+            Math.floor(totalMinutes / 60);
+
+        document.getElementById(
+            "duration-minutes"
+        ).value =
+            totalMinutes % 60;
+
+        const weekDays =
+            String(goal.week_days || "")
+                .split(",")
+                .filter(value => value !== "");
+
+        document
+        .querySelectorAll(".day")
+        .forEach(btn => {
             btn.classList.remove(
+                "active",
+                "btn-success"
+            );
+            btn.classList.add(
                 "btn-outline-secondary"
             );
 
+            if(
+                weekDays.includes(
+                    btn.textContent.trim()
+                )
+            ){
+                btn.classList.add(
+                    "active"
+                );
+                btn.classList.remove(
+                    "btn-outline-secondary"
+                );
+                btn.classList.add(
+                    "btn-success"
+                );
+            }
+        });
+
+        document.getElementById(
+            "start-date"
+        ).value =
+            goal.start_date ?? "";
+
+        document.getElementById(
+            "end-date"
+        ).value =
+            goal.end_date ?? "";
+
+        document.getElementById(
+            "goal-color"
+        ).value =
+            goal.color ?? "#198754";
+
+        const modeValue =
+            goal.priority
+                ? "優先順位"
+                : "自由設定";
+
+        document
+        .querySelectorAll(".mode")
+        .forEach(btn => {
+            btn.classList.remove(
+                "active",
+                "btn-primary"
+            );
             btn.classList.add(
-                "btn-success"
+                "btn-outline-primary"
             );
 
+            if(
+                btn.textContent.trim()
+                === modeValue
+            ){
+                btn.classList.add(
+                    "active"
+                );
+                btn.classList.remove(
+                    "btn-outline-primary"
+                );
+                btn.classList.add(
+                    "btn-primary"
+                );
+            }
+        });
+
+        togglePriorityArea();
+
+        if(goal.priority){
+            const priorityMap = {
+                high: "高",
+                middle: "中",
+                low: "低"
+            };
+
+            const priorityLabel =
+                priorityMap[goal.priority] ??
+                goal.priority;
+
+            document
+            .querySelectorAll(".priority")
+            .forEach(btn => {
+                btn.classList.remove(
+                    "active",
+                    "btn-secondary"
+                );
+                btn.classList.add(
+                    "btn-outline-secondary"
+                );
+
+                if(
+                    btn.textContent.trim()
+                    === priorityLabel
+                ){
+                    btn.classList.add(
+                        "active"
+                    );
+                    btn.classList.remove(
+                        "btn-outline-secondary"
+                    );
+                    btn.classList.add(
+                        "btn-secondary"
+                    );
+                }
+            });
         }
 
-    });
-
-}
-    document.getElementById(
-        "start-date"
-    ).value =
-        goal.startDate;
-
-    document.getElementById(
-        "end-date"
-    ).value =
-        goal.endDate;
-
-    document.getElementById(
-        "goal-color"
-    ).value =
-        goal.color;
-    
-    togglePriorityArea();
+    }catch(error){
+        console.error(error);
+        alert(error.message || "タスクの取得に失敗しました");
+    }
 }
 
-if(goal.mode){
+loadTask();
 
-    document
-    .querySelectorAll(".mode")
-    .forEach(btn=>{
-
-        btn.classList.remove("active");
-        btn.classList.remove("btn-primary");
-        btn.classList.add("btn-outline-primary");
-
-        if(
-            btn.textContent.trim()
-            === goal.mode
-        ){
-
-            btn.classList.add("active");
-            btn.classList.remove("btn-outline-primary");
-            btn.classList.add("btn-primary");
-
-        }
-
-    });
-
-}
-
-if(goal.priority){
-
-    document
-    .querySelectorAll(".priority")
-    .forEach(btn=>{
-
-        btn.classList.remove("active");
-        btn.classList.remove("btn-secondary");
-        btn.classList.add("btn-outline-secondary");
-
-        if(
-            btn.textContent.trim()
-            === goal.priority
-        ){
-
-            btn.classList.add("active");
-            btn.classList.remove("btn-outline-secondary");
-            btn.classList.add("btn-secondary");
-
-        }
-
-    });
-
-}
-
-/* =====================================
-   保存キー
-===================================== */
-
-const storageKey =
-    "groupGoals";
-
-/* =====================================
-   編集保存
-===================================== */
-function updateTask(){
+async function updateTask(){
 
     const goalName =
     document.getElementById(
@@ -623,25 +657,12 @@ function updateTask(){
         return;
     }
 
-    const goals =
-    JSON.parse(
-        localStorage.getItem(
-            "groupGoals"
-        )
-    ) || [];
-
-    const editId =
-    Number(
-        localStorage.getItem(
-            "editTaskId"
-        )
-    );
-
-    const index =
-    goals.findIndex(
-        goal =>
-        goal.id === editId
-    );
+    if(!taskId){
+        alert(
+            "タスクIDがありません"
+        );
+        return;
+    }
 
     const selectedDays = [];
 
@@ -655,71 +676,101 @@ document
 
 });
 
-const mode =
+    const mode =
 document.querySelector(
-    ".mode.active"
-).textContent.trim();
+        ".mode.active"
+    ).textContent.trim();
 
-const priority =
-document.querySelector(
-    ".priority.active"
-).textContent.trim();
+    let priority = null;
 
-    if(index === -1){
-
-        alert(
-            "タスクが見つかりません"
+    if (mode === "優先順位") {
+        const priorityButton = document.querySelector(
+            ".priority.active"
         );
 
-        return;
+        const priorityLabel = priorityButton
+            ? priorityButton.textContent.trim()
+            : "中";
+
+        const priorityMap = {
+            高: "high",
+            中: "middle",
+            低: "low"
+        };
+
+        priority = priorityMap[priorityLabel] ?? priorityLabel;
     }
 
-    goals[index].startTime =
-        document.getElementById(
-            "start-timing"
-        ).value;
-
-    goals[index].durationHours =
-        hours;
-
-    goals[index].durationMinutes =
+    const requiredMinutes =
+        (hours * 60) +
         minutes;
 
-    goals[index].startDate =
-        startDate;
+    try{
+        const response =
+            await fetch(
+                `/api/grouptasks/${taskId}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
+                    },
+                    body: JSON.stringify({
+                        group_id: {{ $group->id }},
+                        title: goalName,
+                        content: "",
+                        week_days: selectedDays,
+                        start_time: document.getElementById(
+                            "start-timing"
+                        ).value,
+                        required_minutes: requiredMinutes,
+                        priority: priority,
+                        color: document.getElementById(
+                            "goal-color"
+                        ).value,
+                        period: null,
+                        notification_enabled: true,
+                        start_date: startDate,
+                        end_date:
+                            document.getElementById(
+                                "end-date"
+                            ).value || null,
+                        status: "active",
+                        created_by: Number(
+                            localStorage.getItem(
+                                "user_id"
+                            )
+                        )
+                    })
+                }
+            );
 
-    goals[index].endDate =
-        document.getElementById(
-            "end-date"
-        ).value;
+        const data =
+            await response
+                .json()
+                .catch(() => ({}));
 
-    goals[index].color =
-        document.getElementById(
-            "goal-color"
-        ).value;
+        if(!response.ok){
+            alert(
+                data.message ||
+                "グループタスクの更新に失敗しました"
+            );
+            return;
+        }
 
-    goals[index].mode =
-        mode;
+        alert(
+            "編集内容を保存しました"
+        );
 
-    goals[index].priority =
-        priority;
+        location.href =
+            "/gtasutkuitiran/{{ $group->id }}";
 
-    goals[index].days =
-    selectedDays;
-
-    localStorage.setItem(
-        "groupGoals",
-        JSON.stringify(
-            goals
-        )
-    );
-
-    alert(
-        "編集内容を保存しました"
-    );
-
-    location.href =
-        "/gtasutkuitiran";
+    }catch(error){
+        console.error(error);
+        alert(
+            "グループタスクの更新に失敗しました"
+        );
+    }
 }
 
 document

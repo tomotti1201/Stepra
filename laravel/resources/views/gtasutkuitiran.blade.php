@@ -239,6 +239,11 @@ async function renderGoals(){
 
 function editTask(id){
 
+    localStorage.setItem(
+        "editTaskId",
+        id
+    );
+
     location.href =
         `/gurutaskukuhen/{{ $group->id }}?task_id=${id}`;
 }
@@ -304,8 +309,14 @@ function formatTaskInfo(goal){
     }
 
     if(goal.priority){
+        const priorityMap = {
+            high: "高",
+            middle: "中",
+            low: "低"
+        };
+
         infos.push(
-            goal.priority
+            priorityMap[goal.priority] ?? goal.priority
         );
     }
 

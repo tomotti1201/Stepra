@@ -55,6 +55,8 @@ Route::prefix('groups')->group(function () {
 Route::prefix('grouptasks')->group(function () {
     Route::get('/', [GroupTaskController::class, 'index']);
     Route::post('/', [GroupTaskController::class, 'store']);
+    Route::get('/{id}', [GroupTaskController::class, 'show']);
+    Route::put('/{id}', [GroupTaskController::class, 'update']);
     Route::delete('/{id}', [GroupTaskController::class, 'destroy']);
 });
 

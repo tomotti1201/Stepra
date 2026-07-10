@@ -119,7 +119,25 @@
 
 <script>
 (() => {
-  const taskData = @json($calendarTasks);
+  let taskData = [];
+  async function loadTasks() {
+    try {
+      const resp = await fetch(`/api/grouptasks?group_id={{ $group->id }}`, { headers: { Accept: 'application/json' } });
+      if (!resp.ok) return;
+      const data = await resp.json();
+      const tasks = Array.isArray(data) ? data : data.tasks || [];
+      taskData = tasks.map(task => ({
+        id: task.id,
+        title: task.title,
+        weekdays: task.week_days ? task.week_days.split(',').map(s => s.trim()) : [],
+        startDate: task.start_date,
+        endDate: task.end_date,
+        color: task.color || '#198754'
+      }));
+    } catch (e) {
+      console.error('Failed loading group tasks', e);
+    }
+  }
   const today = new Date();
   let currentYear = today.getFullYear();
   let currentMonth = today.getMonth() + 1;
@@ -163,7 +181,13 @@
 
     const week = date.getDay();
 
-    return (task.weekdays || []).some((dayText) => {
+    const days = task.weekdays || [];
+    if (days.length === 0) {
+      // No weekday restriction — show for all dates in the start/end range
+      return true;
+    }
+
+    return days.some((dayText) => {
       const key = String(dayText).trim();
       return weekMap[key] === week || Number(key) === week;
     });
@@ -223,8 +247,28 @@
 
       matchedTasks.slice(0, 3).forEach((task) => {
         const taskBar = document.createElement("div");
-        taskBar.className = "text-white fw-bold text-center px-1 rounded";
-        taskBar.style.backgroundColor = task.color || "#0d6efd";
+        taskBar.className = "fw-bold text-center px-1 rounded";
+        const bg = task.color || "#0d6efd";
+        taskBar.style.backgroundColor = bg;
+        // choose readable text color based on background luminance
+        function hexToRgb(hex) {
+          const h = hex.replace('#', '');
+          const bigint = parseInt(h.length === 3 ? h.split('').map(c=>c+c).join('') : h, 16);
+          return [(bigint >> 16) & 255, (bigint >> 8) & 255, bigint & 255];
+        }
+        function luminance(r,g,b){
+          const a=[r,g,b].map(v=>{
+            v=v/255; return v<=0.03928? v/12.92 : Math.pow((v+0.055)/1.055,2.4);
+          });
+          return 0.2126*a[0]+0.7152*a[1]+0.0722*a[2];
+        }
+        try{
+          const [r,g,b] = hexToRgb(bg);
+          const lum = luminance(r,g,b);
+          taskBar.style.color = lum > 0.5 ? '#111' : '#fff';
+        }catch(e){
+          taskBar.style.color = '#fff';
+        }
         taskBar.style.fontSize = "12px";
         taskBar.style.lineHeight = "1.45";
         taskBar.style.whiteSpace = "nowrap";
@@ -243,12 +287,11 @@
       }
 
       dayBox.onclick = () => {
-        if (matchedTasks.length === 0) {
-          alert(`${currentMonth}月${day}日のタスクはありません`);
-          return;
-        }
-
-        alert(matchedTasks.map((task) => task.title).join("\n"));
+        const y = currentYear;
+        const m = String(currentMonth).padStart(2, '0');
+        const d = String(day).padStart(2, '0');
+        // navigate to schedule detail page for the clicked date (include group_id)
+        window.location.href = `/scheduleDetail?date=${y}-${m}-${d}&group_id={{ $group->id }}`;
       };
 
       dayBox.appendChild(taskContainer);
@@ -331,8 +374,11 @@
     alert("グループ編集は未実装です");
   };
 
-  updateCalendarTitle();
-  createCalendar();
+  (async () => {
+    await loadTasks();
+    updateCalendarTitle();
+    createCalendar();
+  })();
 })();
 </script>
 

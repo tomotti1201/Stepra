@@ -12,6 +12,7 @@ class Grouptask extends Model
     protected $table = 'group_tasks';
 
     protected $fillable = [
+        'user_id',
         'group_id',
         'title',
         'content',
