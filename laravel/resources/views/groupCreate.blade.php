@@ -44,7 +44,7 @@
     </button>
 
     <button class="btn btn-secondary w-100 py-3 fw-bold fs-5" 
-            onclick="location.href='/group'">
+            onclick="location.href='/group?user_id=' + encodeURIComponent(localStorage.getItem('user_id') || '')">
       戻る
     </button>
 

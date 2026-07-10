@@ -1,4 +1,4 @@
-<nav class="navbar bg-white border-top fixed-bottom">
+<nav id="main-menu-bar" class="navbar bg-white border-top fixed-bottom">
 
     <div class="container d-flex justify-content-around">
 
@@ -22,7 +22,7 @@
 
         <button
             class="btn {{ request()->is('gurupu') ? 'btn-success' : 'btn-outline-secondary' }}"
-            onclick="location.href='/gurupu?user_id=' + encodeURIComponent(localStorage.getItem('user_id') || '')">
+            onclick="location.href='/group?user_id=' + encodeURIComponent(localStorage.getItem('user_id') || '')">
             👥 グループ
         </button>
 

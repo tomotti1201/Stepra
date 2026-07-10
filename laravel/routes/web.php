@@ -45,10 +45,6 @@ Route::get('/schedules',function(){
 
 Route::get('/scheduleDetail', [ScheduleController::class, 'detail']);
 
-Route::get('/group',function(){
-    return view('group');
-});
-
 Route::get('/groupCreate',function(){
     return view('groupCreate');
 });
@@ -97,6 +93,7 @@ Route::prefix('setting')->group(function () {
 Route::get('/group',function(){
     $groups = Group::all();
 
+    $userId = request('user_id');
     if ($userId) {
         $groupIds = Groupmember::where('user_id', $userId)->pluck('group_id');
         $groups = Group::whereIn('id', $groupIds)->get();

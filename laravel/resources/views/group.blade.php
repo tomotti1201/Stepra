@@ -81,7 +81,7 @@
     <button class="btn btn-outline-secondary" onclick="location.href='/home'">ホーム</button>
     <button class="btn btn-outline-secondary" onclick="location.href='/mokuhyouitiran'">目標</button>
     <button class="btn btn-outline-secondary" onclick="location.href='/gekkankarenda'">カレンダー</button>
-    <button class="btn btn-success" onclick="location.href='/gurupu?user_id=' + encodeURIComponent(localStorage.getItem('user_id') || '')">グループ</button>
+    <button class="btn btn-success" onclick="location.href='/group?user_id=' + encodeURIComponent(localStorage.getItem('user_id') || '')">グループ</button>
     <button class="btn btn-outline-secondary" onclick="location.href='/setting'">設定</button>
   </div>
 </nav>
@@ -142,7 +142,7 @@
       resultDiv.innerHTML = `
         <p class="fw-bold text-success mb-2">${data.already_joined ? "すでに参加済みです" : "グループに参加しました"}</p>
         <p class="mb-3">${data.group.name}</p>
-        <button class="btn btn-sm btn-success w-100 fw-bold" onclick="location.href='/gurupu?user_id=' + encodeURIComponent(localStorage.getItem('user_id') || '')">グループ一覧へ戻る</button>
+        <button class="btn btn-sm btn-success w-100 fw-bold" onclick="location.href='/group?user_id=' + encodeURIComponent(localStorage.getItem('user_id') || '')">グループ一覧へ戻る</button>
       `;
     } catch (error) {
       console.error(error);

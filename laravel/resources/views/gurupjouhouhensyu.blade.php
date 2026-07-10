@@ -317,16 +317,18 @@
       document.getElementById('mobile-profile-icon').innerText = icon;
       document.getElementById('mobile-profile-username').innerText = username;
       document.getElementById('mobile-profile-text').innerText = info;
+      const menuBar = document.getElementById('main-menu-bar');
       document.getElementById('screen-main').classList.add('d-none');
-      document.getElementById('main-menu-bar').classList.add('d-none');
+      menuBar?.classList.add('d-none');
       document.getElementById('screen-detail').classList.remove('d-none');
       window.scrollTo(0, 0);
     }
 
     function navigateBack() {
+      const menuBar = document.getElementById('main-menu-bar');
       document.getElementById('screen-detail').classList.add('d-none');
       document.getElementById('screen-main').classList.remove('d-none');
-      document.getElementById('main-menu-bar').classList.remove('d-none');
+      menuBar?.classList.remove('d-none');
     }
 
     document.addEventListener('DOMContentLoaded', loadMembers);
