@@ -3,6 +3,7 @@
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\ScheduleController;
 use App\Models\Group;
+use App\Models\Groupmember;
 use App\Models\Grouptask;
 use Illuminate\Support\Facades\Route;
 
@@ -107,13 +108,15 @@ Route::get('/gtasutkuitiran/{id}', function ($id) {
     ]);
 });
 
-Route::get('/gurupjouhouhensyu', function () {
-    return view('gurupjouhouhensyu');
+Route::get('/gurupjouhouhensyu/{id}', function ($id) {
+    $group = Group::findOrFail($id);
+    $member = Groupmember::where('group_id',$id)->get();
+    return view('gurupjouhouhensyu',[
+        'group' => $group,
+        'member'=>$member
+    ]);
 });
 
-Route::get('/gurupujouhouhensyu', function () {
-    return view('gurupjouhouhensyu');
-});
 
 Route::get('/gurupumokuhyosinki/{id}', function ($id) {
     $group = Group::findOrFail($id);

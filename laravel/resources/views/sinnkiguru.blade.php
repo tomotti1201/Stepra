@@ -59,29 +59,55 @@
 /* ===================================================== */
 /* グループ作成 */
 /* ===================================================== */
-async function createGroup(){
+async function createGroup() {
   const description = document.getElementById("groupDesc").value;
   const groupname = document.getElementById("groupName").value;
-  const response = await fetch("/api/groups/",{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",
+
+  const userResponse = await fetch("/api/current-user");
+
+  if (!userResponse.ok) {
+    alert("ログイン情報を取得できませんでした。もう一度ログインしてください");
+    return;
+  }
+
+  const currentUser = await userResponse.json();
+
+  const groupResponse = await fetch("/api/groups", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
     },
-    body:JSON.stringify({
-      name:groupname,
-      description:description
-    })
+    body: JSON.stringify({
+      name: groupname,
+      description: description,
+    }),
   });
 
-  if(response.ok){
-    const data = await response.json();
-    alert("グループを作成しました");
-  }
-  else{
+  if (!groupResponse.ok) {
     alert("グループ作成に失敗しました");
-    return
+    return;
+  }
+
+  const data = await groupResponse.json();
+
+  const joinResponse = await fetch("/api/groups/join", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      group_id: data.id,
+      user_id: currentUser.user.id,
+    }),
+  });
+
+  if (joinResponse.ok) {
+    alert("グループを作成しました");
+  } else {
+    alert("グループメンバー登録に失敗しました");
   }
 }
+
 
 /* ===================================================== */
 /* 高さ自動変更 */

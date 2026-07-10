@@ -9,7 +9,6 @@ use Illuminate\Support\Str;
 
 class GroupController extends Controller
 {
-     //グループ一覧取得
     public function index()
     {
         $groups = Group::all();
@@ -17,7 +16,6 @@ class GroupController extends Controller
         return response()->json($groups);
     }
 
-     //グループ作成
     public function store(Request $request)
     {
         $group = Group::create([
@@ -30,7 +28,7 @@ class GroupController extends Controller
 
         return response()->json($group, 201);
     }
-     //グループ参加
+
     public function join(Request $request)
     {
         $member = Groupmember::create([
@@ -42,11 +40,26 @@ class GroupController extends Controller
 
         return response()->json($member, 201);
     }
-    //グループ削除
-public function destroy($id)
-{
-    $group = Group::findOrFail($id);
-    $group->delete();
-    return response()->json(null, 204);
-}
+
+    public function update(Request $request, $id)
+    {
+        $group = Group::findOrFail($id);
+
+        $group->update($request->only([
+            'name',
+            'icon',
+            'description',
+            'is_public',
+        ]));
+
+        return response()->json($group);
+    }
+
+    public function destroy($id)
+    {
+        $group = Group::findOrFail($id);
+        $group->delete();
+
+        return response()->json(null, 204);
+    }
 }
