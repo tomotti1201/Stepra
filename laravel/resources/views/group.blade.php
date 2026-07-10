@@ -20,6 +20,10 @@
 
       <div class="card shadow border-0 mb-4">
         <div class="card-body p-4">
+<<<<<<< HEAD
+=======
+
+>>>>>>> feature-ui-test
           <h2 class="text-center fw-bold mb-4 fs-4">
             グループ
           </h2>
@@ -129,3 +133,7 @@
 
 </body>
 </html>
+<<<<<<< HEAD
+=======
+
+>>>>>>> feature-ui-test
