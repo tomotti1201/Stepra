@@ -322,14 +322,8 @@ if (goal.priority) {
 
 }
 
-/* =====================================
-   保存キー
-===================================== */
 
 const storageKey = "groupGoals";
-/* =====================================
-   編集保存
-===================================== */
 
 function updateTask() {
 
@@ -469,9 +463,7 @@ function togglePriorityArea() {
 }
 
 togglePriorityArea();
-/* =====================================
-   頻度選択
-===================================== */
+    //頻度選択
 
 document.querySelectorAll(".day").forEach(button => {
 
@@ -491,9 +483,7 @@ document.querySelectorAll(".day").forEach(button => {
 
 });
 
-/* =====================================
-   下メニュー
-===================================== */
+   //下メニュー
 
 const menuButtons = document.querySelectorAll(".navbar button");
 
@@ -513,9 +503,7 @@ menuButtons.forEach(button => {
 
 });
 
-/* =====================================
-   頻度ボタン
-===================================== */
+   //頻度ボタン
 
 document.querySelectorAll(".day").forEach(button => {
 
@@ -534,10 +522,6 @@ document.querySelectorAll(".day").forEach(button => {
     });
 
 });
-
-/* =====================================
-   script終了
-===================================== */
 
 </script>
 
