@@ -648,7 +648,7 @@ document.querySelectorAll(".day").forEach(button => {
     });
 
 });
-
+}
 </script>
 
 </body>

@@ -210,7 +210,6 @@
 
     </div>
 
-    <div id="priorityArea" style="display:none;">
 
     <div id="priority-box" class="disabled-group">
 
@@ -504,84 +503,7 @@ async function saveGoal(){
 
     const userId = localStorage.getItem("user_id");
 
-    return;
-}
-
-if(
-    hours === 0 &&
-    minutes === 0
-){
-
-    alert(
-        "所要時間を入力してください"
-    );
-
-    return;
-}
-
-if(startDate === ""){
-
-    alert(
-        "開始日を入力してください"
-    );
-
-    return;
-}   
-
-if(selectedDays.length === 0){
-
-    alert(
-        "頻度を選択してください"
-    );
-
-    return;
-}
-
-    const startTime =
-        document.getElementById(
-            "start-timing"
-        ).value;
-
-    const color =
-        document.getElementById(
-            "goal-color"
-        ).value;
-
-    const mode =
-        document.querySelector(
-            "#mode-group .active"
-        ).textContent.trim();
-    const priority =
-        document.querySelector(
-            ".priority.active"
-        ).textContent.trim();
-
-    const priorityMap = {
-        高: "high",
-        中: "middle",
-        低: "low"
-    };
-
-    const priorityValue =
-        mode === "優先順位"
-            ? priorityMap[priority] ?? priority
-            : null;
-
-    const periodValue = null;
-
-    const endDate =
-        document.getElementById(
-            "end-date"
-        ).value;
-
-    if(
-        endDate &&
-        endDate < startDate
-    ){
-
-        alert(
-            "終了日は開始日以降の日付を選択してください"
-        );
+    const groupId = {{ $group->id }};
 
     if(!userId){
         alert("ログインしてください");
@@ -663,33 +585,58 @@ if(selectedDays.length === 0){
 
     try{
 
-        const response =
-            await fetch(
-                "/api/grouptasks",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Accept": "application/json"
-                    },
-                    body: JSON.stringify({
-                        group_id: {{ $group->id }},
-                        title: goalName,
-                        content: "",
-                        week_days: selectedDays,
-                        start_time: startTime,
-                        required_minutes: requiredMinutes,
-                        priority: priorityValue,
-                        color: color,
-                        period: periodValue,
-                        notification_enabled: true,
-                        start_date: startDate,
-                        end_date: endDate || null,
-                        status: "active",
-                        created_by: userId
-                    })
-                }
-            );
+        const response=await fetch("/api/grouptasks",{
+
+            method:"POST",
+
+            headers:{
+
+                "Content-Type":"application/json",
+                "Accept":"application/json",
+                "X-CSRF-TOKEN":
+                    document.querySelector(
+                        'meta[name="csrf-token"]'
+                    ).content
+
+            },
+
+
+            body:JSON.stringify({
+
+            group_id:groupId,
+
+            user_id:userId,
+
+            title:name,
+
+            content:"",
+
+            week_days:weekDays,
+
+            start_time:timing,
+
+            required_minutes:requiredMinutes,
+
+            priority:priority,
+
+            color:selectedColor,
+
+            period:"weekly",
+
+            start_date:startDate,
+
+            end_date:endDate || null,
+
+            status:"active",
+
+            notification_enabled:true
+
+        })
+
+        });
+
+
+        const data=await response.json();
 
 
         if(!response.ok){
