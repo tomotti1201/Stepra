@@ -210,8 +210,49 @@
 
                         <label class="form-label fw-bold small">目標カラー</label>
 
-                        <div id="color-limit-message" class="form-text text-muted mb-2">
-                            好きな色を5色まで選べます。不要な色は削除できます。
+                        <div class="color-selection" id="color-group">
+
+                            <div class="color-circle selected"
+                                data-color="#0d6efd"
+                                style="background:#0d6efd"
+                                onclick="selectColor(this)">
+                            </div>
+
+                            <div class="color-circle"
+                                data-color="#198754"
+                                style="background:#198754"
+                                onclick="selectColor(this)">
+                            </div>
+
+                            <div class="color-circle"
+                                data-color="#dc3545"
+                                style="background:#dc3545"
+                                onclick="selectColor(this)">
+                            </div>
+
+                            <div class="color-circle"
+                                data-color="#ffc107"
+                                style="background:#ffc107"
+                                onclick="selectColor(this)">
+                            </div>
+
+                            <div class="color-circle"
+                                data-color="#6f42c1"
+                                style="background:#6f42c1"
+                                onclick="selectColor(this)">
+                            </div>
+
+                            <div class="color-circle custom"
+                                id="add-color-btn"
+                                onclick="selectCustomColor()">
+                                ＋
+                            </div>
+
+                            <input type="color"
+                                id="custom-color-picker"
+                                style="display:none;"
+                                onchange="addCustomColor(this.value)">
+
                         </div>
 
                         <div class="color-selection" id="color-group"></div>

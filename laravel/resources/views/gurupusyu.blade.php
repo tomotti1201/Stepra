@@ -44,7 +44,7 @@
         </div>
 
         <div class="col-5">
-          <button class="btn btn-primary w-100 h-100 fw-bold d-flex align-items-center justify-content-center" onclick="editGroup()">
+          <button class="btn btn-primary w-100 h-100 fw-bold d-flex align-items-center justify-content-center" onclick="editGroup({{ $group->id }})">
             グループ<br>編集
           </button>
         </div>
@@ -370,8 +370,8 @@
     window.location.href = `/gurutaskukuhen/${id}`;
   };
 
-  window.editGroup = () => {
-    alert("グループ編集は未実装です");
+  window.editGroup = (id) => {
+   window.location.href = `/gurupjouhouhensyu/${id}`;
   };
 
   (async () => {

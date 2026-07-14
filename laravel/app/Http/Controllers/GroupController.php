@@ -9,7 +9,6 @@ use Illuminate\Support\Str;
 
 class GroupController extends Controller
 {
-     //グループ一覧取得
     public function index()
     {
         $groups = Group::all();
@@ -17,7 +16,6 @@ class GroupController extends Controller
         return response()->json($groups);
     }
 
-     //グループ作成
     public function store(Request $request)
     {
         $group = Group::create([
@@ -30,23 +28,63 @@ class GroupController extends Controller
 
         return response()->json($group, 201);
     }
-     //グループ参加
+
     public function join(Request $request)
     {
+        $validated = $request->validate([
+            'group_id' => ['required', 'integer'],
+            'user_id' => ['required', 'integer'],
+            'role' => ['nullable', 'in:admin,member'],
+        ]);
+
         $member = Groupmember::create([
-            'group_id' => $request->group_id,
-            'user_id' => $request->user_id,
+            'group_id' => $validated['group_id'],
+            'user_id' => $validated['user_id'],
             'notification_enabled' => 1,
-            'role' => 'member',
+            'role' => $validated['role'] ?? 'member',
         ]);
 
         return response()->json($member, 201);
     }
-    //グループ削除
-public function destroy($id)
-{
-    $group = Group::findOrFail($id);
-    $group->delete();
-    return response()->json(null, 204);
-}
+
+    public function update(Request $request, $id)
+    {
+        $group = Group::findOrFail($id);
+        $requestUserId = $request->request_user_id;
+
+        if (!$requestUserId) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'request_user_id is required',
+            ], 400);
+        }
+
+        $requestMember = Groupmember::where('group_id', $group->id)
+            ->where('user_id', $requestUserId)
+            ->first();
+
+        if (!$requestMember || $requestMember->role !== 'admin') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Only admins can update groups',
+            ], 403);
+        }
+
+        $group->update($request->only([
+            'name',
+            'icon',
+            'description',
+            'is_public',
+        ]));
+
+        return response()->json($group);
+    }
+
+    public function destroy($id)
+    {
+        $group = Group::findOrFail($id);
+        $group->delete();
+
+        return response()->json(null, 204);
+    }
 }

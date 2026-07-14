@@ -46,7 +46,7 @@
                         class="d-grid gap-1 text-center fs-6"
                         style="
                             grid-template-columns: repeat(7, 1fr);
-                            grid-auto-rows: 95px;
+                            grid-auto-rows: 120px;
                             align-items: stretch;
                         ">
                     </div>
@@ -139,19 +139,57 @@
                 dayEl.className =
                     "btn w-100 border rounded-3 p-1 shadow-sm";
 
-                dayEl.style.height = "95px";
+                dayEl.style.height = "120px";
                 dayEl.style.overflow = "hidden";
                 dayEl.style.display = "flex";
                 dayEl.style.flexDirection = "column";
 
                 const dayOfWeek = new Date(year, month, date).getDay();
+                
+                const today = new Date();
 
-                if (dayOfWeek === 0) {
-                    dayEl.className = "btn btn-danger-subtle border border-danger-subtle text-danger fw-bold rounded-3 py-1 shadow-sm w-100 h-100";
-                } else if (dayOfWeek === 6) {
-                    dayEl.className = "btn btn-primary-subtle border border-primary-subtle text-primary fw-bold rounded-3 py-1 shadow-sm w-100 h-100";
+                const isToday =
+                    year === today.getFullYear() &&
+                    month === today.getMonth() &&
+                    date === today.getDate();
+
+                if (isToday) {
+
+                    // 今日
+                    dayEl.className =
+                        "btn border border-success text-success fw-bold rounded-3 py-1 shadow-sm w-100 h-100";
+
+                    dayEl.style.setProperty(
+                        "background-color",
+                        "rgba(25,135,84,0.25)",
+                        "important"
+                    );
+
+                } else {
+
+                    // 全曜日共通
+                    dayEl.className =
+                        "btn border rounded-3 p-1 shadow-sm w-100 h-100";
+
+                    // 日曜
+                    if (dayOfWeek === 0) {
+                        dayEl.classList.add(
+                            "text-danger",
+                            "bg-danger",
+                            "bg-opacity-10"
+                        );
+                    }
+
+                    // 土曜
+                    if (dayOfWeek === 6) {
+                        dayEl.classList.add(
+                            "text-primary",
+                            "bg-primary",
+                            "bg-opacity-10"
+                        );
+                    }
+
                 }
-
                 // 日付
                 const header = `
                     <div style="font-size:13px; font-weight:bold;">
@@ -200,7 +238,7 @@
 
             for (let i = 0; i < remainCells; i++) {
                 const empty = document.createElement("div");
-                empty.style.height = "95px";
+                empty.style.height = "120px";
                 daysContainer.appendChild(empty);
             }
         }
@@ -234,8 +272,6 @@ function goTask(taskId) {
          */
         document.addEventListener("DOMContentLoaded", renderCalendar);
     </script>
-
-    <x-menubar />
 
     <div style="height:100px;"></div>
 
