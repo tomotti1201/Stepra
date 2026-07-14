@@ -102,6 +102,7 @@ Route::get('/group',function(){
     return view('group', ['groups' => $groups]);
 });
 
+
 Route::get('/gtasutkuitiran/{id}', function ($id) {
     $tasklist = Grouptask::where('group_id', $id)->get();
     $group = Group::findOrFail($id);
@@ -173,3 +174,16 @@ Route::get('/im/{filename}', function (string $filename) {
 
     return response()->file($imagePath);
 })->where('filename', '[A-Za-z0-9_.-]+');
+
+Route::prefix('setting')->group(function () {
+
+    Route::view('/user', 'setting.settingUser');
+
+    Route::view('/notification', 'setting.settingNotification');
+
+    Route::view('/design', 'setting.settingDesign');
+
+    Route::view('/logout', 'setting.settingLogout');
+
+});
+

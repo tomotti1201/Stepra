@@ -47,7 +47,7 @@
       font-weight: bold;
     }
     .status-card {
-        min-height: 150px; 
+        min-height: 150px; /* ランクカードと同じくらいの高さ */
     }
   </style>
 </head>
@@ -61,8 +61,17 @@
       <div class="card shadow border-0 mb-5">
         <div class="card-body p-4">
           
-          <div class="d-flex align-items-center gap-3 mb-4">  
-            <div id="userName" class="form-control d-flex align-items-center justify-content-center fw-bold bg-light" style="height: 80px; font-size: 1.1rem;">
+          <h2 class="text-center fw-bold mb-4 fs-4">ユーザー情報</h2>
+
+          <div class="d-flex align-items-center gap-3 mb-4">
+            <button type="button" class="user-icon-circle shadow-sm" onclick="selectImage()">
+              <img id="iconImage" src="" alt="ユーザーアイコン">
+              <span id="iconText" class="small fw-bold text-white">画像選択</span>
+            </button>
+            <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="changeIcon(event)">
+
+            <div class="form-control d-flex align-items-center justify-content-center fw-bold bg-light" style="height: 80px; font-size: 1.1rem;">
+              ユーザー名
             </div>
           </div>
 
@@ -129,8 +138,7 @@ async function loadContinuity() {
     const res = await fetch(`/api/continuity?user_id=${userId}`);
 
     const data = await res.json();
-
-    document.getElementById("userName").textContent = data.name;
+console.log(data);
 
     document.getElementById("rate").innerHTML =
         `${Number(data.rate).toFixed(1)}<span class="fs-4">%</span>`;

@@ -61,9 +61,9 @@
                     個人目標一覧
                 </h5>
 
-                <button class="btn btn-success" onclick="changeGoal()">
+                <!--<button class="btn btn-success" onclick="changeGoal()">
                     切替
-                </button>
+                </button>-->
 
             </div>
         </div>
@@ -165,7 +165,7 @@ if (!dateStr) {
 // 日付表示
 // ==========================
 document.getElementById("scheduleTitle").textContent =
-`${dateStr} のスケジュール`;
+`${dateStr} `;
 const clickedDate = new Date(dateStr);
 const today = new Date();
 

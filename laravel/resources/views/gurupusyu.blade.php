@@ -7,6 +7,19 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
+  <div class="container py-4 mb-5">
+
+        <!--<div class="row justify-content-center">-->
+
+            <!--<div class="col-12 col-md-8 col-lg-5"> -->
+
+                <div class="card-body">
+
+    <script>
+        if (!localStorage.getItem("user_id")) {
+            location.href = "/login";
+        }
+    </script>
 
 @php
   $calendarTasks = $tasklist->map(function ($task) {
@@ -23,11 +36,8 @@
   })->values();
 @endphp
 
-<div class="container-fluid py-4 mb-5">
   <img src="/image/tit.png" alt="STEPRA" class="mb-3" style="width:200px;">
 
-  <div class="card shadow border-0 mb-4">
-    <div class="card-body p-3 p-md-4">
       <h2 class="text-center fw-bold mb-4 display-6">
         {{ $group->name }}
       </h2>
@@ -50,24 +60,61 @@
         </div>
       </div>
 
-      <div class="border rounded p-3 bg-light">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <button class="btn btn-secondary px-3 py-1 fw-bold" onclick="changeMonth(-1)" aria-label="previous month" title="previous month">&lt;</button>
-          <div class="fs-4 fw-bold text-dark px-3 py-1 bg-white border rounded shadow-sm" style="cursor:pointer;" onclick="openCalendarModal()" id="calendarTitle"></div>
+    <div id="calendarArea">
+    <!-- 通常表示 -->
+    <button
+        id="calendarTitle"
+        type="button"
+        class="btn btn-light border shadow-sm fw-bold fs-3 px-4 py-2"
+        onclick="showSelect()">
+    </button>
+    <!-- 編集用 -->
+    <div id="calendarEditor" class="d-none">
+      <div class="d-flex align-items-center gap-3">
+      <select
+          id="yearSelect"
+          class="form-select"
+          style="width:140px;"
+          onchange="changeYear()">
+      </select>
+
+      <select
+          id="monthSelect"
+          class="form-select"
+          style="width:140px;"
+          onchange="changeMonthSelect()">
+      </select>
+
+      </div>
+
+    </div>
+
+</div>
           <button class="btn btn-secondary px-3 py-1 fw-bold" onclick="changeMonth(1)" aria-label="next month" title="next month">&gt;</button>
         </div>
 
-        <div class="d-flex text-center fw-bold mb-2 small">
-          <div class="text-danger" style="width:14.285%;">日</div>
-          <div class="text-dark" style="width:14.285%;">月</div>
-          <div class="text-dark" style="width:14.285%;">火</div>
-          <div class="text-dark" style="width:14.285%;">水</div>
-          <div class="text-dark" style="width:14.285%;">木</div>
-          <div class="text-dark" style="width:14.285%;">金</div>
-          <div class="text-primary" style="width:14.285%;">土</div>
+        <div
+            class="d-grid text-center fw-bold border-bottom pb-3 mb-3 fs-5"
+            style="grid-template-columns:repeat(7,1fr);">
+            <div class="text-danger">日</div>
+            <div>月</div>
+            <div>火</div>
+            <div>水</div>
+            <div>木</div>
+            <div>金</div>
+            <div class="text-primary">土</div>
         </div>
 
-        <div id="calendarGrid" class="d-flex flex-wrap"></div>
+       <div
+          id="calendarGrid"
+          class="d-grid gap-1 text-center fs-6"
+          style="
+              grid-template-columns: repeat(7,1fr);
+              grid-auto-rows:95px;
+              align-items:stretch;
+          ">
       </div>
 
       <div class="mt-4 border rounded p-3 bg-white">
@@ -89,29 +136,8 @@
   </div>
 </div>
 
-<div class="modal fade" id="calendarModal" tabindex="-1" aria-labelledby="calendarModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered px-3">
-    <div class="modal-content shadow border-0">
-      <div class="modal-header border-0 pb-0">
-        <h5 class="modal-title fw-bold" id="calendarModalLabel">移動する年月</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" title="Close"></button>
-      </div>
 
-      <div class="modal-body p-4 text-center">
-        <div class="d-flex gap-2 mb-4">
-          <select id="yearSelect" class="form-control py-2 fw-bold text-center" aria-label="year" title="year"></select>
-          <select id="monthSelect" class="form-control py-2 fw-bold text-center" aria-label="month" title="month"></select>
-        </div>
-
-        <button type="button" class="btn btn-success w-100 py-2 fw-bold" onclick="changeCalendar()">
-          移動する
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<x-menubar />
+  <x-menubar />
 
 <div class="py-5"></div>
 
@@ -182,12 +208,11 @@
 
     for (let i = 0; i < firstDay; i++) {
       const empty = document.createElement("div");
-      empty.style.width = "14.285%";
       calendar.appendChild(empty);
     }
 
     for (let day = 1; day <= lastDate; day++) {
-      const dayBox = document.createElement("div");
+      const dayBox = document.createElement("button");
       const currentDate = new Date(currentYear, currentMonth - 1, day);
       const currentWeek = currentDate.getDay();
       const matchedTasks = getTasksForDate(currentDate);
@@ -207,10 +232,10 @@
       }
 
       dayBox.className =
-        `border rounded p-1 d-flex flex-column ${colorClasses}`;
-      dayBox.style.width = "14.285%";
-      dayBox.style.minHeight = "108px";
-      dayBox.style.cursor = "pointer";
+        "btn w-100 border rounded-3 p-1 shadow-sm";
+      dayBox.style.height = "95px";
+      dayBox.style.display = "flex";
+      dayBox.style.flexDirection = "column";
       dayBox.style.overflow = "hidden";
 
       const dayNum = document.createElement("span");
@@ -256,7 +281,7 @@
     }
   }
 
-  function createSelectOptions() {
+  window.createSelectOptions = function() {
     const yearSelect = document.getElementById("yearSelect");
     const monthSelect = document.getElementById("monthSelect");
 
@@ -304,19 +329,38 @@
     modal.show();
   };
 
-  window.changeCalendar = () => {
-    currentYear = Number(document.getElementById("yearSelect").value);
-    currentMonth = Number(document.getElementById("monthSelect").value);
+  window.changeYear = () => {
+
+    currentYear =
+        Number(document.getElementById("yearSelect").value);
+
+    currentMonth =
+        Number(document.getElementById("monthSelect").value);
 
     updateCalendarTitle();
     createCalendar();
 
-    const modalElement = document.getElementById("calendarModal");
-    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+    // 編集画面は閉じない
+  };
 
-    if (modalInstance) {
-      modalInstance.hide();
-    }
+  window.changeMonthSelect = () => {
+    currentYear =
+        Number(document.getElementById("yearSelect").value);
+
+    currentMonth =
+        Number(document.getElementById("monthSelect").value);
+
+    updateCalendarTitle();
+    createCalendar();
+
+    // 編集終了
+    document
+        .getElementById("calendarEditor")
+        .classList.add("d-none");
+
+    document
+        .getElementById("calendarTitle")
+        .classList.remove("d-none");
   };
 
   window.openTaskList = (id) => {
@@ -334,6 +378,22 @@
   updateCalendarTitle();
   createCalendar();
 })();
+
+function showSelect(){
+
+    createSelectOptions();
+
+    document
+        .getElementById("calendarTitle")
+        .classList.add("d-none");
+
+    document
+        .getElementById("calendarEditor")
+        .classList.remove("d-none");
+
+}
+
+
 </script>
 
 </body>
