@@ -218,8 +218,7 @@ async function renderList(){
                 "編集";
 
             editLink.href =
-                `/gurutaskukuhen/{{ $group->id }}?task_id=${goal.id}`;
-
+    `/gurutaskukuhen/{{ $group->id }}?task_id=${goal.id}`;
             editBtnWrapper.appendChild(editLink);
 
             item.appendChild(content);
@@ -244,14 +243,6 @@ async function renderList(){
 
 }
 
-
-    localStorage.setItem(
-        "editTaskId",
-        id
-    );
-
-    location.href =
-        `/gurutaskukuhen/{{ $group->id }}?task_id=${id}`;
 
 function formatWeekDays(goal){
 
@@ -300,21 +291,6 @@ function formatTime(time){
 
     return time.slice(0,5);
 
-    if(goal.priority){
-        const priorityMap = {
-            high: "高",
-            middle: "中",
-            low: "低"
-        };
-
-        infos.push(
-            priorityMap[goal.priority] ?? goal.priority
-        );
-    }
-
-    return infos.length
-        ? escapeHtml(infos.join(" / "))
-        : "";
 }
 function formatDate(date){
 

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\GroupTaskController;
 use App\Models\Group;
 use App\Models\Groupmember;
 use App\Models\Grouptask;
@@ -10,140 +11,151 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-
-Route::get('/login',function(){
+Route::get('/login', function(){
     return view('login');
 });
-
-Route::get('/login',function(){
-    return view('login');
-});
-
-Route::get('/newuser',function(){
+Route::get('/newuser', function(){
     return view('newuser');
 });
-
-Route::get('/taskCreate',function(){
+Route::get('/taskCreate', function(){
     return view('taskCreate');
 });
-
-Route::get('/schedule', function () {
+Route::get('/schedule', function(){
     return view('schedules');
 });
-
-Route::get('/task',function(){
+Route::get('/task', function(){
     return view('task');
 });
-
-Route::get('/taskedit', function () {
+Route::get('/taskedit', function(){
     return view('taskedit');
 });
-
-Route::get('/schedules',function(){
+Route::get('/schedules', function(){
     return view('schedules');
 });
-
 Route::get('/scheduleDetail', [ScheduleController::class, 'detail']);
-
-Route::get('/groupCreate',function(){
+Route::get('/groupCreate', function(){
     return view('groupCreate');
 });
-
-Route::get('/continuity',function(){
+Route::get('/continuity', function(){
     return view('continuity');
 });
-
-Route::get('/setting',function(){
+Route::get('/setting', function(){
     return view('setting');
 });
-
-Route::get('/logout',function(){
+Route::get('/logout', function(){
     return view('logout');
 });
-
-
 
 Route::get('/tasks', [TaskController::class, 'index']);
 Route::get('/user/tasks', [TaskController::class, 'userTask']);
 Route::post('/tasks', [TaskController::class, 'store']);
-Route::get('/home',function(){
+
+Route::get('/home', function(){
     return view('home');
 });
-
-Route::get('/passwordReset',function(){
+Route::get('/passwordReset', function(){
     return view('passwordReset');
 });
 
 Route::get('/tasks/{id}', [TaskController::class, 'show']);
-
 Route::put('/tasks/{id}', [TaskController::class, 'update']);
 Route::delete('/tasks/{id}', [TaskController::class, 'destroy']);
 
+Route::get(
+    '/api/grouptasks/{id}',
+    [GroupTaskController::class, 'show']
+);
+
+Route::put(
+    '/api/grouptasks/{id}',
+    [GroupTaskController::class, 'update']
+);
+
+Route::delete(
+    '/api/grouptasks/{id}',
+    [GroupTaskController::class, 'destroy']
+);
+
 Route::prefix('setting')->group(function () {
-
     Route::view('/user', 'setting.settingUser');
-
     Route::view('/notification', 'setting.settingNotification');
-
     Route::view('/design', 'setting.settingDesign');
-
     Route::view('/logout', 'setting.settingLogout');
-
 });
-Route::get('/group',function(){
+
+Route::get('/group', function(){
     $groups = Group::all();
 
     $userId = request('user_id');
-    if ($userId) {
-        $groupIds = Groupmember::where('user_id', $userId)->pluck('group_id');
+
+    if($userId){
+        $groupIds = Groupmember::where('user_id', $userId)
+            ->pluck('group_id');
+
         $groups = Group::whereIn('id', $groupIds)->get();
     }
 
-    return view('group', ['groups' => $groups]);
+    return view('group', [
+        'groups' => $groups
+    ]);
 });
-
 Route::get('/gtasutkuitiran/{id}', function ($id) {
+
     $tasklist = Grouptask::where('group_id', $id)->get();
+
     $group = Group::findOrFail($id);
-    return view('gtasutkuitiran',[
+
+    return view('gtasutkuitiran', [
         'group' => $group,
         'tasklist' => $tasklist
     ]);
 });
 
 Route::get('/gurupjouhouhensyu/{id}', function ($id) {
+
     $group = Group::findOrFail($id);
+
     $member = Groupmember::where('group_id',$id)->get();
-    return view('gurupjouhouhensyu',[
+
+    return view('gurupjouhouhensyu', [
         'group' => $group,
-        'member'=>$member
+        'member' => $member
     ]);
 });
 
-
 Route::get('/gurupumokuhyosinki/{id}', function ($id) {
+
     $group = Group::findOrFail($id);
-    return view('gurupumokuhyosinki',[
+
+    return view('gurupumokuhyosinki', [
         'group' => $group
     ]);
 });
 
 Route::get('/gurupusyu/{id}', function ($id) {
+
     $group = Group::findOrFail($id);
+
     $tasklist = Grouptask::where('group_id', $id)->get();
 
-    return view('gurupusyu',[
+    return view('gurupusyu', [
         'group' => $group,
         'tasklist' => $tasklist
     ]);
-
 });
 
-Route::get('/gurutaskukuhen/{id}', function ($id) {
-    $group = Group::findOrFail($id);
-    return view('gurutasukuhen',[
-        'group' => $group 
+Route::get('/gurutaskukuhen/{group_id}', function ($group_id) {
+
+    $task_id = request('task_id');
+
+    $task = Grouptask::where('id',$task_id)
+        ->where('group_id',$group_id)
+        ->firstOrFail();
+
+    return view('gurutasukuhen', [
+        'task' => $task
     ]);
+
 });
 
 Route::get('/sinnkiguru', function () {
@@ -167,9 +179,11 @@ Route::get('/mokuhyouitiran', function () {
 });
 
 Route::get('/im/{filename}', function (string $filename) {
+
     $imagePath = dirname(base_path()) . '/im/' . $filename;
 
     abort_unless(is_file($imagePath), 404);
 
     return response()->file($imagePath);
+
 })->where('filename', '[A-Za-z0-9_.-]+');

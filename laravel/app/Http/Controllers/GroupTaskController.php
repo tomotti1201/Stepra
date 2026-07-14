@@ -3,10 +3,189 @@
 namespace App\Http\Controllers;
 
 use App\Models\Grouptask;
+use App\Models\GroupSchedule;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class GroupTaskController extends Controller
 {
+
+public function store(Request $request)
+{
+    $title = trim($request->title ?? '');
+
+    if ($title === '') {
+        return response()->json([
+            'status'=>'error',
+            'message'=>'目標名を入力してください'
+        ],400);
+    }
+
+    $groupId = $request->group_id;
+
+    if(!$groupId){
+        return response()->json([
+            'status'=>'error',
+            'message'=>'グループIDがありません'
+        ],400);
+    }
+
+    $weekDays = $request->week_days ?? [];
+
+    if(count($weekDays) === 0){
+        return response()->json([
+            'status'=>'error',
+            'message'=>'曜日を選択してください'
+        ],400);
+    }
+
+    $start_time = trim($request->start_time ?? '');
+
+    if($start_time === ''){
+        return response()->json([
+            'status'=>'error',
+            'message'=>'開始時間を入力してください'
+        ],400);
+    }
+
+    $requiredMinutes = (int)($request->required_minutes ?? 0);
+
+    if($requiredMinutes <= 0){
+        return response()->json([
+            'status'=>'error',
+            'message'=>'所要時間を入力してください'
+        ],400);
+    }
+
+    $startDate = trim($request->start_date ?? '');
+    $endDate = trim($request->end_date ?? '');
+
+    if($startDate === ''){
+        return response()->json([
+            'status'=>'error',
+            'message'=>'開始日を入力してください'
+        ],400);
+    }
+
+    $today = date('Y-m-d');
+
+    if($startDate < $today){
+        return response()->json([
+            'status'=>'error',
+            'message'=>'開始日は今日以降を指定してください'
+        ],400);
+    }
+
+    if($endDate !== '' && $endDate < $startDate){
+        return response()->json([
+            'status'=>'error',
+            'message'=>'終了日は開始日以降を指定してください'
+        ],400);
+    }
+
+    $endDate = $endDate === '' ? null : $endDate;
+
+    // 優先度変換
+    $priority = match($request->priority){
+        '高'=>'high',
+        '中'=>'middle',
+        '低'=>'low',
+        default=>null
+    };
+
+    // 曜日を数値化
+    $weekDayMap = [
+        '月'=>1,
+        '火'=>2,
+        '水'=>3,
+        '木'=>4,
+        '金'=>5,
+        '土'=>6,
+        '日'=>7
+    ];
+
+    $weekDays = array_map(
+        fn($day)=>$weekDayMap[$day],
+        $weekDays
+    );
+
+    /*
+    |--------------------------------------------------------------------------
+    | グループタスク登録
+    |--------------------------------------------------------------------------
+    */
+
+    $task = Grouptask::create([
+        'group_id'=>$groupId,
+        'user_id'=>$request->user_id ?? Auth::id(),
+        'title'=>$title,
+        'content'=>$request->content ?? '',
+        'week_days'=>json_encode($weekDays),
+        'start_time'=>$start_time,
+        'required_minutes'=>$requiredMinutes,
+        'priority'=>$priority,
+        'color'=>$request->color ?? '#0d6efd',
+        'period'=>$request->period ?? 'weekly',
+        'notification_enabled'=>1,
+        'start_date'=>$startDate,
+        'end_date'=>$endDate,
+        'status'=>'active',
+    ]);
+
+    /*
+    |--------------------------------------------------------------------------
+    | グループスケジュール生成
+    |--------------------------------------------------------------------------
+    */
+
+    $start = Carbon::parse($startDate);
+
+    if($endDate){
+        $endLimit = Carbon::parse($endDate);
+    }else{
+        // 1か月分
+        $endLimit = $start->copy()->addMonth();
+    }
+
+    $date = $start->copy();
+
+    while($date->lte($endLimit)){
+
+        // 月=1 火=2 ... 日=7
+        $dow = $date->dayOfWeekIso;
+
+        if(in_array($dow,$weekDays)){
+
+            GroupSchedule::create([
+                'group_task_id'=>$task->id,
+                'group_id'=>$groupId,
+                'user_id'=>$task->user_id,
+                'scheduled_date'=>$date->format('Y-m-d'),
+                'title'=>$task->title,
+                'content'=>$task->content,
+                'week_days'=>$task->week_days,
+                'start_time'=>$task->start_time,
+                'required_minutes'=>$task->required_minutes,
+                'priority'=>$task->priority,
+                'color'=>$task->color,
+                'period'=>$task->period,
+                'notification_enabled'=>$task->notification_enabled,
+                'start_date'=>$task->start_date,
+                'end_date'=>$task->end_date,
+                'status'=>$task->status,
+            ]);
+        }
+
+        $date->addDay();
+    }
+
+    return response()->json([
+        'status'=>'success',
+        'message'=>'グループ目標を登録しました',
+        'task'=>$task
+    ],201);
+}
 
     /**
      * グループタスク一覧
@@ -35,260 +214,388 @@ class GroupTaskController extends Controller
     }
 
 
-    /**
-     * 詳細取得
-     */
-    public function show($id)
-    {
-        $task = Grouptask::find($id);
+/**
+ * 詳細取得
+ */
+public function show($id)
+{
+    $task = Grouptask::find($id);
 
-        if(!$task){
-
-            return response()->json([
-                'status'=>'error',
-                'message'=>'タスクが存在しません'
-            ],404);
-
-        }
+    if(!$task){
 
         return response()->json([
-            'status'=>'success',
-            'task'=>$task
-        ]);
+            'status'=>'error',
+            'message'=>'タスクが存在しません'
+        ],404);
+
     }
 
 
-    /**
-     * 登録
-     */
-    public function store(Request $request)
-{
-    $title = trim($request->title ?? '');
-    $weekDays = $request->week_days ?? [];
-    $startTime = trim($request->start_time ?? '');
-    $startDate = trim($request->start_date ?? '');
-    $endDate = trim($request->end_date ?? '');
+    return response()->json([
+        'status'=>'success',
 
-    // タスク名チェック
+        'task'=>[
+            'id'=>$task->id,
+
+            'group_id'=>$task->group_id,
+
+            'title'=>$task->title,
+
+            'content'=>$task->content,
+
+            'week_days'=>$task->week_days,
+
+            'start_time'=>$task->start_time,
+
+            'required_minutes'=>$task->required_minutes,
+
+            'priority'=>$task->priority,
+
+            'color'=>$task->color,
+
+            'period'=>$task->period,
+
+
+            // ★通常タスクと同じ形式
+            'start_date'=>$task->start_date
+                ? $task->start_date->format('Y-m-d')
+                : null,
+
+
+            'end_date'=>$task->end_date
+                ? $task->end_date->format('Y-m-d')
+                : null,
+
+            'status'=>$task->status
+        ]
+    ]);
+}
+
+public function update(Request $request, $id)
+{
+    $task = Grouptask::find($id);
+
+    if (!$task) {
+        return response()->json([
+            'status'=>'error',
+            'message'=>'グループタスクが見つかりません'
+        ],404);
+    }
+
+
+    $title = trim($request->title ?? '');
+
     if ($title === '') {
         return response()->json([
-            'status' => 'error',
-            'message' => 'グループタスク名を入力してください'
-        ], 400);
+            'status'=>'error',
+            'message'=>'タスク名を入力してください'
+        ],400);
     }
 
-    // 曜日チェック
-    if (count($weekDays) === 0) {
+
+    $weekDays = $request->week_days ?? [];
+
+    if(count($weekDays) === 0){
         return response()->json([
-            'status' => 'error',
-            'message' => '曜日を選択してください'
-        ], 400);
+            'status'=>'error',
+            'message'=>'曜日を選択してください'
+        ],400);
     }
 
-    // 開始時間チェック
-    if ($startTime === '') {
+
+    $start_time = trim($request->start_time ?? '');
+
+    if($start_time === ''){
         return response()->json([
-            'status' => 'error',
-            'message' => '開始時間を入力してください'
-        ], 400);
+            'status'=>'error',
+            'message'=>'開始時間を入力してください'
+        ],400);
     }
 
 
-    // 所要時間
+    $duration_hours = trim($request->duration_hours ?? '');
+
+    $duration_minutes = trim($request->duration_minutes ?? '');
+
+
+    if(
+        $duration_hours === '' ||
+        $duration_minutes === ''
+    ){
+        return response()->json([
+            'status'=>'error',
+            'message'=>'所要時間を入力してください'
+        ],400);
+    }
+
+
     $requiredMinutes =
-        (int)($request->required_minutes ?? 0);
+        ((int)$duration_hours * 60)
+        +
+        (int)$duration_minutes;
 
 
-    if ($requiredMinutes <= 0) 
-    {
-        $validated = $request->validate([
-            'group_id' => ['required', 'integer'],
-            'title' => ['required', 'string', 'max:255'],
-            'content' => ['nullable', 'string'],
-            'week_days' => ['required'],
-            'start_time' => ['nullable', 'date_format:H:i'],
-            'required_minutes' => ['nullable', 'integer', 'min:1'],
-            'priority' => ['nullable', 'string', 'max:20'],
-            'color' => ['required', 'string', 'max:20'],
-            'period' => ['required', 'string', 'max:20'],
-            'notification_enabled' => ['nullable', 'boolean'],
-            'start_date' => ['nullable', 'date'],
-            'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
-            'status' => ['nullable', 'string', 'max:20'],
-            'user_id' => ['nullable', 'integer'],
-            'created_by' => ['required', 'integer'],
-        ]);
-
-        $weekDays = $validated['week_days'];
-        $priority = match ($validated['priority'] ?? 'middle') {
-            '高' => 'high',
-            '中' => 'middle',
-            '低' => 'low',
-            default => $validated['priority'] ?? 'middle',
-        };
-        $period = match ($validated['period']) {
-            '毎週' => 'weekly',
-            '毎月' => 'monthly',
-            '毎年' => 'yearly',
-            '自由設定' => 'weekly',
-            default => $validated['period'],
-        };
-
-        $task = Grouptask::create([
-            'group_id' => $validated['group_id'],
-            'user_id' => $validated['user_id'] ?? $validated['created_by'],
-            'title' => $validated['title'],
-            'content' => $validated['content'] ?? null,
-            'week_days' => is_array($weekDays)
-                ? implode(',', $weekDays)
-                : $weekDays,
-            'start_time' => $validated['start_time'] ?? null,
-            'required_minutes' => $validated['required_minutes'] ?? null,
-            'priority' => $priority,
-            'color' => $validated['color'],
-            'period' => $period,
-            'notification_enabled' => $validated['notification_enabled'] ?? 1,
-            'start_date' => $validated['start_date'] ?? null,
-            'end_date' => $validated['end_date'] ?? null,
-            'status' => $validated['status'] ?? 'active',
-            'created_by' => $validated['created_by'],
-        ]);
+    if($requiredMinutes <= 0){
 
         return response()->json([
-            'status' => 'error',
-            'message' => '所要時間を入力してください'
-        ], 400);
+            'status'=>'error',
+            'message'=>'所要時間を入力してください'
+        ],400);
 
     }
-
-
-    // 日付チェック
-    if ($startDate === '') {
-        return response()->json([
-            'status' => 'error',
-            'message' => '開始日を入力してください'
-        ], 400);
-    }
-
-
-    $today = date('Y-m-d');
-
-    if ($startDate < $today) {
-        return response()->json([
-            'status' => 'error',
-            'message' => '開始日は今日以降を指定してください'
-        ], 400);
-    }
-
-
-    if ($endDate !== '' && $endDate < $startDate) {
-        return response()->json([
-            'status' => 'error',
-            'message' => '終了日は開始日以降を指定してください'
-        ], 400);
-    }
-
-
-    $endDate = $endDate ?: null;
 
 
     // 優先度変換
-    $priority = match ($request->priority) {
-        '高' => 'high',
-        '中' => 'middle',
-        '低' => 'low',
-        default => null
+    $priority = match($request->priority){
+
+        '高'=>'high',
+
+        '中'=>'middle',
+
+        '低'=>'low',
+
+        default=>null
+
     };
 
 
-    // 曜日を数値化
+    // 曜日変換
     $weekDayMap = [
-        '月' => 1,
-        '火' => 2,
-        '水' => 3,
-        '木' => 4,
-        '金' => 5,
-        '土' => 6,
-        '日' => 7
+
+        '月'=>1,
+
+        '火'=>2,
+
+        '水'=>3,
+
+        '木'=>4,
+
+        '金'=>5,
+
+        '土'=>6,
+
+        '日'=>7
+
     ];
 
 
     $weekDays = array_map(
-        fn($day) => $weekDayMap[$day],
+        fn($d)=>$weekDayMap[$d],
         $weekDays
     );
 
 
-    // 登録
-    $task = Grouptask::create([
+    $startDate = trim($request->start_date ?? '');
 
-        'group_id' => $request->group_id,
+    $endDate = trim($request->end_date ?? '');
 
-        'user_id' => $request->user_id,
 
-        'title' => $title,
+    if($startDate === ''){
 
-        'content' => $request->content ?? '',
+        return response()->json([
+            'status'=>'error',
+            'message'=>'開始日を入力してください'
+        ],400);
 
-        'week_days' => json_encode($weekDays),
+    }
 
-        'start_time' => $startTime,
 
-        'required_minutes' => $requiredMinutes,
+    $endDate =
+        $endDate === ''
+        ? null
+        : $endDate;
 
-        'priority' => $priority,
 
-        'color' => $request->color ?? '#0d6efd',
+    if(
+        !empty($endDate)
+        &&
+        strtotime($endDate) < strtotime($startDate)
+    ){
 
-        'period' => $request->period ?? 'weekly',
+        return response()->json([
+            'status'=>'error',
+            'message'=>'終了日は開始日以降を指定してください'
+        ],400);
 
-        'notification_enabled' => 1,
+    }
 
-        'start_date' => $startDate,
 
-        'end_date' => $endDate,
 
-        'status' => 'active'
+    /*
+    |--------------------------------------------------------------------------
+    | グループタスク更新
+    |--------------------------------------------------------------------------
+    */
 
-    ]);
+    $task->update([
+
+    'title'=>$title,
+
+    'week_days'=>json_encode($weekDays),
+
+    'start_time'=>$start_time,
+
+    'required_minutes'=>$requiredMinutes,
+
+    'priority'=>$priority,
+
+    'color'=>$request->color ?? $task->color,
+
+    'period'=>$task->period,
+
+    'start_date'=>$startDate,
+
+    'end_date'=>$endDate,
+
+]);
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | 未来スケジュール削除
+    |--------------------------------------------------------------------------
+    */
+
+    $today = now()->toDateString();
+
+
+    GroupSchedule::where(
+            'group_task_id',
+            $task->id
+        )
+        ->where(
+            'scheduled_date',
+            '>=',
+            $today
+        )
+        ->delete();
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | スケジュール再生成
+    |--------------------------------------------------------------------------
+    */
+
+
+    // 修正：開始日から生成
+    $start = Carbon::parse($startDate);
+
+
+    if($endDate){
+
+        $endLimit = Carbon::parse($endDate);
+
+    }else{
+
+        $endLimit = (clone $start)->addMonth();
+
+    }
+
+
+    $date = $start->copy();
+
+
+
+    while($date->lte($endLimit)){
+
+
+        $dow = $date->dayOfWeekIso;
+
+
+        if(in_array($dow,$weekDays)){
+
+
+            GroupSchedule::create([
+
+                'group_task_id'=>$task->id,
+
+                'group_id'=>$task->group_id,
+
+                'user_id'=>$task->user_id,
+
+                'scheduled_date'=>$date->format('Y-m-d'),
+
+                'title'=>$title,
+
+                'content'=>$request->content ?? '',
+
+                'week_days'=>json_encode($weekDays),
+
+                'start_time'=>$start_time,
+
+                'required_minutes'=>$requiredMinutes,
+
+                'priority'=>$priority,
+
+                'color'=>$request->color ?? $task->color,
+
+                'period'=>$task->period,
+
+                'notification_enabled'=>1,
+
+                'end_date'=>$endDate,
+
+                'status'=>'active'
+
+            ]);
+
+        }
+
+
+        $date->addDay();
+
+    }
+
+
+    $task->refresh();
 
 
     return response()->json([
 
-        'status' => 'success',
+        'status'=>'success',
 
-        'message' => 'グループタスクを登録しました',
+        'message'=>'更新しました',
 
-        'task' => $task
+        'task'=>$task
 
-    ], 201);
+    ]);
+
 }
-
-
     /**
      * 削除
      */
     public function destroy($id)
-    {
-        $task =
-            Grouptask::find($id);
+{
+    $task = Grouptask::find($id);
 
-        if(!$task){
 
-            return response()->json([
-                'status'=>'error',
-                'message'=>'タスクが存在しません'
-            ],404);
-
-        }
-
-        $task->delete();
+    if(!$task){
 
         return response()->json([
-            'status'=>'success',
-            'message'=>'削除しました'
-        ]);
+            'status'=>'error',
+            'message'=>'タスクが存在しません'
+        ],404);
 
     }
+
+
+    GroupSchedule::where(
+        'group_task_id',
+        $task->id
+    )->delete();
+
+
+    $task->delete();
+
+
+    return response()->json([
+    'status'=>'success',
+    'message'=>'削除しました',
+    'group_id'=>$task->group_id
+]);
+}
 
 }

@@ -156,36 +156,6 @@
 
     </div>
 </div>
-        <!-- <div class="mb-3">
-        <label class="form-label fw-bold small">繰り返し</label>
-
-        <div class="btn-group w-100" id="period-group">
-            <button
-                type="button"
-                class="btn btn-outline-secondary day"
-                data-period="weekly"
-                onclick="togglePeriod(this)">
-                毎週
-            </button>
-
-            <button
-                type="button"
-                class="btn btn-outline-secondary day"
-                data-period="monthly"
-                onclick="togglePeriod(this)">
-                毎月
-            </button>
-
-            <button
-                type="button"
-                class="btn btn-outline-secondary day"
-                data-period="yearly"
-                onclick="togglePeriod(this)">
-                毎年
-            </button>
-        </div>
-        </div> -->
-
         <div class="row g-2 mb-3">
         <div class="col-6">
             <label class="form-label fw-bold">開始時間</label>
