@@ -21,20 +21,20 @@
         </button>
 
         <button
-            class="btn {{ request()->is('group') ? 'btn-success' : 'btn-outline-secondary' }}"
-            onclick="location.href='/group'">
+            class="btn {{ request()->is('gurupu') ? 'btn-success' : 'btn-outline-secondary' }}"
+            onclick="location.href='/gurupu'">
             👥 グループ
         </button>
 
         <button
             class="btn {{ request()->is('continuity') ? 'btn-success' : 'btn-outline-secondary' }}"
             onclick="location.href='/continuity'">
-            ⚙️ 継続率
+            📈 継続率
         </button>
 
         <button
             class="btn {{ request()->is('setting') ? 'btn-success' : 'btn-outline-secondary' }}"
-            onclick="location.href='/setting'">
+            onclick="location.href='/setting/user'">
             ⚙️ 設定
         </button>
 

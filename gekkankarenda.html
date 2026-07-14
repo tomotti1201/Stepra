@@ -9,7 +9,7 @@
 <body class="bg-light">
 
 <div class="container-fluid py-4">
-  <img src="im/tit.png" class="mb-3" style="width:200px;">
+  <img src="im/tit.png" class="mb-3" style="width:200px;" alt="">
   <div class="row justify-content-center">
     
     <div class="col-12 px-3 px-md-4">
@@ -109,9 +109,9 @@ function clickDate(date) {
   const year = currentViewDate.getFullYear();
   const month = currentViewDate.getMonth() + 1;
 
-  // 例: 日付を押したら「kiroku.html」に遷移する（URLの後ろに選んだ年月日をくっつけて送る設定）
-  // パラメータが不要でただページを飛ばしたい場合は window.location.href = "kiroku.html"; だけでも動きます
-  window.location.href = `kiroku.html?year=${year}&month=${month}&day=${date}`;
+  // 例: 日付を押したら「/kiroku」に遷移する（URLの後ろに選んだ年月日をくっつけて送る設定）
+  // パラメータが不要でただページを飛ばしたい場合は window.location.href = "/kiroku"; だけでも動きます
+  window.location.href = `/kiroku?year=${year}&month=${month}&day=${date}`;
 }
 
 // 読み込み時に実行
@@ -120,16 +120,16 @@ document.addEventListener('DOMContentLoaded', renderCalendar);
 
 <nav class="navbar navbar-light bg-light border-top fixed-bottom py-2">
   <div class="container-fluid justify-content-around">
-    <a href="kiroku.html" class="text-decoration-none text-secondary text-center" style="font-size: 12px;">
+    <a href="/kiroku" class="text-decoration-none text-secondary text-center" style="font-size: 12px;">
       <div>📅</div><div>記録</div>
     </a>
-    <a href="rireki.html" class="text-decoration-none text-secondary text-center" style="font-size: 12px;">
+    <a href="/rireki" class="text-decoration-none text-secondary text-center" style="font-size: 12px;">
       <div>🔄</div><div>履歴</div>
     </a>
-    <a href="gekkankarenda.html" class="text-decoration-none text-primary fw-bold text-center" style="font-size: 12px;">
+    <a href="/gekkankarenda" class="text-decoration-none text-primary fw-bold text-center" style="font-size: 12px;">
       <div>📊</div><div>分析</div>
     </a>
-    <a href="mokuhyouitiran.html" class="text-decoration-none text-secondary text-center" style="font-size: 12px;">
+    <a href="/mokuhyouitiran" class="text-decoration-none text-secondary text-center" style="font-size: 12px;">
       <div>✅</div><div>目標</div>
     </a>
   </div>

@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>新規登録</title>
 <style>
     body {
@@ -70,19 +71,19 @@
     <div class="title">新規登録</div>
     <form action="register.php" method="POST">
         <div class="form-group">
-            <input type="text" name="username" placeholder="ユーザー名" required>
+            <input type="text" name="username" placeholder="ユーザー名" required aria-label="Username" title="Username">
         </div>
         <div class="form-group">
-            <input type="email" name="email" placeholder="メールアドレス" required>
+            <input type="email" name="email" placeholder="メールアドレス" required aria-label="Email address" title="Email address">
         </div>
         <div class="form-group">
-            <input type="text" name="birthdate" placeholder="生年月日(例:2000/01/01)" required>
+            <input type="text" name="birthdate" placeholder="生年月日(例:2000/01/01)" required aria-label="Birth date" title="Birth date">
         </div>
         <div class="form-group">
-            <input type="password" name="password" placeholder="パスワード" required>
+            <input type="password" name="password" placeholder="パスワード" required aria-label="Password" title="Password">
         </div>
         <div class="form-group">
-            <input type="password" name="password_confirm" placeholder="パスワード再入力" required>
+            <input type="password" name="password_confirm" placeholder="パスワード再入力" required aria-label="Confirm password" title="Confirm password">
         </div>
         <button type="submit" class="submit-btn">登録する</button>
         <button type="button" class="back-btn" onclick="history.back()">取消・戻る</button>

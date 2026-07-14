@@ -26,7 +26,7 @@
                 <div id="error-message" class="text-danger text-center mb-3">
                 </div>
 
-                <!--ユーザー名-->
+                <!--メールアドレス-->
                 <div class="mb-3">
                     <label class="form-label">
                         メールアドレス

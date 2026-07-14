@@ -25,6 +25,13 @@
 </head>
 
 <body>
+    <div class="container py-4 mb-5">
+
+        <!--<div class="row justify-content-center">-->
+
+            <!--<div class="col-12 col-md-8 col-lg-5"> -->
+
+                <div class="card-body">
 
     <script>
         if (!localStorage.getItem("user_id")) {
@@ -32,7 +39,7 @@
         }
     </script>
 
-    <div class="container-fluid py-4">
+    <div class="container-fluid">
 
         <img src="{{ asset('image/tit.png') }}" class="mb-3" style="width:200px;">
 
@@ -47,13 +54,15 @@
                         <span class="fs-6 fw-normal text-muted">作成・編集</span>
                     </h2>
 
-                    <div id="target-list" class="d-flex flex-column gap-2"></div>
-
                     <div class="mt-4">
                         <a href="/taskCreate" class="btn btn-success w-100 py-3 fw-bold fs-5 shadow-sm">
                             ＋ 新規目標作成
                         </a>
                     </div>
+
+                    <div id="target-list" class="d-flex flex-column gap-2"></div>
+
+                    
 
                 </div>
 

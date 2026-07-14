@@ -54,31 +54,54 @@
             background-color: #fff;
             box-shadow: none;
         }
+        .color-circle.selected {
+            transform: scale(1.15);
+            border: 3px solid black;
+        }
+
+        .page-title{
+            font-size: clamp(1.5rem, 2vw, 2.2rem);
+        }
+
+        .form-label{
+            font-size: clamp(0.95rem, 1.2vw, 1.2rem);
+        }
+
+        .form-control{
+            font-size: clamp(1rem, 1.2vw, 1.2rem);
+        }
+
+        .btn{
+            font-size: clamp(1rem, 1.3vw, 1.2rem);
+        }
+
+        .small{
+            font-size: clamp(0.9rem, 1vw, 1.1rem) !important;
+        }
     </style>
 </head>
 
-<>
 
-    <div class="container-fluid py-4">
+    <div class="container py-4 mb-5">
 
         <img src="{{ asset('image/tit.png') }}" class="mb-3" style="width:200px;">
 
-        <div class="row justify-content-center">
+        <!--<div class="row justify-content-center">-->
 
-            <div class="col-12 col-md-8 col-lg-5">
+            <!--<div class="col-12 col-md-8 col-lg-5"> -->
 
-                <div class="card-body p-4">
+                <div class="card-body">
 
-                    <h2 class="text-center fw-bold mb-4 fs-4">目標新規作成</h2>
+                    <h2 class="text-center fw-bold ">目標新規作成</h2>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold small">目標名</label>
+                        <label class="form-label fw-bold ">目標名</label>
                         <input type="text" class="form-control" id="goal-name" placeholder="目標名を入力">
                     </div>
 
                     <div class="mb-3">
 
-                        <label class="form-label fw-bold small">頻度</label>
+                        <label class="form-label fw-bold ">頻度</label>
 
                         <div class="d-flex gap-2 mb-2">
 
@@ -100,13 +123,13 @@
                     <div class="row g-2 mb-3">
 
                         <div class="col-6">
-                            <label class="form-label fw-bold small">開始時間</label>
+                            <label class="form-label fw-bold ">開始時間</label>
                             <input type="time" class="form-control" id="start-timing" placeholder="10:00" value="10:00">
                         </div>
 
                         <div class="col-6">
 
-                            <label class="form-label fw-bold small">所要時間</label>
+                            <label class="form-label fw-bold ">所要時間</label>
 
                             <div class="d-flex gap-1">
                                 <input type="number" class="form-control" id="duration-hours" placeholder="0" min="0" value="0">
@@ -121,7 +144,7 @@
 
                     <div class="mb-3 border p-3 rounded bg-light">
 
-                        <label class="form-label fw-bold small">モード設定</label>
+                        <label class="form-label fw-bold ">モード設定</label>
 
                         <div class="btn-group w-100 mb-2" id="mode-group">
                             <button type="button" class="btn btn-outline-secondary day active" onclick="selectMode(this)">自由設定</button>
@@ -130,7 +153,7 @@
 
                         <div id="priority-box" class="disabled-group">
 
-                            <label class="form-label small">優先度</label>
+                            <label class="form-label ">優先度</label>
 
                             <div class="btn-group w-100" id="priority-group">
                                 <button type="button" class="btn btn-outline-secondary day" onclick="selectSingle(this)">高</button>
@@ -145,12 +168,12 @@
                     <div class="row g-2 mb-3">
 
                         <div class="col-6">
-                            <label class="form-label fw-bold small">開始日</label>
+                            <label class="form-label fw-bold ">開始日</label>
                             <input type="date" class="form-control" id="start-date">
                         </div>
 
                         <div class="col-6">
-                            <label class="form-label fw-bold small">終了日</label>
+                            <label class="form-label fw-bold ">終了日</label>
                             <input type="date" class="form-control" id="end-date">
                         </div>
 
@@ -160,15 +183,48 @@
 
                         <label class="form-label fw-bold small">目標カラー</label>
 
-                        <button type="button" id="delete-mode-btn" class="btn btn-sm btn-outline-secondary ms-2" style="font-size:11px; padding:2px 6px;" onclick="toggleColorDeleteMode()">色の変更</button>
-
                         <div class="color-selection" id="color-group">
 
-                            <div class="color-circle" id="current-color-circle" style="background-color:#0d6efd;" data-color="#0d6efd"></div>
+                            <div class="color-circle active-color"
+                                data-color="#0d6efd"
+                                style="background:#0d6efd"
+                                onclick="selectColor(this)">
+                            </div>
 
-                            <div class="color-circle custom" id="custom-color-circle" style="display:none;" onclick="selectCustomColor()">＋</div>
+                            <div class="color-circle"
+                                data-color="#198754"
+                                style="background:#198754"
+                                onclick="selectColor(this)">
+                            </div>
 
-                            <input type="color" id="custom-color-picker" style="display:none;" onchange="updateCustomColor(this.value)">
+                            <div class="color-circle"
+                                data-color="#dc3545"
+                                style="background:#dc3545"
+                                onclick="selectColor(this)">
+                            </div>
+
+                            <div class="color-circle"
+                                data-color="#ffc107"
+                                style="background:#ffc107"
+                                onclick="selectColor(this)">
+                            </div>
+
+                            <div class="color-circle"
+                                data-color="#6f42c1"
+                                style="background:#6f42c1"
+                                onclick="selectColor(this)">
+                            </div>
+
+                            <div class="color-circle custom"
+                                id="add-color-btn"
+                                onclick="selectCustomColor()">
+                                ＋
+                            </div>
+
+                            <input type="color"
+                                id="custom-color-picker"
+                                style="display:none;"
+                                onchange="addCustomColor(this.value)">
 
                         </div>
                     </div>
@@ -182,6 +238,7 @@
     </div>
 
     <script>
+        // JavaScript functions for handling UI interactions
         function selectMode(element) {
             selectSingle(element);
 
@@ -207,30 +264,61 @@
             element.classList.add("active");
         }
 
-        let isColorDeleteMode = false;
+        let selectedColor = "#0d6efd";
 
-        function toggleColorDeleteMode() {
-            isColorDeleteMode = !isColorDeleteMode;
+        function selectColor(element) {
 
-            const btn = document.getElementById("delete-mode-btn");
-            const addBtn = document.getElementById("custom-color-circle");
+            document
+                .querySelectorAll(".color-circle")
+                .forEach(circle =>
+                    circle.classList.remove("selected")
+                );
 
-            if (isColorDeleteMode) {
-                btn.textContent = "色の変更完了";
-                btn.classList.replace("btn-outline-secondary", "btn-secondary");
+            element.classList.add("selected");
 
-                if (addBtn) {
-                    addBtn.style.display = "flex";
-                }
-            } else {
-                btn.textContent = "色の変更";
-                btn.classList.replace("btn-secondary", "btn-outline-secondary");
-
-                if (addBtn) {
-                    addBtn.style.display = "none";
-                }
-            }
+            selectedColor = element.dataset.color;
         }
+
+        function addCustomColor(value) {
+
+            if (!value) return;
+
+            const colorGroup =
+                document.getElementById("color-group");
+
+            const addButton =
+                document.getElementById("add-color-btn");
+
+            const newColor =
+                document.createElement("div");
+
+            newColor.className =
+                "color-circle selected";
+
+            newColor.style.backgroundColor =
+                value;
+
+            newColor.dataset.color =
+                value;
+
+            newColor.onclick = function () {
+                selectColor(this);
+            };
+
+            document
+                .querySelectorAll(".color-circle")
+                .forEach(circle =>
+                    circle.classList.remove("selected")
+                );
+
+            colorGroup.insertBefore(
+                newColor,
+                addButton
+            );
+
+            selectedColor = value;
+        }
+
 
         function selectCustomColor() {
             document.getElementById("custom-color-picker").click();
@@ -358,8 +446,7 @@
 
             const durationHours = document.getElementById("duration-hours").value;
             const durationMinutes = document.getElementById("duration-minutes").value;
-            const color = document.getElementById("current-color-circle").dataset.color;
-
+            const color = selectedColor;
             let priority = null;
 
             if (

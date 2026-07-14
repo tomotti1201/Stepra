@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>目標編集</title>
 
 <style>
@@ -207,7 +208,7 @@ input.box {
   <!-- スクロールさせたい範囲を div で囲む -->
   <div class="scroll-area">
   <!-- 目標の名前を入力する場所 -->
-  <input type="text" class="box" id="goal-name" name="goal_name" placeholder="目標名を入力">
+  <input type="text" class="box" id="goal-name" name="goal_name" placeholder="目標名を入力" aria-label="Goal name" title="Goal name">
   <div class="box">
     頻度
     <!-- 曜日を選択する（複数選択可能） -->
@@ -225,14 +226,14 @@ input.box {
   <div class="box">
     開始タイミング<br>
     <!-- 何時に始めるかなどを入力 -->
-    <input type="text" class="date-box" id="start-timing" name="start_timing" placeholder="例:10:00 または 朝" value="10:00">
+    <input type="text" class="date-box" id="start-timing" name="start_timing" placeholder="例:10:00 または 朝" value="10:00" aria-label="Start timing" title="Start timing">
   </div>
 
   <div class="box">
     所要時間<br>
     <div style="display: flex; align-items: center; gap: 5px; margin-top: 5px;">
-      <input type="text" class="date-box" id="duration-hours" name="duration_hours" placeholder="0" value="0" style="margin-top: 0; flex: 1;"> 時間
-      <input type="text" class="date-box" id="duration-minutes" name="duration_minutes" placeholder="30" value="30" style="margin-top: 0; flex: 1;"> 分
+      <input type="text" class="date-box" id="duration-hours" name="duration_hours" placeholder="0" value="0" style="margin-top: 0; flex: 1;" aria-label="Duration hours" title="Duration hours"> 時間
+      <input type="text" class="date-box" id="duration-minutes" name="duration_minutes" placeholder="30" value="30" style="margin-top: 0; flex: 1;" aria-label="Duration minutes" title="Duration minutes"> 分
     </div>
   </div>
 
@@ -259,11 +260,11 @@ input.box {
   <div class="row">
     <div class="box">
       開始日
-      <input type="text" class="date-box" id="start-date" name="start_date" placeholder="20241107" value="20240101">
+      <input type="text" class="date-box" id="start-date" name="start_date" placeholder="20241107" value="20240101" aria-label="Start date" title="Start date">
     </div>
     <div class="box">
       終了日
-      <input type="text" class="date-box" id="end-date" name="end_date" placeholder="20241231" value="20241231">
+      <input type="text" class="date-box" id="end-date" name="end_date" placeholder="20241231" value="20241231" aria-label="End date" title="End date">
     </div>
   </div>
 
@@ -287,7 +288,7 @@ input.box {
       <!-- 新しい色を追加するためのボタン -->
       <div class="color-circle custom" id="custom-color-circle" onclick="selectCustomColor()" data-color="#ffffff" style="display: none;">＋</div>
       <!-- 隠しカラーピッカー（＋を押した時にプログラムから呼び出される） -->
-      <input type="color" id="custom-color-picker" style="display: none;" onchange="updateCustomColor(this.value)">
+      <input type="color" id="custom-color-picker" style="display: none;" onchange="updateCustomColor(this.value)" aria-label="Custom color" title="Custom color">
     </div>
   </div>
   </div> <!-- /scroll-area ここまでスクロール -->
