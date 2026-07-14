@@ -58,22 +58,16 @@
                 <select
                     id="yearSelect"
                     class="form-select form-select-lg"
-                    style="width:140px;">
+                    style="width:140px;"
+                    onchange="changeYear()">
                 </select>
 
                 <select
                     id="monthSelect"
                     class="form-select form-select-lg"
-                    style="width:120px;">
+                    style="width:120px;"
+                    onchange="changeCalendar()">
                 </select>
-
-                <button
-                    class="btn btn-success px-3"
-                    style="min-width:80px;"
-                    onclick="changeCalendar()">
-                    決定
-                </button>
-
             </div>
 
         </div>
@@ -342,27 +336,30 @@ function goTask(taskId) {
 
         }
 
+        function changeYear() {
+
+            const year = Number(document.getElementById("yearSelect").value);
+            const month = Number(document.getElementById("monthSelect").value);
+
+            currentViewDate = new Date(year, month - 1, 1);
+
+            renderCalendar();
+
+            // 編集画面は閉じない
+        }
+
         function changeCalendar() {
+            const year = Number(document.getElementById("yearSelect").value);
+            const month = Number(document.getElementById("monthSelect").value);
 
-    const year =
-        Number(document.getElementById("yearSelect").value);
+            currentViewDate = new Date(year, month - 1, 1);
 
-    const month =
-        Number(document.getElementById("monthSelect").value);
+            renderCalendar();
 
-    currentViewDate = new Date(year, month - 1, 1);
-
-    renderCalendar();
-
-    document
-        .getElementById("calendarEditor")
-        .classList.add("d-none");
-
-    document
-        .getElementById("current-month-display")
-        .classList.remove("d-none");
-
-}
+            // 月を選んだら編集終了
+            document.getElementById("calendarEditor").classList.add("d-none");
+            document.getElementById("current-month-display").classList.remove("d-none");     
+        }
     
     </script>
 

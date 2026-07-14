@@ -72,18 +72,20 @@
     </button>
     <!-- 編集用 -->
     <div id="calendarEditor" class="d-none">
-      <div class="d-flex align-items-center gap-2">
+      <div class="d-flex align-items-center gap-3">
+      <select
+          id="yearSelect"
+          class="form-select"
+          style="width:140px;"
+          onchange="changeYear()">
+      </select>
 
-          <select id="yearSelect" class="form-select"></select>
-
-          <select id="monthSelect" class="form-select"></select>
-
-          <button
-              class="btn btn-success ps-2 px-3"
-              style="width:138px;"
-              onclick="changeCalendar()">
-              決定
-          </button>
+      <select
+          id="monthSelect"
+          class="form-select"
+          style="width:140px;"
+          onchange="changeMonthSelect()">
+      </select>
 
       </div>
 
@@ -327,13 +329,31 @@
     modal.show();
   };
 
-  window.changeCalendar = () => {
-    currentYear = Number(document.getElementById("yearSelect").value);
-    currentMonth = Number(document.getElementById("monthSelect").value);
+  window.changeYear = () => {
+
+    currentYear =
+        Number(document.getElementById("yearSelect").value);
+
+    currentMonth =
+        Number(document.getElementById("monthSelect").value);
 
     updateCalendarTitle();
     createCalendar();
 
+    // 編集画面は閉じない
+  };
+
+  window.changeMonthSelect = () => {
+    currentYear =
+        Number(document.getElementById("yearSelect").value);
+
+    currentMonth =
+        Number(document.getElementById("monthSelect").value);
+
+    updateCalendarTitle();
+    createCalendar();
+
+    // 編集終了
     document
         .getElementById("calendarEditor")
         .classList.add("d-none");
@@ -341,7 +361,7 @@
     document
         .getElementById("calendarTitle")
         .classList.remove("d-none");
-};
+  };
 
   window.openTaskList = (id) => {
     window.location.href = `/gtasutkuitiran/${id}`;

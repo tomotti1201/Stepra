@@ -82,11 +82,11 @@ Route::get('/tasks/{id}', [TaskController::class, 'show']);
 Route::put('/tasks/{id}', [TaskController::class, 'update']);
 Route::delete('/tasks/{id}', [TaskController::class, 'destroy']);
 
-<<<<<<< HEAD
 Route::get('/gurupu',function(){
     $groups = Group::all();
     return view('group', ['groups' => $groups]);
 });
+
 
 Route::get('/gtasutkuitiran/{id}', function ($id) {
     $tasklist = Grouptask::where('group_id', $id)->get();
@@ -157,7 +157,7 @@ Route::get('/im/{filename}', function (string $filename) {
 
     return response()->file($imagePath);
 })->where('filename', '[A-Za-z0-9_.-]+');
-=======
+
 Route::prefix('setting')->group(function () {
 
     Route::view('/user', 'setting.settingUser');
@@ -169,4 +169,4 @@ Route::prefix('setting')->group(function () {
     Route::view('/logout', 'setting.settingLogout');
 
 });
->>>>>>> e1d9235 (ユーザー情報編集機能を追加)
+
