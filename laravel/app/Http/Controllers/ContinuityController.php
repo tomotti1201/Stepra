@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Schedule;
 use App\Models\Task;
+use App\Models\User;
 use Carbon\Carbon;
 
 class ContinuityController extends Controller
@@ -12,16 +13,21 @@ class ContinuityController extends Controller
     public function index(Request $request)
 {
     $userId = $request->query('user_id');
-
+    $user = User::findOrFail($userId);
     $startDate = Task::where('user_id', $userId)
         ->min('start_date');
 
     if (!$startDate) {
         return response()->json([
             'status' => 'success',
+            'name' => $user->name,
             'rate' => 0,
             'total' => 0,
-            'completed' => 0
+            'completed' => 0,
+            'streak' => 0,
+            'month_total' => 0,
+            'month_completed' => 0,
+            'medal' => 'bronze-medal.png'
         ]);
     }
 
@@ -104,6 +110,7 @@ if ($rate >= 90) {
 }
     return response()->json([
     'status' => 'success',
+    'name' => $user->name,
     'rate' => $rate,
     'total' => $total,
     'completed' => $completed,

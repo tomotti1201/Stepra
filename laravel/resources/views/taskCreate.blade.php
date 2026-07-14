@@ -185,7 +185,7 @@
 
                         <div class="color-selection" id="color-group">
 
-                            <div class="color-circle active-color"
+                            <div class="color-circle selected"
                                 data-color="#0d6efd"
                                 style="background:#0d6efd"
                                 onclick="selectColor(this)">

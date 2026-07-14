@@ -410,7 +410,7 @@
             📅 月間カレンダー
         </button>
 
-        <button class="btn btn-success" onclick="location.href='/gurupu'">
+        <button class="btn btn-success" onclick="location.href='/gurupu?user_id=' + encodeURIComponent(localStorage.getItem('user_id') || '')">
             👥 グループ
         </button>
 

@@ -3,6 +3,7 @@
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\ScheduleController;
 use App\Models\Group;
+use App\Models\Groupmember;
 use App\Models\Grouptask;
 use Illuminate\Support\Facades\Route;
 
@@ -43,10 +44,6 @@ Route::get('/schedules',function(){
 });
 
 Route::get('/scheduleDetail', [ScheduleController::class, 'detail']);
-
-Route::get('/group',function(){
-    return view('group');
-});
 
 Route::get('/groupCreate',function(){
     return view('groupCreate');
@@ -93,8 +90,15 @@ Route::prefix('setting')->group(function () {
     Route::view('/logout', 'setting.settingLogout');
 
 });
-Route::get('/gurupu',function(){
+Route::get('/group',function(){
     $groups = Group::all();
+
+    $userId = request('user_id');
+    if ($userId) {
+        $groupIds = Groupmember::where('user_id', $userId)->pluck('group_id');
+        $groups = Group::whereIn('id', $groupIds)->get();
+    }
+
     return view('group', ['groups' => $groups]);
 });
 
@@ -107,13 +111,15 @@ Route::get('/gtasutkuitiran/{id}', function ($id) {
     ]);
 });
 
-Route::get('/gurupjouhouhensyu', function () {
-    return view('gurupjouhouhensyu');
+Route::get('/gurupjouhouhensyu/{id}', function ($id) {
+    $group = Group::findOrFail($id);
+    $member = Groupmember::where('group_id',$id)->get();
+    return view('gurupjouhouhensyu',[
+        'group' => $group,
+        'member'=>$member
+    ]);
 });
 
-Route::get('/gurupujouhouhensyu', function () {
-    return view('gurupjouhouhensyu');
-});
 
 Route::get('/gurupumokuhyosinki/{id}', function ($id) {
     $group = Group::findOrFail($id);
