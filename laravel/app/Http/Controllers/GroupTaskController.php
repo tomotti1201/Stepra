@@ -24,6 +24,15 @@ class GroupTaskController extends Controller
 
         }
 
+        if($request->filled('user_id')){
+
+            $query->where(
+                'user_id',
+                $request->user_id
+            );
+
+        }
+
         $tasks = $query
             ->orderBy('id','desc')
             ->get();

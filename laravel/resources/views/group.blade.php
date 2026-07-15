@@ -4,54 +4,46 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>グループ一覧 | STEPRA</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
 
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background-color: #f8f9fa; }
+  </style>
+</head>
 <body>
 
-<div class="container py-4 mb-5">
-
-        <!--<div class="row justify-content-center">-->
-
-            <!--<div class="col-12 col-md-8 col-lg-5"> -->
-
-                <div class="card-body">
-
-    <script>
-        if (!localStorage.getItem("user_id")) {
-            location.href = "/login";
-        }
-    </script>
-
+<div class="container-fluid py-4">
   <img src="/image/tit.png" alt="STEPRA" class="mb-3" style="width:200px;">
 
-      <!--<div class="card shadow border-0 mb-4">-->
+  <div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-5">
+      <div class="card shadow border-0 mb-4">
         <div class="card-body p-4">
           <h2 class="text-center fw-bold mb-4 fs-4">グループ</h2>
 
           <div class="row g-2 mb-4">
             <div class="col-6">
-              <button class="btn btn-success w-100 py-3 fw-bold" onclick="goCreateGroup()">
+              <button class="btn btn-success w-100 py-3 fw-bold small" onclick="goCreateGroup()">
                 新規<br>グループ作成
               </button>
             </div>
             <div class="col-6">
-              <button class="btn btn-outline-primary w-100 py-3 fw-bold" data-bs-toggle="modal" data-bs-target="#joinModal">
+              <button class="btn btn-outline-primary w-100 py-3 fw-bold small" data-bs-toggle="modal" data-bs-target="#joinModal">
                 グループに<br>入る
               </button>
             </div>
           </div>
 
           <div class="mb-2">
-            <p class="fw-bold mb-2 text-muted">グループ一覧</p>
+            <p class="fw-bold mb-2 text-muted small">グループ一覧</p>
 
-            <div class="d-flex flex-column gap-3">
+            <div class="d-flex flex-column gap-2" style="max-height: 350px; overflow-y: auto;">
               @forelse ($groups as $group)
                 <button class="btn btn-light border text-start p-3 fw-bold" onclick="openGroup({{ $group->id }})">
                   {{ $group->name }}
                 </button>
               @empty
-                <p class="text-muted mb-0">まだグループがありません</p>
+                <p class="text-muted small mb-0">まだグループがありません</p>
               @endforelse
             </div>
           </div>
@@ -86,21 +78,11 @@
 
 <nav class="navbar bg-white border-top fixed-bottom">
   <div class="container d-flex justify-content-around">
-    <button class="btn btn-outline-secondary" onclick="location.href='/home'">
-      ホーム
-    </button>
-    <button class="btn btn-outline-secondary" onclick="location.href='/mokuhyouitiran'">
-      目標
-    </button>
-    <button class="btn btn-outline-secondary" onclick="location.href='/gekkankarenda'">
-      カレンダー
-    </button>
-    <button class="btn btn-success" onclick="location.href='/gurupu'">
-      グループ
-    </button>
-    <button class="btn btn-outline-secondary" onclick="location.href='/setting'">
-      設定
-    </button>
+    <button class="btn btn-outline-secondary" onclick="location.href='/home'">ホーム</button>
+    <button class="btn btn-outline-secondary" onclick="location.href='/mokuhyouitiran'">目標</button>
+    <button class="btn btn-outline-secondary" onclick="location.href='/gekkankarenda'">カレンダー</button>
+    <button class="btn btn-success" onclick="location.href='/group?user_id=' + encodeURIComponent(localStorage.getItem('user_id') || '')">グループ</button>
+    <button class="btn btn-outline-secondary" onclick="location.href='/setting'">設定</button>
   </div>
 </nav>
 

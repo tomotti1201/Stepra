@@ -44,7 +44,7 @@
 
       <div class="row g-2 mb-4">
         <div class="col-7 d-flex flex-column gap-2">
-          <button class="btn btn-outline-dark w-100 py-2 fw-bold text-start btn-sm" onclick="openTaskList({{ $group->id }})">
+          <button class="btn btn-outline-dark w-100 py-2 fw-bold text-start btn-sm" onclick="loadGroupTasks({{ $group->id }})">
             グループタスクを表示
           </button>
 
@@ -117,20 +117,22 @@
           ">
       </div>
 
-      <div class="mt-4 border rounded p-3 bg-white">
+      <div class="mt-4 border rounded p-3 bg-white" id="groupTaskArea">
         <p class="fw-bold mb-3">グループタスク一覧</p>
 
-        @forelse ($tasklist as $task)
-          <div class="border rounded p-3 mb-2">
-            <div class="fw-bold">{{ $task->title }}</div>
+        <div id="groupTaskList">
+          @forelse ($tasklist as $task)
+            <div class="border rounded p-3 mb-2">
+              <div class="fw-bold">{{ $task->title }}</div>
 
-            @if (!empty($task->content))
-              <div class="small text-muted mt-1">{{ $task->content }}</div>
-            @endif
-          </div>
-        @empty
-          <p class="text-muted small mb-0">まだグループタスクがありません</p>
-        @endforelse
+              @if (!empty($task->content))
+                <div class="small text-muted mt-1">{{ $task->content }}</div>
+              @endif
+            </div>
+          @empty
+            <p class="text-muted small mb-0">まだグループタスクがありません</p>
+          @endforelse
+        </div>
       </div>
     </div>
   </div>
@@ -145,7 +147,7 @@
 
 <script>
 (() => {
-  const taskData = @json($calendarTasks);
+  let taskData = @json($calendarTasks);
   const today = new Date();
   let currentYear = today.getFullYear();
   let currentMonth = today.getMonth() + 1;
@@ -363,9 +365,91 @@
         .classList.remove("d-none");
   };
 
-  window.openTaskList = (id) => {
-    window.location.href = `/gtasutkuitiran/${id}`;
+  window.loadGroupTasks = async (id) => {
+    const list = document.getElementById("groupTaskList");
+    const area = document.getElementById("groupTaskArea");
+
+    list.innerHTML = '<p class="text-muted small mb-0">読み込み中...</p>';
+
+    try {
+      const response = await fetch(`/api/grouptasks?group_id=${encodeURIComponent(id)}`);
+      const data = await response.json();
+
+      if (!response.ok || data.status === "error") {
+        throw new Error(data.message || "グループタスクの取得に失敗しました");
+      }
+
+      const tasks = data.tasks || [];
+      renderGroupTaskList(tasks);
+
+      taskData = tasks.map((task) => ({
+        id: task.id,
+        title: task.title,
+        weekdays: normalizeWeekDays(task.week_days),
+        startDate: task.start_date,
+        endDate: task.end_date,
+        color: task.color || "#198754",
+      }));
+      createCalendar();
+      area.scrollIntoView({ behavior: "smooth", block: "start" });
+    } catch (error) {
+      console.error(error);
+      list.innerHTML = '<p class="text-danger small mb-0">グループタスクの読み込みに失敗しました</p>';
+    }
   };
+
+  function renderGroupTaskList(tasks) {
+    const list = document.getElementById("groupTaskList");
+    list.innerHTML = "";
+
+    if (tasks.length === 0) {
+      list.innerHTML = '<p class="text-muted small mb-0">まだグループタスクがありません</p>';
+      return;
+    }
+
+    tasks.forEach((task) => {
+      const item = document.createElement("div");
+      item.className = "border rounded p-3 mb-2";
+
+      const title = document.createElement("div");
+      title.className = "fw-bold";
+      title.textContent = task.title || "無題のタスク";
+      item.appendChild(title);
+
+      if (task.content) {
+        const content = document.createElement("div");
+        content.className = "small text-muted mt-1";
+        content.textContent = task.content;
+        item.appendChild(content);
+      }
+
+      list.appendChild(item);
+    });
+  }
+
+  function normalizeWeekDays(value) {
+    if (!value) {
+      return [];
+    }
+
+    if (Array.isArray(value)) {
+      return value;
+    }
+
+    try {
+      const parsed = JSON.parse(value);
+      if (Array.isArray(parsed)) {
+        return parsed;
+      }
+    } catch (error) {
+      // comma separated values are handled below.
+    }
+
+    return String(value)
+      .split(",")
+      .map((day) => day.trim())
+      .filter(Boolean);
+  }
 
   window.openTaskContinue = (id) => {
     window.location.href = `/gurutaskukuhen/${id}`;

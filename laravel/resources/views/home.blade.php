@@ -120,7 +120,9 @@
             createGoals(tasks);
         }
 
-        function createGoals(tasks) {
+        function createGoals(tasks, options = {}) {
+            const heading = options.heading || "今日のタスク";
+            const readonly = options.readonly || false;
 
     const goalList = document.getElementById("goalList");
     goalList.innerHTML = "";
@@ -147,9 +149,9 @@
                     <div class="fw-bold">${task.title}</div>
 
                     <div class="small text-muted">
-                        ${task.start_time.slice(0,5)}
+                        ${formatTime(task.start_time)}
                         /
-                        ${task.required_minutes}分
+                        ${task.required_minutes ?? 0}分
                         /
                         ${task.priority ?? "未設定"}
                     </div>
@@ -168,7 +170,7 @@
 
             <div class="d-flex gap-2 px-3">
                 ${
-                    task.status === "active"
+                    task.status === "active" && !readonly
                     ? `
                         <button class="btn btn-success btn-sm"
                             onclick="doneTask(this)">○</button>
@@ -176,6 +178,8 @@
                         <button class="btn btn-danger btn-sm"
                             onclick="openReasonModal(this)">×</button>
                       `
+                    : readonly
+                    ? ""
                     : `
                         <button class="btn btn-secondary btn-sm"
                             onclick="cancelTask(this)">取消</button>
@@ -187,7 +191,7 @@
         `;
     }
 
-    goalList.innerHTML += `<h5 class="mt-3">今日のタスク</h5>`;
+    goalList.innerHTML += `<h5 class="mt-3">${heading}</h5>`;
 
     active.forEach(task=>{
         goalList.innerHTML += createCard(task);
@@ -205,7 +209,105 @@
         goalList.innerHTML += createCard(task);
     });
 
+    if(tasks.length === 0){
+        goalList.innerHTML += `
+            <div class="text-center text-muted small py-4">
+                表示できる目標がありません
+            </div>
+        `;
+    }
+
 }
+
+        async function loadGroupGoals() {
+            const groupId = localStorage.getItem("group_id");
+            const userId = localStorage.getItem("user_id");
+            const goalList = document.getElementById("goalList");
+
+            goalList.innerHTML = `
+                <div class="text-center text-muted small py-4">
+                    読み込み中...
+                </div>
+            `;
+
+            if(!groupId || !userId){
+                createGoals([], {
+                    heading: "今日のグループ目標",
+                    readonly: true
+                });
+                return;
+            }
+
+            const params = new URLSearchParams({
+                group_id: groupId,
+                user_id: userId
+            });
+            const response = await fetch(`/api/grouptasks?${params.toString()}`);
+            const data = await response.json();
+
+            const todayTasks = (data.tasks || [])
+                .filter(isTodayGroupTask)
+                .sort((a, b) => (a.start_time || "").localeCompare(b.start_time || ""));
+
+            createGoals(todayTasks, {
+                heading: "今日のグループ目標",
+                readonly: true
+            });
+        }
+
+        function isTodayGroupTask(task) {
+            const today = new Date();
+            const todayDate = formatLocalDate(today);
+            const dayNames = ["日", "月", "火", "水", "木", "金", "土"];
+            const todayDayName = dayNames[today.getDay()];
+            const todayDayNumber = String(today.getDay() === 0 ? 7 : today.getDay());
+
+            if(task.start_date && task.start_date.slice(0, 10) > todayDate){
+                return false;
+            }
+
+            if(task.end_date && task.end_date.slice(0, 10) < todayDate){
+                return false;
+            }
+
+            const weekDays = normalizeWeekDays(task.week_days);
+
+            return weekDays.length === 0
+                || weekDays.includes(todayDayName)
+                || weekDays.includes(todayDayNumber);
+        }
+
+        function formatLocalDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day = String(date.getDate()).padStart(2, "0");
+
+            return `${year}-${month}-${day}`;
+        }
+
+        function normalizeWeekDays(value) {
+            if(!value){
+                return [];
+            }
+
+            if(Array.isArray(value)){
+                return value.map(day => String(day));
+            }
+
+            try{
+                const parsed = JSON.parse(value);
+                if(Array.isArray(parsed)){
+                    return parsed.map(day => String(day));
+                }
+            }catch(e){
+                // カンマ区切りで保存されている古いデータにも対応する
+            }
+
+            return String(value)
+                .split(",")
+                .map(day => day.trim())
+                .filter(Boolean);
+        }
 
         function formatTime(time) {
             if (!time) return '';
@@ -425,10 +527,10 @@
 
             if (isGroupMode) {
                 title.textContent = "本日のグループ目標一覧";
-                loadGroupGoals();
+                await loadGroupGoals();
             } else {
                 title.textContent = "本日の目標一覧";
-                loadGroupGoals(personalGoals);
+                await loadTodayGoals();
             }
         }
     </script>
