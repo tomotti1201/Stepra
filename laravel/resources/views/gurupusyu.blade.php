@@ -23,12 +23,18 @@
 
 @php
   $calendarTasks = $tasklist->map(function ($task) {
+    $weekdays = [];
+    if (!empty($task->week_days)) {
+      $decoded = json_decode($task->week_days, true);
+      $weekdays = is_array($decoded)
+        ? $decoded
+        : array_map('trim', explode(',', $task->week_days));
+    }
+
     return [
       'id' => $task->id,
       'title' => $task->title,
-      'weekdays' => $task->week_days
-        ? array_map('trim', explode(',', $task->week_days))
-        : [],
+      'weekdays' => $weekdays,
       'startDate' => $task->start_date,
       'endDate' => $task->end_date,
       'color' => $task->color ?: '#198754',
@@ -44,7 +50,7 @@
 
       <div class="row g-2 mb-4">
         <div class="col-7 d-flex flex-column gap-2">
-          <button class="btn btn-outline-dark w-100 py-2 fw-bold text-start btn-sm" onclick="loadGroupTasks({{ $group->id }})">
+          <button class="btn btn-outline-dark w-100 py-2 fw-bold text-start btn-sm" onclick="openGroupTasks({{ $group->id }})">
             グループタスクを表示
           </button>
 
@@ -146,7 +152,7 @@
 
 <script>
 (() => {
-  let taskData = [];
+  let taskData = @json($calendarTasks);
   async function loadTasks() {
     try {
       const resp = await fetch(`/api/grouptasks?group_id={{ $group->id }}`, { headers: { Accept: 'application/json' } });
@@ -156,7 +162,7 @@
       taskData = tasks.map(task => ({
         id: task.id,
         title: task.title,
-        weekdays: task.week_days ? task.week_days.split(',').map(s => s.trim()) : [],
+        weekdays: normalizeWeekDays(task.week_days),
         startDate: task.start_date,
         endDate: task.end_date,
         color: task.color || '#198754'
@@ -165,7 +171,6 @@
       console.error('Failed loading group tasks', e);
     }
   }
-  let taskData = @json($calendarTasks);
   const today = new Date();
   let currentYear = today.getFullYear();
   let currentMonth = today.getMonth() + 1;
@@ -208,6 +213,7 @@
     }
 
     const week = date.getDay();
+    const isoWeek = week === 0 ? 7 : week;
 
     const days = task.weekdays || [];
     if (days.length === 0) {
@@ -217,7 +223,7 @@
 
     return days.some((dayText) => {
       const key = String(dayText).trim();
-      return weekMap[key] === week || Number(key) === week;
+      return weekMap[key] === week || Number(key) === isoWeek;
     });
   }
 
@@ -500,8 +506,12 @@
       .filter(Boolean);
   }
 
+  window.openGroupTasks = (id) => {
+    window.location.href = `/grouptask/${id}`;
+  };
+
   window.openTaskContinue = (id) => {
-    window.location.href = `/gurutaskukuhen/${id}`;
+    window.location.href = `/grouptask/${id}`;
   };
 
   window.editGroup = (id) => {

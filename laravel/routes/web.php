@@ -88,6 +88,10 @@ Route::get('/grouptask/{id}', function ($id) {
     ]);
 });
 
+Route::get('/gtasutkuitiran/{id}', function ($id) {
+    return redirect("/grouptask/{$id}");
+});
+
 Route::get('/gurupjouhouhensyu/{id}', function ($id) {
     $group = Group::findOrFail($id);
     $member = Groupmember::where('group_id', $id)->get();

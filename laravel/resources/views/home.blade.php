@@ -249,7 +249,6 @@
 
         async function loadGroupGoals() {
             const groupId = selectedGroupId || localStorage.getItem("group_id");
-            const userId = localStorage.getItem("user_id");
             const goalList = document.getElementById("goalList");
 
             goalList.innerHTML = `
@@ -258,7 +257,7 @@
                 </div>
             `;
 
-            if(!groupId || !userId){
+            if(!groupId){
                 createGoals([], {
                     heading: "今日のグループ目標",
                     readonly: true
@@ -267,8 +266,7 @@
             }
 
             const params = new URLSearchParams({
-                group_id: groupId,
-                user_id: userId
+                group_id: groupId
             });
             const response = await fetch(`/api/grouptasks?${params.toString()}`);
             const data = await response.json();
@@ -286,8 +284,10 @@
         function isTodayGroupTask(task) {
             const targetDate = parseLocalDate(selectedHomeDate);
             const todayDate = formatLocalDate(targetDate);
+            /*
             const dayNames = ["日", "月", "火", "水", "木", "金", "土"];
-            const todayDayName = dayNames[targetDate.getDay()];
+            const todayDayNumber = String(targetDate.getDay() === 0 ? 7 : targetDate.getDay());
+            */
             const todayDayNumber = String(targetDate.getDay() === 0 ? 7 : targetDate.getDay());
 
             if(task.start_date && task.start_date.slice(0, 10) > todayDate){
@@ -300,9 +300,20 @@
 
             const weekDays = normalizeWeekDays(task.week_days);
 
-            return weekDays.length === 0
-                || weekDays.includes(todayDayName)
-                || weekDays.includes(todayDayNumber);
+            const dayNameMap = {
+                "\u65e5": "7",
+                "\u6708": "1",
+                "\u706b": "2",
+                "\u6c34": "3",
+                "\u6728": "4",
+                "\u91d1": "5",
+                "\u571f": "6"
+            };
+
+            return weekDays.length === 0 || weekDays.some(day => {
+                const key = String(day).trim();
+                return key === todayDayNumber || dayNameMap[key] === todayDayNumber;
+            });
         }
 
         function formatLocalDate(date) {
@@ -411,6 +422,20 @@
         }
 
         async function loadChart() {
+            if (selectedGroupId) {
+                const params = new URLSearchParams({
+                    group_id: selectedGroupId
+                });
+                const response = await fetch(`/api/grouptasks?${params.toString()}`);
+                const data = await response.json();
+                const tasks = (data.tasks || [])
+                    .filter(isTodayGroupTask)
+                    .sort((a, b) => (a.start_time || "").localeCompare(b.start_time || ""));
+
+                renderChart(tasks);
+                return;
+            }
+
             const userId = localStorage.getItem("user_id");
 
             const params = new URLSearchParams({
