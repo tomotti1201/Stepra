@@ -61,9 +61,9 @@
                     個人目標一覧
                 </h5>
 
-                <button class="btn btn-success" onclick="changeGoal()">
+                <!--<button class="btn btn-success" onclick="changeGoal()">
                     切替
-                </button>
+                </button>-->
 
             </div>
         </div>
@@ -171,7 +171,7 @@ if (!dateStr) {
 // 日付表示
 // ==========================
 document.getElementById("scheduleTitle").textContent =
-`${dateStr} のスケジュール`;
+`${dateStr} `;
 const clickedDate = new Date(dateStr);
 const today = new Date();
 
@@ -213,7 +213,6 @@ async function loadDayData() {
     createGoals(tasks);
 }
 
-// Load group tasks for the date when viewing from a group calendar
 async function loadGroupDayData() {
     console.log('loadGroupDayData called', { groupId, date: dateStr });
     const date = dateStr;

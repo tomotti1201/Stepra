@@ -9,10 +9,12 @@
 </head>
 <body class="bg-light">
 
-<div class="container-fluid min-vh-100 d-flex flex-column justify-content-between p-0">
+<div class="container py-4 mb-5">
   
-  <div class="p-4 flex-grow-1 mb-5">
-    
+      <!-- タイトル -->
+      <img src="{{ asset('image/tit.png') }}" class="mb-3" style="width:200px;">
+
+
     <h2 class="text-center fw-bold display-6 mb-5 fs-4">
       新規作成
     </h2>
@@ -45,10 +47,10 @@
 
     <button class="btn btn-success w-100 mb-3 py-3 fw-bold fs-5" 
             id="createGroupBtn" 
-            onclick="createGroup()" 
-            disabled>
+            onclick="createGroup()" >
       グループ作成
     </button>
+</dib>
 
     <button class="btn btn-secondary w-100 py-3 fw-bold fs-5" 
             onclick="goBack()">
@@ -56,10 +58,8 @@
     </button>
 
   </div>
-
-    <x-menubar />
-
 </div>
+  <x-menubar />
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
