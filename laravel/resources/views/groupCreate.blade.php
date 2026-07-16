@@ -151,7 +151,7 @@ function checkGroupName(){
 /* 戻る */
 /* ===================================================== */
 function goBack(){
-  window.location.href = "/group?user_id=" + encodeURIComponent(localStorage.getItem("user_id") || "");
+  history.back();
 }
 </script>
 

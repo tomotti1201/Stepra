@@ -284,11 +284,23 @@ function createGoals(tasks){
 
     goalList.innerHTML += `<h5 class="mt-3">今日のタスク</h5>`;
 
-    active.forEach(task=>{
+    if(active.length > 0){
 
-        goalList.innerHTML += createCard(task);
+        active.forEach(task=>{
 
-    });
+            goalList.innerHTML += createCard(task);
+
+        });
+
+    }else{
+
+        goalList.innerHTML += `
+            <p class="text-muted">
+                本日のタスクはありません
+            </p>
+        `;
+
+    }
 
 
     if(completed.length > 0){

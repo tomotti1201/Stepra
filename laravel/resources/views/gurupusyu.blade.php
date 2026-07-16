@@ -131,18 +131,6 @@
     </div>
   </div>
 </div>
-
-
-      <div class="modal-body p-4 text-center">
-        <div class="d-flex gap-2 mb-4">
-          <select id="yearSelect" class="form-control py-2 fw-bold text-center" aria-label="year" title="year"></select>
-          <select id="monthSelect" class="form-control py-2 fw-bold text-center" aria-label="month" title="month"></select>
-        </div>
-
-        <button type="button" class="btn btn-success w-100 py-2 fw-bold" onclick="changeCalendar()">
-          移動する
-        </button>
-      </div>
     </div>
   </div>
 </div>
