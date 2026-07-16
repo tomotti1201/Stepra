@@ -1029,7 +1029,7 @@ function createGroupGoals(tasks){
             <div class="d-flex gap-2 px-3">
 
                 ${
-                    task.status === "active" && !readonly
+                    task.status === "active"
                     ? `
                         <button class="btn btn-success btn-sm"
                             onclick="doneTask(this)">○</button>
@@ -1037,9 +1037,8 @@ function createGroupGoals(tasks){
                         <button class="btn btn-danger btn-sm"
                             onclick="openReasonModal(this)">×</button>
                       `
-                    : readonly
-                    ? ""
-                    : `
+                    : 
+                      `
                         <button class="btn btn-secondary btn-sm"
                             onclick="cancelTask(this)">取消</button>
                       `
