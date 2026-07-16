@@ -15,7 +15,7 @@
         </button>
 
         <button
-            class="btn {{ request()->is('schedules') ? 'btn-success' : 'btn-outline-secondary' }}"
+            class="btn {{ request()->is('schedules') || request()->is('scheduleDetail') ? 'btn-success' : 'btn-outline-secondary' }}"
             onclick="location.href='/schedules'">
             📅 月間カレンダー
         </button>
