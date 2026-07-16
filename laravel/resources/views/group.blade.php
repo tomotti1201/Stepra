@@ -92,11 +92,11 @@
 
 <script>
   function goCreateGroup() {
-    window.location.href = "/groupCreate";
+    window.location.href = "/group/create";
   }
 
   function openGroup(id) {
-    window.location.href = `/groupSchedule/${id}`;
+    window.location.href = `/group/${id}/schedule`;
   }
 
   async function searchGroup() {

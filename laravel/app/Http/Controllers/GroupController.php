@@ -6,14 +6,25 @@ use App\Models\Group;
 use App\Models\Groupmember;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
 class GroupController extends Controller
 {
     public function index()
     {
-        $groups = Group::all();
+        $userId = session('user_id');
 
-        return response()->json($groups);
+        $groups = Groupmember::where('user_id',$userId)
+            ->with('group')
+            ->get()
+            ->map(function($member){
+
+                return $member->group;
+
+            });
+
+
+        return view('group.index',compact('groups'));
     }
 
     public function store(Request $request)
@@ -87,4 +98,33 @@ class GroupController extends Controller
 
         return response()->json(null, 204);
     }
+    public function userGroups(Request $request)
+{
+    $userId = $request->user_id;
+
+
+    if(!$userId){
+        return response()->json([
+            'groups'=>[]
+        ]);
+    }
+
+
+    $groups = Groupmember::where('user_id',$userId)
+        ->with('group')
+        ->get()
+        ->map(function($member){
+
+            return [
+                'id'=>$member->group_id,
+                'name'=>$member->group->name,
+            ];
+
+        });
+
+
+    return response()->json([
+        'groups'=>$groups
+    ]);
+}
 }

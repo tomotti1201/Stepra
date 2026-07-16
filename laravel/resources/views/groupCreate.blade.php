@@ -50,7 +50,7 @@
             onclick="createGroup()" >
       グループ作成
     </button>
-</dib>
+</div>
 
     <button class="btn btn-secondary w-100 py-3 fw-bold fs-5" 
             onclick="goBack()">

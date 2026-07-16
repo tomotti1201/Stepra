@@ -192,7 +192,7 @@
     }
 
     function openGroupTasks() {
-      location.href = `/gtasutkuitiran/${groupId}`;
+      location.href = `/group/${groupId}/task/create`;
     }
 
     function showInviteCode() {

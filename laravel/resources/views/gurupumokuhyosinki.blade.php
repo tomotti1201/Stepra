@@ -348,7 +348,7 @@
 
     <button type="button"
             class="btn btn-secondary w-100"
-            onclick="location.href='/gtasutkuitiran/{{ $group->id }}'">
+            onclick="location.href='/group/{{ $group->id }}/tasks'">
         キャンセル
     </button>
 
@@ -654,8 +654,8 @@ async function saveGoal(){
         alert("グループタスクを登録しました");
 
 
-        location.href=
-            "/gtasutkuitiran/{{ $group->id }}";
+        location.href =
+            "/group/{{ $group->id }}/tasks";
 
 
     }catch(error){

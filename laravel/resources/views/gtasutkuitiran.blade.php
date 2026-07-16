@@ -60,7 +60,7 @@
                     </h2>
 
                     <div class="mt-4">
-                        <a href="/gurupumokuhyosinki/{{ $group->id }}"
+                        <a href="/group/{{ $group->id }}/task/create"
                            class="btn btn-success w-100 py-3 fw-bold fs-5 shadow-sm">
                             ＋ 新規グループ目標作成
                         </a>
@@ -218,7 +218,7 @@ async function renderList(){
                 "編集";
 
             editLink.href =
-    `/gurutaskukuhen/{{ $group->id }}?task_id=${goal.id}`;
+                `/group/{{ $group->id }}/task/edit?task_id=${goal.id}`;
             editBtnWrapper.appendChild(editLink);
 
             item.appendChild(content);

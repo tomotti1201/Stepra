@@ -140,7 +140,7 @@ class TaskController extends Controller
         $task = Task::create([
             'user_id' => $request->user_id,
             'title' => $request->title,
-            'content' => $request->content,
+            'content' => $request->content ?? '',
             'week_days' => json_encode($weekDays),
             'start_time' => $start_time,
             'required_minutes' => $requiredMinutes,
@@ -369,7 +369,7 @@ while ($date->lte($endLimit)) {
                         'scheduled_date' => $date->format('Y-m-d'),
 
                         'title' => $title,
-                        'content' => $request->content,
+                        'content' => $request->content ?? '',
                         'week_days' => json_encode($weekDays),
                         'start_time' => $start_time,
                         'required_minutes' => $requiredMinutes,
@@ -431,10 +431,10 @@ while ($date->lte($endLimit)) {
 
     // 未達成理由の保存
     if ($status === 'failed') {
-        $schedule->content = $request->input('content');
+        $schedule->content = $request->input('content') ?? '';
     } else {
         // active・completed のときは理由を消す
-        $schedule->content = null;
+        $schedule->content = '';
     }
 
     // 保存

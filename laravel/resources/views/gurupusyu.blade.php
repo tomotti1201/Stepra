@@ -9,11 +9,7 @@
 <body class="bg-light">
   <div class="container py-4 mb-5">
 
-        <!--<div class="row justify-content-center">-->
-
-            <!--<div class="col-12 col-md-8 col-lg-5"> -->
-
-                <div class="card-body">
+    <div class="card-body">
 
     <script>
         if (!localStorage.getItem("user_id")) {
@@ -43,21 +39,21 @@
       </h2>
 
       <div class="row g-2 mb-4">
-        <div class="col-7 d-flex flex-column gap-2">
-          <button class="btn btn-outline-dark w-100 py-2 fw-bold text-start btn-sm" onclick="openTaskList({{ $group->id }})">
-            グループタスクを表示
-          </button>
+          <div class="col-6 d-grid">
+              <button
+                  class="btn btn-outline-dark fw-bold py-4 h-100 d-flex align-items-center justify-content-center"
+                  onclick="openTaskList({{ $group->id }})">
+                  グループタスクを表示
+              </button>
+          </div>
 
-          <button class="btn btn-outline-dark w-100 py-2 fw-bold text-start btn-sm" onclick="openTaskContinue({{ $group->id }})">
-            グループタスクの継続
-          </button>
-        </div>
-
-        <div class="col-5">
-          <button class="btn btn-primary w-100 h-100 fw-bold d-flex align-items-center justify-content-center" onclick="editGroup({{ $group->id }})">
-            グループ<br>編集
-          </button>
-        </div>
+          <div class="col-6 d-grid">
+              <button
+                  class="btn btn-primary fw-bold py-4 h-100 d-flex align-items-center justify-content-center"
+                  onclick="editGroup({{ $group->id }})">
+                  グループ編集
+              </button>
+          </div>
       </div>
 
         <div class="d-flex justify-content-between align-items-center mb-3">
@@ -159,234 +155,264 @@
 
 <script>
 (() => {
-  let taskData = [];
-  async function loadTasks() {
-    try {
-      const resp = await fetch(`/api/grouptasks?group_id={{ $group->id }}`, { headers: { Accept: 'application/json' } });
-      if (!resp.ok) return;
-      const data = await resp.json();
-      const tasks = Array.isArray(data) ? data : data.tasks || [];
-      taskData = tasks.map(task => ({
-        id: task.id,
-        title: task.title,
-        weekdays: task.week_days ? task.week_days.split(',').map(s => s.trim()) : [],
-        startDate: task.start_date,
-        endDate: task.end_date,
-        color: task.color || '#198754'
-      }));
-    } catch (e) {
-      console.error('Failed loading group tasks', e);
-    }
-  }
-  const today = new Date();
-  let currentYear = today.getFullYear();
-  let currentMonth = today.getMonth() + 1;
 
-  const weekMap = {
-    "日": 0,
-    "月": 1,
-    "火": 2,
-    "水": 3,
-    "木": 4,
-    "金": 5,
-    "土": 6
-  };
+let scheduleCache = {};
+let scheduleData = [];
 
-  function parseDate(value) {
-    if (!value) {
-      return null;
+const today = new Date();
+let currentYear = today.getFullYear();
+let currentMonth = today.getMonth() + 1;
+
+/**
+ * 月のスケジュール取得
+ */
+async function fetchSchedules() {
+
+    const key = `${currentYear}-${currentMonth}`;
+
+    if (scheduleCache[key]) {
+        scheduleData = scheduleCache[key];
+        return;
     }
 
-    const normalized = String(value).replaceAll("-", "");
-
-    return new Date(
-      Number(normalized.slice(0, 4)),
-      Number(normalized.slice(4, 6)) - 1,
-      Number(normalized.slice(6, 8))
+    const res = await fetch(
+        `/api/groupSchedules/monthly?year=${currentYear}&month=${currentMonth}&group_id={{ $group->id }}`
     );
-  }
 
-  function updateCalendarTitle() {
+    const data = await res.json();
+
+    scheduleCache[key] = data.schedules || [];
+    scheduleData = scheduleCache[key];
+}
+
+/**
+ * タイトル更新
+ */
+function updateCalendarTitle() {
+
     document.getElementById("calendarTitle").textContent =
-      `${currentYear}年${currentMonth}月`;
-  }
+        `${currentYear}年${currentMonth}月`;
 
-  function taskMatchesDate(task, date) {
-    const start = parseDate(task.startDate);
-    const end = task.endDate ? parseDate(task.endDate) : new Date(9999, 11, 31);
+}
 
-    if (!start || date < start || date > end) {
-      return false;
-    }
+/**
+ * カレンダー描画
+ */
+async function createCalendar() {
 
-    const week = date.getDay();
+    await fetchSchedules();
 
-    const days = task.weekdays || [];
-    if (days.length === 0) {
-      // No weekday restriction — show for all dates in the start/end range
-      return true;
-    }
-
-    return days.some((dayText) => {
-      const key = String(dayText).trim();
-      return weekMap[key] === week || Number(key) === week;
-    });
-  }
-
-  function getTasksForDate(date) {
-    return taskData.filter((task) => taskMatchesDate(task, date));
-  }
-
-  function createCalendar() {
     const calendar = document.getElementById("calendarGrid");
     calendar.innerHTML = "";
+
+    updateCalendarTitle();
 
     const firstDay = new Date(currentYear, currentMonth - 1, 1).getDay();
     const lastDate = new Date(currentYear, currentMonth, 0).getDate();
 
+    // 空白
     for (let i = 0; i < firstDay; i++) {
-      const empty = document.createElement("div");
-      calendar.appendChild(empty);
+
+        const empty = document.createElement("div");
+        calendar.appendChild(empty);
+
     }
 
+    // 日付生成
     for (let day = 1; day <= lastDate; day++) {
-      const dayBox = document.createElement("button");
-      const currentDate = new Date(currentYear, currentMonth - 1, day);
-      const currentWeek = currentDate.getDay();
-      const matchedTasks = getTasksForDate(currentDate);
 
-      let colorClasses = "bg-white text-dark";
+        const dayBox = document.createElement("button");
 
-      if (
-        currentYear === today.getFullYear() &&
-        currentMonth === today.getMonth() + 1 &&
-        day === today.getDate()
-      ) {
-        colorClasses = "bg-success bg-opacity-25 border border-success text-success fw-bold";
-      } else if (currentWeek === 0) {
-        colorClasses = "bg-danger bg-opacity-10 text-danger";
-      } else if (currentWeek === 6) {
-        colorClasses = "bg-primary bg-opacity-10 text-primary";
-      }
+        const fullDate =
+            `${currentYear}-${String(currentMonth).padStart(2,"0")}-${String(day).padStart(2,"0")}`;
 
-      dayBox.className =
-        "btn w-100 border rounded-3 p-1 shadow-sm";
-      dayBox.style.height = "95px";
-      dayBox.style.display = "flex";
-      dayBox.style.flexDirection = "column";
-      dayBox.style.overflow = "hidden";
+        const matchedTasks =
+            scheduleData.filter(schedule =>
+                schedule.scheduled_date === fullDate
+            );
 
-      const dayNum = document.createElement("span");
-      dayNum.className = "small fw-bold text-center mb-1";
-      dayNum.textContent = day;
-      dayBox.appendChild(dayNum);
+        const dayOfWeek =
+            new Date(currentYear, currentMonth - 1, day).getDay();
 
-      const taskContainer = document.createElement("div");
-      taskContainer.className = "d-flex flex-column gap-1 w-100";
+        let colorClasses = "bg-white text-dark";
 
-      matchedTasks.slice(0, 3).forEach((task) => {
-        const taskBar = document.createElement("div");
-        taskBar.className = "fw-bold text-center px-1 rounded";
-        const bg = task.color || "#0d6efd";
-        taskBar.style.backgroundColor = bg;
-        // choose readable text color based on background luminance
-        function hexToRgb(hex) {
-          const h = hex.replace('#', '');
-          const bigint = parseInt(h.length === 3 ? h.split('').map(c=>c+c).join('') : h, 16);
-          return [(bigint >> 16) & 255, (bigint >> 8) & 255, bigint & 255];
+        if (
+            currentYear === today.getFullYear() &&
+            currentMonth === today.getMonth() + 1 &&
+            day === today.getDate()
+        ) {
+
+            colorClasses =
+                "bg-success bg-opacity-25 border border-success text-success fw-bold";
+
+        } else if (dayOfWeek === 0) {
+
+            colorClasses =
+                "bg-danger bg-opacity-10 text-danger";
+
+        } else if (dayOfWeek === 6) {
+
+            colorClasses =
+                "bg-primary bg-opacity-10 text-primary";
+
         }
-        function luminance(r,g,b){
-          const a=[r,g,b].map(v=>{
-            v=v/255; return v<=0.03928? v/12.92 : Math.pow((v+0.055)/1.055,2.4);
-          });
-          return 0.2126*a[0]+0.7152*a[1]+0.0722*a[2];
+
+        dayBox.className =
+            `btn w-100 border rounded-3 p-1 shadow-sm ${colorClasses}`;
+
+        dayBox.style.height = "95px";
+        dayBox.style.display = "flex";
+        dayBox.style.flexDirection = "column";
+        dayBox.style.overflow = "hidden";
+
+        // 日付
+        const dayNum = document.createElement("span");
+
+        dayNum.className =
+            "small fw-bold text-center mb-1";
+
+        dayNum.textContent = day;
+
+        dayBox.appendChild(dayNum);
+
+        // タスク表示
+        const taskContainer = document.createElement("div");
+
+        taskContainer.className =
+            "d-flex flex-column gap-1 w-100";
+
+        matchedTasks.slice(0,3).forEach(task => {
+
+            const taskBar = document.createElement("div");
+
+            taskBar.className =
+                "fw-bold text-center px-1 rounded";
+
+            taskBar.style.backgroundColor =
+                task.color || "#198754";
+
+            taskBar.style.color = "#fff";
+
+            taskBar.style.fontSize = "12px";
+            taskBar.style.whiteSpace = "nowrap";
+            taskBar.style.overflow = "hidden";
+            taskBar.style.textOverflow = "ellipsis";
+
+            taskBar.textContent = task.title;
+
+            taskContainer.appendChild(taskBar);
+
+        });
+                // 4件以上ある場合
+        if (matchedTasks.length > 3) {
+
+            const more = document.createElement("div");
+
+            more.className =
+                "small text-muted text-center";
+
+            more.textContent =
+                `+${matchedTasks.length - 3}`;
+
+            taskContainer.appendChild(more);
         }
-        try{
-          const [r,g,b] = hexToRgb(bg);
-          const lum = luminance(r,g,b);
-          taskBar.style.color = lum > 0.5 ? '#111' : '#fff';
-        }catch(e){
-          taskBar.style.color = '#fff';
-        }
-        taskBar.style.fontSize = "12px";
-        taskBar.style.lineHeight = "1.45";
-        taskBar.style.whiteSpace = "nowrap";
-        taskBar.style.overflow = "hidden";
-        taskBar.style.textOverflow = "ellipsis";
-        taskBar.title = task.title;
-        taskBar.textContent = task.title;
-        taskContainer.appendChild(taskBar);
-      });
 
-      if (matchedTasks.length > 3) {
-        const more = document.createElement("div");
-        more.className = "small text-muted text-center";
-        more.textContent = `+${matchedTasks.length - 3}`;
-        taskContainer.appendChild(more);
-      }
+        dayBox.appendChild(taskContainer);
 
-      dayBox.onclick = () => {
-        const y = currentYear;
-        const m = String(currentMonth).padStart(2, '0');
-        const d = String(day).padStart(2, '0');
-        // navigate to schedule detail page for the clicked date (include group_id)
-        window.location.href = `/scheduleDetail?date=${y}-${m}-${d}&group_id={{ $group->id }}`;
-      };
+        // 日付クリック
+        dayBox.onclick = () => {
 
-      dayBox.appendChild(taskContainer);
-      calendar.appendChild(dayBox);
+            window.location.href =
+                `/group/{{ $group->id }}/scheduleDetail?date=${fullDate}`;
+
+        };
+
+        calendar.appendChild(dayBox);
     }
-  }
 
-  window.createSelectOptions = function() {
-    const yearSelect = document.getElementById("yearSelect");
-    const monthSelect = document.getElementById("monthSelect");
+    // 最後の空白セル
+    const totalCells = firstDay + lastDate;
+    const remainCells = 42 - totalCells;
+
+    for (let i = 0; i < remainCells; i++) {
+
+        const empty = document.createElement("div");
+
+        empty.style.height = "95px";
+
+        calendar.appendChild(empty);
+    }
+
+}
+
+/**
+ * 年月セレクト作成
+ */
+window.createSelectOptions = function () {
+
+    const yearSelect =
+        document.getElementById("yearSelect");
+
+    const monthSelect =
+        document.getElementById("monthSelect");
 
     yearSelect.innerHTML = "";
     monthSelect.innerHTML = "";
 
     for (let year = 2020; year <= 2035; year++) {
-      const option = document.createElement("option");
-      option.value = year;
-      option.textContent = `${year}年`;
-      yearSelect.appendChild(option);
+
+        const option = document.createElement("option");
+
+        option.value = year;
+        option.textContent = `${year}年`;
+
+        yearSelect.appendChild(option);
     }
 
     for (let month = 1; month <= 12; month++) {
-      const option = document.createElement("option");
-      option.value = month;
-      option.textContent = `${month}月`;
-      monthSelect.appendChild(option);
+
+        const option = document.createElement("option");
+
+        option.value = month;
+        option.textContent = `${month}月`;
+
+        monthSelect.appendChild(option);
     }
 
     yearSelect.value = currentYear;
     monthSelect.value = currentMonth;
-  }
 
-  window.changeMonth = (move) => {
+};
+
+/**
+ * 前月・翌月
+ */
+window.changeMonth = async (move) => {
+
     currentMonth += move;
 
     if (currentMonth < 1) {
-      currentMonth = 12;
-      currentYear--;
+
+        currentMonth = 12;
+        currentYear--;
+
     }
 
     if (currentMonth > 12) {
-      currentMonth = 1;
-      currentYear++;
+
+        currentMonth = 1;
+        currentYear++;
+
     }
 
-    updateCalendarTitle();
-    createCalendar();
-  };
+    await createCalendar();
 
-  window.openCalendarModal = () => {
-    createSelectOptions();
-    const modal = new bootstrap.Modal(document.getElementById("calendarModal"));
-    modal.show();
-  };
+};
 
-  window.changeYear = () => {
+/**
+ * 年変更
+ */
+window.changeYear = async () => {
 
     currentYear =
         Number(document.getElementById("yearSelect").value);
@@ -394,21 +420,21 @@
     currentMonth =
         Number(document.getElementById("monthSelect").value);
 
-    updateCalendarTitle();
-    createCalendar();
+    await createCalendar();
 
-    // 編集画面は閉じない
-  };
+};
+/**
+ * 月変更（セレクト）
+ */
+window.changeMonthSelect = async () => {
 
-  window.changeMonthSelect = () => {
     currentYear =
         Number(document.getElementById("yearSelect").value);
 
     currentMonth =
         Number(document.getElementById("monthSelect").value);
 
-    updateCalendarTitle();
-    createCalendar();
+    await createCalendar();
 
     // 編集終了
     document
@@ -418,28 +444,42 @@
     document
         .getElementById("calendarTitle")
         .classList.remove("d-none");
-  };
 
-  window.openTaskList = (id) => {
-    window.location.href = `/grouptask/${id}`;
-  };
+};
 
-  window.openTaskContinue = (id) => {
-    window.location.href = `/gurutaskukuhen/${id}`;
-  };
+/**
+ * タスク一覧
+ */
+window.openTaskList = (id) => {
 
-  window.editGroup = (id) => {
-   window.location.href = `/gurupjouhouhensyu/${id}`;
-  };
+    window.location.href = `/group/${id}/tasks`;
 
-  (async () => {
-    await loadTasks();
-    updateCalendarTitle();
-    createCalendar();
-  })();
+};
+
+/**
+ * グループ編集
+ */
+window.editGroup = (id) => {
+
+    window.location.href = `/group/${id}/edit`;
+
+};
+
+/**
+ * 初期表示
+ */
+(async () => {
+
+    await createCalendar();
+
 })();
 
-function showSelect(){
+})();
+
+/**
+ * 年月選択表示
+ */
+function showSelect() {
 
     createSelectOptions();
 
@@ -452,8 +492,6 @@ function showSelect(){
         .classList.remove("d-none");
 
 }
-
-
 </script>
 
 </body>

@@ -61,9 +61,23 @@
                     個人目標一覧
                 </h5>
 
-                <!--<button class="btn btn-success" onclick="changeGoal()">
-                    切替
-                </button>-->
+
+                <div>
+
+                    <button id="prevBtn"
+                    class="btn btn-success"
+                    onclick="prevGroup()">
+                        ←
+                    </button>
+
+
+                    <button id="nextBtn"
+                    class="btn btn-success"
+                    onclick="nextGroup()">
+                        →
+                    </button>
+
+                </div>
 
             </div>
         </div>
@@ -138,6 +152,9 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
+    // グループ切替
+let userGroups = [];
+let currentGroupIndex = -1;
 function moveDate(diff){
 
     const date = new Date(dateStr);
@@ -185,17 +202,135 @@ const diffDays = (today - clickedDate) / (1000 * 60 * 60 * 24);
 const canEdit = [2, 1, 0].includes(diffDays);
 
 // Detect group context
-const groupId = urlParams.get("group_id");
+let groupId = urlParams.get("group_id");
 
 // 初期ロード
-document.addEventListener("DOMContentLoaded", () => {
-    if (groupId) {
+document.addEventListener("DOMContentLoaded", async()=>{
+
+    await loadUserGroups();
+
+    if(groupId){
         loadGroupDayData();
-    } else {
+    }else{
         loadDayData();
     }
-});
 
+});
+async function loadUserGroups(){
+
+    const userId = localStorage.getItem("user_id");
+
+
+    const res = await fetch(
+        `/api/user/groups?user_id=${userId}`
+    );
+
+
+    const data = await res.json();
+
+
+    userGroups = data.groups || [];
+
+
+    updateArrow();
+
+
+}
+function updateArrow(){
+
+    const prev =
+        document.getElementById("prevBtn");
+
+    const next =
+        document.getElementById("nextBtn");
+
+
+    if(currentGroupIndex === -1){
+
+        prev.style.visibility = "hidden";
+
+    }
+    else{
+
+        prev.style.visibility = "visible";
+
+    }
+
+
+
+    if(currentGroupIndex >= userGroups.length - 1){
+
+        next.style.visibility = "hidden";
+
+    }
+    else{
+
+        next.style.visibility = "visible";
+
+    }
+
+}
+async function nextGroup(){
+
+    if(userGroups.length === 0){
+        return;
+    }
+
+
+    if(currentGroupIndex < userGroups.length - 1){
+
+        currentGroupIndex++;
+
+        await showCurrentGroup();
+
+    }
+
+
+    updateArrow();
+
+}
+async function prevGroup(){
+
+    if(currentGroupIndex === -1){
+        return;
+    }
+
+    currentGroupIndex--;
+
+    if(currentGroupIndex === -1){
+
+    groupId = null;
+
+    document.getElementById("goalTitle")
+    .textContent =
+    "個人目標一覧";
+
+    await loadDayData();
+
+    }else{
+
+        await showCurrentGroup();
+
+    }
+
+
+    updateArrow();
+
+}
+async function showCurrentGroup(){
+
+    const group =
+        userGroups[currentGroupIndex];
+
+
+    document.getElementById("goalTitle")
+    .textContent =
+    group.name + " の目標一覧";
+
+
+    await loadGroupDayData(group.id);
+
+}
 // データ取得（API）
 async function loadDayData() {
 
@@ -213,8 +348,13 @@ async function loadDayData() {
     createGoals(tasks);
 }
 
-async function loadGroupDayData() {
-    console.log('loadGroupDayData called', { groupId, date: dateStr });
+async function loadGroupDayData(selectedGroupId=null) {
+
+    if(selectedGroupId){
+
+        groupId = selectedGroupId;
+
+    }
     const date = dateStr;
     try {
         const resp = await fetch(`/api/grouptasks?group_id=${groupId}`, { headers: { Accept: 'application/json' } });
@@ -261,7 +401,6 @@ async function loadGroupDayData() {
             title: t.title
         }));
 
-        document.getElementById('goalTitle').textContent = 'グループ目標一覧';
         // hide change button for group view
         const btn = document.querySelector('#goalTitle').nextElementSibling;
         if (btn && btn.tagName === 'BUTTON') btn.style.display = 'none';
