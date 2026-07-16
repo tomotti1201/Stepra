@@ -218,8 +218,7 @@ async function renderList(){
                 "編集";
 
             editLink.href =
-                `/gurutaskukuhen/{{ $group->id }}?task_id=${goal.id}`;
-
+    `/gurutaskukuhen/{{ $group->id }}?task_id=${goal.id}`;
             editBtnWrapper.appendChild(editLink);
 
             item.appendChild(content);

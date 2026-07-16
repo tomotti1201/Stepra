@@ -59,6 +59,33 @@
             border: 3px solid black;
         }
 
+        .color-option {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .color-remove {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 18px;
+            height: 18px;
+            border: none;
+            border-radius: 50%;
+            background: #fff;
+            color: #444;
+            box-shadow: 0 0 0 1px #ccc;
+            font-size: 12px;
+            line-height: 1;
+            cursor: pointer;
+        }
+
+        .color-remove:hover {
+            background: #f8d7da;
+            color: #b02a37;
+        }
+
         .page-title{
             font-size: clamp(1.5rem, 2vw, 2.2rem);
         }
@@ -227,6 +254,14 @@
                                 onchange="addCustomColor(this.value)">
 
                         </div>
+
+                        <div class="color-selection" id="color-group"></div>
+
+                        <input type="color"
+                            id="custom-color-picker"
+                            style="display:none;"
+                            onchange="addCustomColor(this.value)">
+
                     </div>
                     <div>
                         <button type="button" class="btn btn-success w-100 mb-2" onclick="saveGoal()">登録する</button>
@@ -264,75 +299,111 @@
             element.classList.add("active");
         }
 
-        let selectedColor = "#0d6efd";
+        let availableColors = ["#0d6efd", "#198754", "#dc3545", "#ffc107", "#6f42c1"];
+        let selectedColor = availableColors[0];
+
+        function renderColorPalette() {
+            const colorGroup = document.getElementById("color-group");
+            const limitMessage = document.getElementById("color-limit-message");
+
+            if (!colorGroup) return;
+
+            colorGroup.innerHTML = "";
+
+            availableColors.forEach(color => {
+                const option = document.createElement("div");
+                option.className = "color-option";
+
+                const swatch = document.createElement("div");
+                swatch.className = "color-circle" + (selectedColor === color ? " selected" : "");
+                swatch.style.backgroundColor = color;
+                swatch.dataset.color = color;
+                swatch.onclick = function () {
+                    selectColor(this);
+                };
+
+                const removeButton = document.createElement("button");
+                removeButton.type = "button";
+                removeButton.className = "color-remove";
+                removeButton.textContent = "×";
+                removeButton.setAttribute("aria-label", "色を削除");
+                removeButton.onclick = function (event) {
+                    event.stopPropagation();
+                    removeColor(color);
+                };
+
+                option.appendChild(swatch);
+                option.appendChild(removeButton);
+                colorGroup.appendChild(option);
+            });
+
+            const addButton = document.createElement("div");
+            addButton.className = "color-circle custom";
+            addButton.id = "add-color-btn";
+            addButton.textContent = "＋";
+            addButton.onclick = function () {
+                selectCustomColor();
+            };
+            colorGroup.appendChild(addButton);
+
+            if (limitMessage) {
+                limitMessage.textContent =
+                    availableColors.length >= 5
+                        ? "彩りは5色まで。大切な色を残して、気分に合わせて入れ替えてみてください。"
+                        : "好きな色を5色まで選べます。不要な色は削除できます。";
+                limitMessage.className = "form-text " + (availableColors.length >= 5 ? "text-warning" : "text-muted");
+            }
+        }
 
         function selectColor(element) {
-
-            document
-                .querySelectorAll(".color-circle")
-                .forEach(circle =>
-                    circle.classList.remove("selected")
-                );
-
-            element.classList.add("selected");
-
             selectedColor = element.dataset.color;
+            renderColorPalette();
         }
 
         function addCustomColor(value) {
-
             if (!value) return;
 
-            const colorGroup =
-                document.getElementById("color-group");
+            if (availableColors.includes(value)) {
+                selectedColor = value;
+                renderColorPalette();
+                return;
+            }
 
-            const addButton =
-                document.getElementById("add-color-btn");
+            if (availableColors.length >= 5) {
+                const limitMessage = document.getElementById("color-limit-message");
+                if (limitMessage) {
+                    limitMessage.textContent = "彩りは5色まで。大切な色を残して、気分に合わせて入れ替えてみてください。";
+                    limitMessage.className = "form-text text-warning";
+                }
+                return;
+            }
 
-            const newColor =
-                document.createElement("div");
-
-            newColor.className =
-                "color-circle selected";
-
-            newColor.style.backgroundColor =
-                value;
-
-            newColor.dataset.color =
-                value;
-
-            newColor.onclick = function () {
-                selectColor(this);
-            };
-
-            document
-                .querySelectorAll(".color-circle")
-                .forEach(circle =>
-                    circle.classList.remove("selected")
-                );
-
-            colorGroup.insertBefore(
-                newColor,
-                addButton
-            );
-
+            availableColors.push(value);
             selectedColor = value;
+            renderColorPalette();
         }
 
+        function removeColor(colorValue) {
+            if (availableColors.length <= 1) {
+                const limitMessage = document.getElementById("color-limit-message");
+                if (limitMessage) {
+                    limitMessage.textContent = "最後の1色は残しておきましょう。";
+                    limitMessage.className = "form-text text-secondary";
+                }
+                return;
+            }
+
+            availableColors = availableColors.filter(color => color !== colorValue);
+
+            if (selectedColor === colorValue) {
+                selectedColor = availableColors[0];
+            }
+
+            renderColorPalette();
+        }
 
         function selectCustomColor() {
             document.getElementById("custom-color-picker").click();
-        }
-
-        function updateCustomColor(value) {
-            if (!value) return;
-
-            const targetCircle = document.getElementById("current-color-circle");
-
-            if (targetCircle) {
-                targetCircle.style.backgroundColor = value;
-                targetCircle.dataset.color = value;
-            }
         }
 
         function toggleDay(element) {
@@ -385,6 +456,8 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
+            renderColorPalette();
+
             const today = new Date().toISOString().split("T")[0];
             const startDate = document.getElementById("start-date");
             const endDate = document.getElementById("end-date");

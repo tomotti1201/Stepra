@@ -47,7 +47,7 @@
       font-weight: bold;
     }
     .status-card {
-        min-height: 150px; /* ランクカードと同じくらいの高さ */
+        min-height: 150px; 
     }
   </style>
 </head>
@@ -138,7 +138,8 @@ async function loadContinuity() {
     const res = await fetch(`/api/continuity?user_id=${userId}`);
 
     const data = await res.json();
-console.log(data);
+
+    document.getElementById("userName").textContent = data.name;
 
     document.getElementById("rate").innerHTML =
         `${Number(data.rate).toFixed(1)}<span class="fs-4">%</span>`;

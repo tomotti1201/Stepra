@@ -9,10 +9,11 @@
 </head>
 <body class="bg-light">
 
-<div class="container-fluid min-vh-100 d-flex flex-column justify-content-between p-0">
+<div class="container py-4 mb-5">
+  
+      <!-- タイトル -->
+      <img src="{{ asset('image/tit.png') }}" class="mb-3" style="width:200px;">
 
-  <div class="p-4 flex-grow-1 mb-5">
-            <img src="{{ asset('image/tit.png') }}" class="mb-3" style="width:200px;">
 
     <h2 class="text-center fw-bold display-6 mb-5 fs-4">
       新規作成
@@ -36,23 +37,29 @@
                 oninput="autoResize(this)"></textarea>
     </div>
 
+    <div class="mb-5">
+      <label for="groupRole" class="form-label fw-bold">ロール</label>
+      <select id="groupRole" class="form-select form-select-lg">
+        <option value="admin">管理者</option>
+        <option value="member">メンバー</option>
+      </select>
+    </div>
+
     <button class="btn btn-success w-100 mb-3 py-3 fw-bold fs-5" 
             id="createGroupBtn" 
-            onclick="createGroup()" 
-            disabled>
+            onclick="createGroup()" >
       グループ作成
     </button>
+</dib>
 
     <button class="btn btn-secondary w-100 py-3 fw-bold fs-5" 
-            onclick="location.href='/group?user_id=' + encodeURIComponent(localStorage.getItem('user_id') || '')">
+            onclick="goBack()">
       戻る
     </button>
 
   </div>
-
 </div>
-
-<x-menubar />
+  <x-menubar />
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -60,9 +67,57 @@
 /* ===================================================== */
 /* グループ作成 */
 /* ===================================================== */
-function createGroup(){
-  alert("グループを作成しました");
+async function createGroup() {
+  const description = document.getElementById("groupDesc").value;
+  const groupname = document.getElementById("groupName").value;
+  const role = document.getElementById("groupRole").value;
+
+  const userResponse = await fetch("/api/current-user");
+
+  if (!userResponse.ok) {
+    alert("ログイン情報を取得できませんでした。もう一度ログインしてください");
+    return;
+  }
+
+  const currentUser = await userResponse.json();
+
+  const groupResponse = await fetch("/api/groups", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      name: groupname,
+      description: description,
+    }),
+  });
+
+  if (!groupResponse.ok) {
+    alert("グループ作成に失敗しました");
+    return;
+  }
+
+  const data = await groupResponse.json();
+
+  const joinResponse = await fetch("/api/groups/join", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      group_id: data.id,
+      user_id: currentUser.user.id,
+      role: role,
+    }),
+  });
+
+  if (joinResponse.ok) {
+    alert("グループを作成しました");
+  } else {
+    alert("グループメンバー登録に失敗しました");
+  }
 }
+
 
 /* ===================================================== */
 /* 高さ自動変更 */
@@ -96,7 +151,7 @@ function checkGroupName(){
 /* 戻る */
 /* ===================================================== */
 function goBack(){
-  window.location.href = "gurupu.html";
+  window.location.href = "/group?user_id=" + encodeURIComponent(localStorage.getItem("user_id") || "");
 }
 </script>
 

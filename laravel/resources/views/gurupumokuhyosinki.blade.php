@@ -102,9 +102,9 @@
                 </label>
 
                 <input type="text"
-                       class="form-control"
-                       id="goal-name"
-                       placeholder="目標名を入力">
+                    class="form-control"
+                    id="goal-name"
+                    placeholder="目標名を入力">
             </div>
 
 
@@ -145,9 +145,9 @@
         </label>
 
         <input type="time"
-               class="form-control"
-               id="start-timing"
-               value="10:00">
+            class="form-control"
+            id="start-timing"
+            value="10:00">
     </div>
 
 
@@ -160,21 +160,21 @@
         <div class="d-flex gap-1">
 
             <input type="number"
-                   class="form-control"
-                   id="duration-hours"
-                   min="0"
-                   value="0">
+                class="form-control"
+                id="duration-hours"
+                min="0"
+                value="0">
 
             <span class="align-self-center small">
                 時間
             </span>
 
             <input type="number"
-                   class="form-control"
-                   id="duration-minutes"
-                   min="0"
-                   max="59"
-                   value="0">
+                class="form-control"
+                id="duration-minutes"
+                min="0"
+                max="59"
+                value="0">
 
             <span class="align-self-center small">
                 分
@@ -254,8 +254,8 @@
         </label>
 
         <input type="date"
-               class="form-control"
-               id="start-date">
+            class="form-control"
+            id="start-date">
 
     </div>
 
@@ -267,8 +267,8 @@
         </label>
 
         <input type="date"
-               class="form-control"
-               id="end-date">
+            class="form-control"
+            id="end-date">
 
     </div>
 
@@ -286,51 +286,51 @@
 
 
         <div class="color-circle selected"
-             data-color="#0d6efd"
-             style="background:#0d6efd"
-             onclick="selectColor(this)">
+            data-color="#0d6efd"
+            style="background:#0d6efd"
+            onclick="selectColor(this)">
         </div>
 
 
         <div class="color-circle"
-             data-color="#198754"
-             style="background:#198754"
-             onclick="selectColor(this)">
+            data-color="#198754"
+            style="background:#198754"
+            onclick="selectColor(this)">
         </div>
 
 
         <div class="color-circle"
-             data-color="#dc3545"
-             style="background:#dc3545"
-             onclick="selectColor(this)">
+            data-color="#dc3545"
+            style="background:#dc3545"
+            onclick="selectColor(this)">
         </div>
 
 
         <div class="color-circle"
-             data-color="#ffc107"
-             style="background:#ffc107"
-             onclick="selectColor(this)">
+            data-color="#ffc107"
+            style="background:#ffc107"
+            onclick="selectColor(this)">
         </div>
 
 
         <div class="color-circle"
-             data-color="#6f42c1"
-             style="background:#6f42c1"
-             onclick="selectColor(this)">
+            data-color="#6f42c1"
+            style="background:#6f42c1"
+            onclick="selectColor(this)">
         </div>
 
 
         <div class="color-circle custom"
-             id="add-color-btn"
-             onclick="selectCustomColor()">
+            id="add-color-btn"
+            onclick="selectCustomColor()">
             ＋
         </div>
 
 
         <input type="color"
-               id="custom-color-picker"
-               style="display:none;"
-               onchange="addCustomColor(this.value)">
+            id="custom-color-picker"
+            style="display:none;"
+            onchange="addCustomColor(this.value)">
 
     </div>
 
@@ -667,7 +667,6 @@ async function saveGoal(){
     }
 
 }
-
 
 </script>
 </body>

@@ -148,7 +148,13 @@ function moveDate(diff){
     const m = String(date.getMonth() + 1).padStart(2,"0");
     const d = String(date.getDate()).padStart(2,"0");
 
-    location.href = `/scheduleDetail?date=${y}-${m}-${d}`;
+    const params = new URLSearchParams();
+    params.set('date', `${y}-${m}-${d}`);
+    if (typeof groupId !== 'undefined' && groupId) {
+        params.set('group_id', groupId);
+    }
+
+    location.href = `/scheduleDetail?${params.toString()}`;
 }
 
 // ==========================
@@ -175,11 +181,20 @@ today.setHours(0,0,0,0);
 // 操作可能判定（今日・昨日・一昨日のみ）
 const diffDays = (today - clickedDate) / (1000 * 60 * 60 * 24);
 
-// 今日～2日前までだけ操作可能
-const canEdit = diffDays >= 0 && diffDays <= 2;
+// 一昨日・昨日・今日だけ操作可能
+const canEdit = [2, 1, 0].includes(diffDays);
+
+// Detect group context
+const groupId = urlParams.get("group_id");
 
 // 初期ロード
-document.addEventListener("DOMContentLoaded", loadDayData);
+document.addEventListener("DOMContentLoaded", () => {
+    if (groupId) {
+        loadGroupDayData();
+    } else {
+        loadDayData();
+    }
+});
 
 // データ取得（API）
 async function loadDayData() {
@@ -196,6 +211,69 @@ async function loadDayData() {
 
     createChart(tasks);
     createGoals(tasks);
+}
+
+async function loadGroupDayData() {
+    console.log('loadGroupDayData called', { groupId, date: dateStr });
+    const date = dateStr;
+    try {
+        const resp = await fetch(`/api/grouptasks?group_id=${groupId}`, { headers: { Accept: 'application/json' } });
+        if (!resp.ok) {
+            createChart([]);
+            createGoals([]);
+            return;
+        }
+
+        const data = await resp.json();
+        const tasks = Array.isArray(data) ? data : data.tasks || [];
+
+        // filter tasks by date range and weekdays
+        const filtered = tasks.filter(t => {
+            const start = t.start_date ? new Date(t.start_date + 'T00:00:00') : null;
+            const end = t.end_date ? new Date(t.end_date + 'T00:00:00') : null;
+            const target = new Date(date + 'T00:00:00');
+
+            if (start && target < start) return false;
+            if (end && target > end) return false;
+
+            // weekdays check
+            if (t.week_days && t.week_days.trim() !== '') {
+                const days = t.week_days.split(',').map(s => s.trim());
+                const week = target.getDay();
+                return days.some(d => {
+                    const map = { '日':0,'月':1,'火':2,'水':3,'木':4,'金':5,'土':6 };
+                    return map[d] === week || Number(d) === week;
+                });
+            }
+
+            return true;
+        });
+
+        // transform into schedule-like objects for createGoals
+        const scheduleLike = filtered.map(t => ({
+            id: t.id,
+            status: t.status || 'active',
+            start_time: t.start_time || '00:00',
+            required_minutes: t.required_minutes || 0,
+            priority: t.priority || null,
+            content: t.content || null,
+            color: t.color || '#198754',
+            title: t.title
+        }));
+
+        document.getElementById('goalTitle').textContent = 'グループ目標一覧';
+        // hide change button for group view
+        const btn = document.querySelector('#goalTitle').nextElementSibling;
+        if (btn && btn.tagName === 'BUTTON') btn.style.display = 'none';
+
+        createChart(scheduleLike);
+        createGoals(scheduleLike);
+
+    } catch (e) {
+        console.error(e);
+        createChart([]);
+        createGoals([]);
+    }
 }
 
 // 時間変換
@@ -345,9 +423,19 @@ function createGoals(tasks) {
         `;
         return;
     }
-    const active = tasks.filter(t => t.status === "active");
-    const completed = tasks.filter(t => t.status === "completed");
-    const failed = tasks.filter(t => t.status === "failed");
+    
+    // 操作不可の日付でも、完了済み/未達成は段階として表示する
+    let active, completed, failed;
+    if (canEdit) {
+        active = tasks.filter(t => t.status === "active");
+        completed = tasks.filter(t => t.status === "completed");
+        failed = tasks.filter(t => t.status === "failed");
+    } else {
+        active = tasks.filter(t => t.status === "active");
+        completed = tasks.filter(t => t.status === "completed");
+        failed = tasks.filter(t => t.status === "failed");
+    }
+    
     function createCard(task){
 
         return `
@@ -420,17 +508,19 @@ function createGoals(tasks) {
         goalList.innerHTML += createCard(task);
     });
 
-    goalList.innerHTML += `<hr><h5>達成済み</h5>`;
+    if (completed.length > 0 || failed.length > 0) {
+        goalList.innerHTML += `<hr><h5>達成済み</h5>`;
 
-    completed.forEach(task=>{
-        goalList.innerHTML += createCard(task);
-    });
+        completed.forEach(task=>{
+            goalList.innerHTML += createCard(task);
+        });
 
-    goalList.innerHTML += `<hr><h5>未達成</h5>`;
+        goalList.innerHTML += `<hr><h5>未達成</h5>`;
 
-    failed.forEach(task=>{
-        goalList.innerHTML += createCard(task);
-    });
+        failed.forEach(task=>{
+            goalList.innerHTML += createCard(task);
+        });
+    }
 }
 
 
@@ -440,12 +530,25 @@ async function doneTask(btn) {
     const card = btn.closest("[data-id]");
     const id = card.dataset.id;
 
-    await fetch(`/api/tasks/${id}/status`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: "completed" })
-    });
-    await loadDayData();
+    if (groupId) {
+        await fetch(`/api/grouptasks/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status: "completed" })
+        });
+    } else {
+        await fetch(`/api/tasks/${id}/status`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status: "completed" })
+        });
+    }
+    
+    if (groupId) {
+        await loadGroupDayData();
+    } else {
+        await loadDayData();
+    }
 }
 
 // 未達成理由
@@ -469,14 +572,25 @@ async function registerReason() {
         return;
     }
 
-    await fetch(`/api/tasks/${currentTaskId}/status`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            status: "failed",
-            content: selected.value
-        })
-    });
+    if (groupId) {
+        await fetch(`/api/grouptasks/${currentTaskId}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                status: "failed",
+                content: selected.value
+            })
+        });
+    } else {
+        await fetch(`/api/tasks/${currentTaskId}/status`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                status: "failed",
+                content: selected.value
+            })
+        });
+    }
 
     bootstrap.Modal.getInstance(
     document.getElementById("reasonModal")
@@ -484,7 +598,11 @@ async function registerReason() {
 
     selected.checked = false;
 
-    await loadDayData();
+    if (groupId) {
+        await loadGroupDayData();
+    } else {
+        await loadDayData();
+    }
 }
 
 // 取消
@@ -493,13 +611,25 @@ async function cancelTask(btn) {
     const card = btn.closest("[data-id]");
     const id = card.dataset.id;
 
-    await fetch(`/api/tasks/${id}/status`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: "active" })
-    });
+    if (groupId) {
+        await fetch(`/api/grouptasks/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status: "active" })
+        });
+    } else {
+        await fetch(`/api/tasks/${id}/status`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status: "active" })
+        });
+    }
 
-    await loadDayData();
+    if (groupId) {
+        await loadGroupDayData();
+    } else {
+        await loadDayData();
+    }
 }
 
 // モーダルリセット

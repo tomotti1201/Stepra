@@ -14,7 +14,6 @@ class Grouptask extends Model
     public $timestamps = false;
 
     protected $fillable = [
-
         'group_id',
         'user_id',
         'title',

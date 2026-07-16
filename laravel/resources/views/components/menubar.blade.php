@@ -15,13 +15,13 @@
         </button>
 
         <button
-            class="btn {{ request()->is('schedules') ? 'btn-success' : 'btn-outline-secondary' }}"
+            class="btn {{ request()->is('schedules') || request()->is('scheduleDetail') ? 'btn-success' : 'btn-outline-secondary' }}"
             onclick="location.href='/schedules'">
             📅 月間カレンダー
         </button>
 
         <button
-            class="btn {{ request()->is('gurupu') ? 'btn-success' : 'btn-outline-secondary' }}"
+            class="btn {{ request()->is('group') ? 'btn-success' : 'btn-outline-secondary' }}"
             onclick="location.href='/group?user_id=' + encodeURIComponent(localStorage.getItem('user_id') || '')">
             👥 グループ
         </button>
@@ -33,7 +33,7 @@
         </button>
 
         <button
-            class="btn {{ request()->is('setting') ? 'btn-success' : 'btn-outline-secondary' }}"
+            class="btn {{ request()->is('setting/*') ? 'btn-success' : 'btn-outline-secondary' }}"
             onclick="location.href='/setting/user'">
             ⚙️ 設定
         </button>

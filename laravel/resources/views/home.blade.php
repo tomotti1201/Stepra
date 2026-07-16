@@ -146,6 +146,18 @@
             const tasks = data.tasks || [];
 
             createGoals(tasks);
+            await loadChart(tasks);
+        }
+
+        async function loadChart(tasks = null) {
+            if (!tasks) {
+                const userId = localStorage.getItem("user_id");
+                const res = await fetch(`/api/home/tasks?user_id=${userId}`);
+                const data = await res.json();
+                tasks = data.tasks || [];
+            }
+
+            renderChart(tasks);
         }
 
         function createGoals(tasks, options = {}) {
@@ -351,13 +363,27 @@
             const card = btn.closest("[data-id]");
             const id = card.dataset.id;
 
-            await fetch(`/api/tasks/${id}/status`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ status: "completed" })
-            });
+            if (isGroupMode) {
+                await fetch(`/api/grouptasks/${id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ status: "completed" })
+                });
+            } else {
+                await fetch(`/api/tasks/${id}/status`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ status: "completed" })
+                });
+            }
 
-            await loadTodayGoals();
+            if (isGroupMode) {
+                await loadGroupGoals();
+                await loadGroupChart();
+            } else {
+                await loadTodayGoals();
+                await loadChart();
+            }
         }
 
         function openReasonModal(btn) {
@@ -377,16 +403,29 @@
                 return;
             }
 
-            await fetch(`/api/tasks/${currentTaskId}/status`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    status: "failed",
-                    content: selected.value
-                })
-            });
+            if (isGroupMode) {
+                await fetch(`/api/grouptasks/${currentTaskId}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        status: "failed",
+                        content: selected.value
+                    })
+                });
+            } else {
+                await fetch(`/api/tasks/${currentTaskId}/status`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        status: "failed",
+                        content: selected.value
+                    })
+                });
+            }
 
             bootstrap.Modal.getInstance(
                 document.getElementById("reasonModal")
@@ -394,36 +433,93 @@
 
             selected.checked = false;
 
-            await loadTodayGoals();
+            if (isGroupMode) {
+                await loadGroupGoals();
+                await loadGroupChart();
+            } else {
+                await loadTodayGoals();
+                await loadChart();
+            }
         }
 
         async function cancelTask(btn) {
             const card = btn.closest("[data-id]");
             const id = card.dataset.id;
 
-            await fetch(`/api/tasks/${id}/status`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ status: "active" })
-            });
+            if (isGroupMode) {
+                await fetch(`/api/grouptasks/${id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ status: "active" })
+                });
+            } else {
+                await fetch(`/api/tasks/${id}/status`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ status: "active" })
+                });
+            }
 
-            await loadTodayGoals();
+            if (isGroupMode) {
+                await loadGroupGoals();
+                await loadGroupChart();
+            } else {
+                await loadTodayGoals();
+                await loadChart();
+            }
         }
 
-        async function loadChart() {
-            const userId = localStorage.getItem("user_id");
+        async function loadGroupChart() {
+            try {
+                // ユーザーが属するグループを取得
+                const res = await fetch('/api/groups');
+                const groupData = await res.json();
+                const groups = Array.isArray(groupData) ? groupData : (groupData.groups || []);
 
-            const params = new URLSearchParams({
-                user_id: userId,
-                date: selectedHomeDate
-            });
-            const res = await fetch(`/api/home/tasks?${params.toString()}`);
-            const data = await res.json();
+                if (!groups.length) {
+                    renderChart([]);
+                    return;
+                }
 
-            const tasks = data.tasks || [];
+                // 全グループのタスクを取得
+                let allTasks = [];
+                for (const group of groups) {
+                    const taskRes = await fetch(`/api/grouptasks?group_id=${group.id}`);
+                    const taskData = await taskRes.json();
+                    const tasks = Array.isArray(taskData) ? taskData : (taskData.tasks || []);
 
-            renderChart(tasks);
+                    // 本日のタスクでフィルタリング
+                    const today = new Date();
+                    const todayStr = today.toISOString().split('T')[0];
+                    const todayDow = today.getDay();
+                    const dayMap = ['日', '月', '火', '水', '木', '金', '土'];
+                    const todayDay = dayMap[todayDow];
+
+                    const filteredTasks = tasks.filter(t => {
+                        // 開始日のチェック
+                        if (t.start_date && t.start_date > todayStr) return false;
+                        // 終了日のチェック
+                        if (t.end_date && t.end_date < todayStr) return false;
+
+                        // 曜日のチェック
+                        if (t.week_days && t.week_days.trim() !== '') {
+                            const days = t.week_days.split(',').map(s => s.trim());
+                            return days.includes(todayDay) || days.some(d => Number(d) === todayDow);
+                        }
+
+                        return true;
+                    });
+
+                    allTasks = allTasks.concat(filteredTasks);
+                }
+
+                renderChart(allTasks);
+            } catch (e) {
+                console.error('Error loading group chart:', e);
+                renderChart([]);
+            }
         }
+
 
         function timeToMin(t) {
             if (!t) return 0;
@@ -565,11 +661,65 @@
             if (isGroupMode) {
                 title.textContent = "本日のグループ目標一覧";
                 await loadGroupGoals();
+                await loadGroupChart();
             } else {
                 title.textContent = "本日の目標一覧";
                 await loadTodayGoals();
+                await loadChart();
             }
         }
+
+        async function loadGroupGoals() {
+            try {
+                // ユーザーが属するグループを取得
+                const res = await fetch('/api/groups');
+                const groupData = await res.json();
+                const groups = Array.isArray(groupData) ? groupData : (groupData.groups || []);
+
+                if (!groups.length) {
+                    createGoals([]);
+                    return;
+                }
+
+                // 全グループのタスクを取得
+                let allTasks = [];
+                for (const group of groups) {
+                    const taskRes = await fetch(`/api/grouptasks?group_id=${group.id}`);
+                    const taskData = await taskRes.json();
+                    const tasks = Array.isArray(taskData) ? taskData : (taskData.tasks || []);
+
+                    // 本日のタスクでフィルタリング
+                    const today = new Date();
+                    const todayStr = today.toISOString().split('T')[0];
+                    const todayDow = today.getDay();
+                    const dayMap = ['日', '月', '火', '水', '木', '金', '土'];
+                    const todayDay = dayMap[todayDow];
+
+                    const filteredTasks = tasks.filter(t => {
+                        // 開始日のチェック
+                        if (t.start_date && t.start_date > todayStr) return false;
+                        // 終了日のチェック
+                        if (t.end_date && t.end_date < todayStr) return false;
+
+                        // 曜日のチェック
+                        if (t.week_days && t.week_days.trim() !== '') {
+                            const days = t.week_days.split(',').map(s => s.trim());
+                            return days.includes(todayDay) || days.some(d => Number(d) === todayDow);
+                        }
+
+                        return true;
+                    });
+
+                    allTasks = allTasks.concat(filteredTasks);
+                }
+
+                createGoals(allTasks);
+            } catch (e) {
+                console.error('Error loading group goals:', e);
+                createGoals([]);
+            }
+        }
+
     </script>
 </body>
 </html>

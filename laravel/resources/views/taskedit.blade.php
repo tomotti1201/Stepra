@@ -61,6 +61,33 @@
     border: 3px solid black;
     }
 
+    .color-option {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    }
+
+    .color-remove {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 18px;
+    height: 18px;
+    border: none;
+    border-radius: 50%;
+    background: #fff;
+    color: #444;
+    box-shadow: 0 0 0 1px #ccc;
+    font-size: 12px;
+    line-height: 1;
+    cursor: pointer;
+    }
+
+    .color-remove:hover {
+    background: #f8d7da;
+    color: #b02a37;
+    }
+
     .page-title{
             font-size: clamp(1.5rem, 2vw, 2.2rem);
         }
@@ -129,36 +156,6 @@
 
     </div>
 </div>
-        <!-- <div class="mb-3">
-        <label class="form-label fw-bold small">繰り返し</label>
-
-        <div class="btn-group w-100" id="period-group">
-            <button
-                type="button"
-                class="btn btn-outline-secondary day"
-                data-period="weekly"
-                onclick="togglePeriod(this)">
-                毎週
-            </button>
-
-            <button
-                type="button"
-                class="btn btn-outline-secondary day"
-                data-period="monthly"
-                onclick="togglePeriod(this)">
-                毎月
-            </button>
-
-            <button
-                type="button"
-                class="btn btn-outline-secondary day"
-                data-period="yearly"
-                onclick="togglePeriod(this)">
-                毎年
-            </button>
-        </div>
-        </div> -->
-
         <div class="row g-2 mb-3">
         <div class="col-6">
             <label class="form-label fw-bold">開始時間</label>
@@ -213,50 +210,17 @@
 
     <label class="form-label fw-bold">目標カラー</label>
 
-    <div class="color-selection" id="color-group">
-
-        <div class="color-circle"
-            data-color="#0d6efd"
-            style="background:#0d6efd"
-            onclick="selectColor(this)">
-        </div>
-
-        <div class="color-circle"
-            data-color="#198754"
-            style="background:#198754"
-            onclick="selectColor(this)">
-        </div>
-
-        <div class="color-circle"
-            data-color="#dc3545"
-            style="background:#dc3545"
-            onclick="selectColor(this)">
-        </div>
-
-        <div class="color-circle"
-            data-color="#ffc107"
-            style="background:#ffc107"
-            onclick="selectColor(this)">
-        </div>
-
-        <div class="color-circle"
-            data-color="#6f42c1"
-            style="background:#6f42c1"
-            onclick="selectColor(this)">
-        </div>
-
-        <div class="color-circle custom"
-            id="add-color-btn"
-            onclick="selectCustomColor()">
-            ＋
-        </div>
-
-        <input
-            type="color"
-            id="custom-color-picker"
-            style="display:none;"
-            onchange="addCustomColor(this.value)">
+    <div id="color-limit-message" class="form-text text-muted mb-2">
+        好きな色を5色まで選べます。不要な色は削除できます。
     </div>
+
+    <div class="color-selection" id="color-group"></div>
+
+    <input
+        type="color"
+        id="custom-color-picker"
+        style="display:none;"
+        onchange="addCustomColor(this.value)">
 </div>
 
         <div class="row g-2">
@@ -387,63 +351,107 @@ function selectSingle(element) {
     element.classList.add('active');
 }
 
-let selectedColor = "#0d6efd";
+let availableColors = ["#0d6efd", "#198754", "#dc3545", "#ffc107", "#6f42c1"];
+let selectedColor = availableColors[0];
+
+function renderColorPalette() {
+    const colorGroup = document.getElementById("color-group");
+    const limitMessage = document.getElementById("color-limit-message");
+
+    if (!colorGroup) return;
+
+    colorGroup.innerHTML = "";
+
+    availableColors.forEach(color => {
+        const option = document.createElement("div");
+        option.className = "color-option";
+
+        const swatch = document.createElement("div");
+        swatch.className = "color-circle" + (selectedColor === color ? " selected" : "");
+        swatch.style.backgroundColor = color;
+        swatch.dataset.color = color;
+        swatch.onclick = function () {
+            selectColor(this);
+        };
+
+        const removeButton = document.createElement("button");
+        removeButton.type = "button";
+        removeButton.className = "color-remove";
+        removeButton.textContent = "×";
+        removeButton.setAttribute("aria-label", "色を削除");
+        removeButton.onclick = function (event) {
+            event.stopPropagation();
+            removeColor(color);
+        };
+
+        option.appendChild(swatch);
+        option.appendChild(removeButton);
+        colorGroup.appendChild(option);
+    });
+
+    const addButton = document.createElement("div");
+    addButton.className = "color-circle custom";
+    addButton.id = "add-color-btn";
+    addButton.textContent = "＋";
+    addButton.onclick = function () {
+        selectCustomColor();
+    };
+    colorGroup.appendChild(addButton);
+
+    if (limitMessage) {
+        limitMessage.textContent =
+            availableColors.length >= 5
+                ? "彩りは5色まで。大切な色を残して、気分に合わせて入れ替えてみてください。"
+                : "好きな色を5色まで選べます。不要な色は削除できます。";
+        limitMessage.className = "form-text " + (availableColors.length >= 5 ? "text-warning" : "text-muted");
+    }
+}
 
 function selectColor(element) {
-
-    document
-        .querySelectorAll(".color-circle")
-        .forEach(circle =>
-            circle.classList.remove("selected")
-        );
-
-    element.classList.add("selected");
-
     selectedColor = element.dataset.color;
+    renderColorPalette();
 }
 
 function addCustomColor(value) {
-
     if (!value) return;
 
-    const colorGroup =
-        document.getElementById("color-group");
+    if (availableColors.includes(value)) {
+        selectedColor = value;
+        renderColorPalette();
+        return;
+    }
 
-    const addButton =
-        document.getElementById("add-color-btn");
+    if (availableColors.length >= 5) {
+        const limitMessage = document.getElementById("color-limit-message");
+        if (limitMessage) {
+            limitMessage.textContent = "彩りは5色まで。大切な色を残して、気分に合わせて入れ替えてみてください。";
+            limitMessage.className = "form-text text-warning";
+        }
+        return;
+    }
 
-    const newColor =
-        document.createElement("div");
-
-    newColor.className =
-        "color-circle selected";
-
-    newColor.style.backgroundColor =
-        value;
-
-    newColor.dataset.color =
-        value;
-
-    newColor.onclick = function () {
-        selectColor(this);
-    };
-
-    document
-        .querySelectorAll(".color-circle")
-        .forEach(circle =>
-            circle.classList.remove("selected")
-        );
-
-    colorGroup.insertBefore(
-        newColor,
-        addButton
-    );
-
+    availableColors.push(value);
     selectedColor = value;
+    renderColorPalette();
 }
 
-function selectCustomColor() {
-    document.getElementById("custom-color-picker").click();
+function removeColor(colorValue) {
+    if (availableColors.length <= 1) {
+        const limitMessage = document.getElementById("color-limit-message");
+        if (limitMessage) {
+            limitMessage.textContent = "最後の1色は残しておきましょう。";
+            limitMessage.className = "form-text text-secondary";
+        }
+        return;
+    }
+
+    availableColors = availableColors.filter(color => color !== colorValue);
+
+    if (selectedColor === colorValue) {
+        selectedColor = availableColors[0];
+    }
+
+    renderColorPalette();
 }
 
 function selectCustomColor() {
@@ -480,25 +488,18 @@ async function loadTaskFromDB() {
     document.getElementById('duration-hours').value = Math.floor(total / 60);
     document.getElementById('duration-minutes').value = total % 60;
 
-    const circle = document.getElementById('current-color-circle');
-
     if (task.color) {
+        if (!availableColors.includes(task.color)) {
+            if (availableColors.length < 5) {
+                availableColors.push(task.color);
+            } else {
+                availableColors = [...availableColors.slice(0, 4), task.color];
+            }
+        }
 
-    let colorBtn =
-        document.querySelector(
-            `.color-circle[data-color="${task.color}"]`
-        );
-
-    if (colorBtn) {
-
-        colorBtn.classList.add("selected");
         selectedColor = task.color;
-
-    } else {
-
-        addCustomColor(task.color);
+        renderColorPalette();
     }
-}
 
     const dayMap = {
         1: '月',
@@ -559,6 +560,7 @@ async function loadTaskFromDB() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    renderColorPalette();
     loadTaskFromDB();
 });
 
