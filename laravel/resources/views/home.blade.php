@@ -104,16 +104,44 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        document.addEventListener("DOMContentLoaded", loadTodayGoals);
+        const homeParams = new URLSearchParams(window.location.search);
+        const selectedHomeDate = homeParams.get("date") || formatLocalDate(new Date());
+        const selectedGroupId = homeParams.get("group_id");
+
+        if (selectedGroupId) {
+            localStorage.setItem("group_id", selectedGroupId);
+        }
+
+        document.addEventListener("DOMContentLoaded", initHome);
         document.addEventListener("DOMContentLoaded", loadChart);
 
         // 切替ボタンでの切替で使用
         let currentTaskId = null;
         let isGroupMode = false;
 
+        async function initHome() {
+            if (selectedGroupId) {
+                isGroupMode = true;
+                const title = document.getElementById("goalTitle");
+
+                if (title) {
+                    title.textContent = "本日のスケジュール";
+                }
+
+                await loadGroupGoals();
+                return;
+            }
+
+            await loadTodayGoals();
+        }
+
         async function loadTodayGoals() {
             const userId = localStorage.getItem("user_id");
-            const res = await fetch(`/api/home/tasks?user_id=${userId}`);
+            const params = new URLSearchParams({
+                user_id: userId,
+                date: selectedHomeDate
+            });
+            const res = await fetch(`/api/home/tasks?${params.toString()}`);
             const data = await res.json();
             const tasks = data.tasks || [];
 
@@ -220,7 +248,7 @@
 }
 
         async function loadGroupGoals() {
-            const groupId = localStorage.getItem("group_id");
+            const groupId = selectedGroupId || localStorage.getItem("group_id");
             const userId = localStorage.getItem("user_id");
             const goalList = document.getElementById("goalList");
 
@@ -256,11 +284,11 @@
         }
 
         function isTodayGroupTask(task) {
-            const today = new Date();
-            const todayDate = formatLocalDate(today);
+            const targetDate = parseLocalDate(selectedHomeDate);
+            const todayDate = formatLocalDate(targetDate);
             const dayNames = ["日", "月", "火", "水", "木", "金", "土"];
-            const todayDayName = dayNames[today.getDay()];
-            const todayDayNumber = String(today.getDay() === 0 ? 7 : today.getDay());
+            const todayDayName = dayNames[targetDate.getDay()];
+            const todayDayNumber = String(targetDate.getDay() === 0 ? 7 : targetDate.getDay());
 
             if(task.start_date && task.start_date.slice(0, 10) > todayDate){
                 return false;
@@ -283,6 +311,11 @@
             const day = String(date.getDate()).padStart(2, "0");
 
             return `${year}-${month}-${day}`;
+        }
+
+        function parseLocalDate(value) {
+            const [year, month, day] = value.split("-").map(Number);
+            return new Date(year, month - 1, day);
         }
 
         function normalizeWeekDays(value) {
@@ -380,7 +413,11 @@
         async function loadChart() {
             const userId = localStorage.getItem("user_id");
 
-            const res = await fetch(`/api/home/tasks?user_id=${userId}`);
+            const params = new URLSearchParams({
+                user_id: userId,
+                date: selectedHomeDate
+            });
+            const res = await fetch(`/api/home/tasks?${params.toString()}`);
             const data = await res.json();
 
             const tasks = data.tasks || [];

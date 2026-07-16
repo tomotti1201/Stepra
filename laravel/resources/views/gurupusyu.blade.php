@@ -275,7 +275,12 @@
           return;
         }
 
-        alert(matchedTasks.map((task) => task.title).join("\n"));
+        const selectedDate =
+          `${currentYear}-${String(currentMonth).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+
+        localStorage.setItem("group_id", "{{ $group->id }}");
+        window.location.href =
+          `/home?date=${encodeURIComponent(selectedDate)}&group_id={{ $group->id }}`;
       };
 
       dayBox.appendChild(taskContainer);

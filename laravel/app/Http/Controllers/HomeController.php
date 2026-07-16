@@ -11,10 +11,13 @@ class HomeController extends Controller
     public function todayTasks(Request $request)
     {
         $userId = $request->query('user_id');
-        $today = Carbon::today()->format('Y-m-d');
+        $date = $request->query('date');
+        $targetDate = $date
+            ? Carbon::parse($date)->format('Y-m-d')
+            : Carbon::today()->format('Y-m-d');
 
         $tasks = Schedule::where('user_id', $userId)
-            ->where('scheduled_date', $today)
+            ->where('scheduled_date', $targetDate)
             ->orderBy('start_time')
             ->get()
             ->map(function ($schedule) {
