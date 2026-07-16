@@ -21,7 +21,7 @@
         </button>
 
         <button
-            class="btn {{ request()->is('gurupu') ? 'btn-success' : 'btn-outline-secondary' }}"
+            class="btn {{ request()->is('group') ? 'btn-success' : 'btn-outline-secondary' }}"
             onclick="location.href='/group?user_id=' + encodeURIComponent(localStorage.getItem('user_id') || '')">
             👥 グループ
         </button>

@@ -421,7 +421,7 @@
   };
 
   window.openTaskList = (id) => {
-    window.location.href = `/gtasutkuitiran/${id}`;
+    window.location.href = `/grouptask/${id}`;
   };
 
   window.openTaskContinue = (id) => {
