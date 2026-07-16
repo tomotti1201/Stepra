@@ -13,7 +13,6 @@ use App\Http\Controllers\GroupController;
 use App\Http\Controllers\GroupTaskController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\GroupmemberController;
-use App\Http\Controllers\SettingController;
 
 // 認証関連
 

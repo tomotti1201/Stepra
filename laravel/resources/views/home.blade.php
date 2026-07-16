@@ -146,23 +146,9 @@
             const tasks = data.tasks || [];
 
             createGoals(tasks);
-            await loadChart(tasks);
         }
 
-        async function loadChart(tasks = null) {
-            if (!tasks) {
-                const userId = localStorage.getItem("user_id");
-                const res = await fetch(`/api/home/tasks?user_id=${userId}`);
-                const data = await res.json();
-                tasks = data.tasks || [];
-            }
-
-            renderChart(tasks);
-        }
-
-        function createGoals(tasks, options = {}) {
-            const heading = options.heading || "今日のタスク";
-            const readonly = options.readonly || false;
+        function createGoals(tasks) {
 
     const goalList = document.getElementById("goalList");
     goalList.innerHTML = "";
