@@ -19,12 +19,18 @@
 
 @php
   $calendarTasks = $tasklist->map(function ($task) {
+    $weekdays = [];
+    if (!empty($task->week_days)) {
+      $decoded = json_decode($task->week_days, true);
+      $weekdays = is_array($decoded)
+        ? $decoded
+        : array_map('trim', explode(',', $task->week_days));
+    }
+
     return [
       'id' => $task->id,
       'title' => $task->title,
-      'weekdays' => $task->week_days
-        ? array_map('trim', explode(',', $task->week_days))
-        : [],
+      'weekdays' => $weekdays,
       'startDate' => $task->start_date,
       'endDate' => $task->end_date,
       'color' => $task->color ?: '#198754',
@@ -113,35 +119,22 @@
           ">
       </div>
 
-      <div class="mt-4 border rounded p-3 bg-white">
+      <div class="mt-4 border rounded p-3 bg-white" id="groupTaskArea">
         <p class="fw-bold mb-3">グループタスク一覧</p>
 
-        @forelse ($tasklist as $task)
-          <div class="border rounded p-3 mb-2">
-            <div class="fw-bold">{{ $task->title }}</div>
+        <div id="groupTaskList">
+          @forelse ($tasklist as $task)
+            <div class="border rounded p-3 mb-2">
+              <div class="fw-bold">{{ $task->title }}</div>
 
-            @if (!empty($task->content))
-              <div class="small text-muted mt-1">{{ $task->content }}</div>
-            @endif
-          </div>
-        @empty
-          <p class="text-muted small mb-0">まだグループタスクがありません</p>
-        @endforelse
-      </div>
-    </div>
-  </div>
-</div>
-
-
-      <div class="modal-body p-4 text-center">
-        <div class="d-flex gap-2 mb-4">
-          <select id="yearSelect" class="form-control py-2 fw-bold text-center" aria-label="year" title="year"></select>
-          <select id="monthSelect" class="form-control py-2 fw-bold text-center" aria-label="month" title="month"></select>
+              @if (!empty($task->content))
+                <div class="small text-muted mt-1">{{ $task->content }}</div>
+              @endif
+            </div>
+          @empty
+            <p class="text-muted small mb-0">まだグループタスクがありません</p>
+          @endforelse
         </div>
-
-        <button type="button" class="btn btn-success w-100 py-2 fw-bold" onclick="changeCalendar()">
-          移動する
-        </button>
       </div>
     </div>
   </div>
@@ -154,14 +147,32 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-(() => {
+() => {
+  let taskData = @json($calendarTasks);
+  async function loadTasks() {
+    try {
+      const resp = await fetch(`/api/grouptasks?group_id={{ $group->id }}`, { headers: { Accept: 'application/json' } });
+      if (!resp.ok) return;
+      const data = await resp.json();
+      const tasks = Array.isArray(data) ? data : data.tasks || [];
+      taskData = tasks.map(task => ({
+        id: task.id,
+        title: task.title,
+        weekdays: normalizeWeekDays(task.week_days),
+        startDate: task.start_date,
+        endDate: task.end_date,
+        color: task.color || '#198754'
+      }));
+    } catch (e) {
+      console.error('Failed loading group tasks', e);
+    }
+  }
+  const today = new Date();
+  let currentYear = today.getFullYear();
+  let currentMonth = today.getMonth() + 1;
 
 let scheduleCache = {};
 let scheduleData = [];
-
-const today = new Date();
-let currentYear = today.getFullYear();
-let currentMonth = today.getMonth() + 1;
 
 /**
  * 月のスケジュール取得
@@ -198,10 +209,28 @@ function updateCalendarTitle() {
 /**
  * カレンダー描画
  */
-async function createCalendar() {
+// async function createCalendar() {
 
-    await fetchSchedules();
+//     const week = date.getDay();
+//     const isoWeek = week === 0 ? 7 : week;
 
+//     const days = task.weekdays || [];
+//     if (days.length === 0) {
+//       // No weekday restriction — show for all dates in the start/end range
+//       return true;
+//     }
+
+//     return days.some((dayText) => {
+//       const key = String(dayText).trim();
+//       return weekMap[key] === week || Number(key) === isoWeek;
+//     });
+//   }
+
+  function getTasksForDate(date) {
+    return taskData.filter((task) => taskMatchesDate(task, date));
+  }
+
+  function createCalendar() {
     const calendar = document.getElementById("calendarGrid");
     calendar.innerHTML = "";
 
@@ -319,8 +348,16 @@ async function createCalendar() {
 
         dayBox.appendChild(taskContainer);
 
-        // 日付クリック
-        dayBox.onclick = () => {
+      dayBox.onclick = () => {
+        if (matchedTasks.length === 0) {
+          alert(`${currentMonth}月${day}日のタスクはありません`);
+          return;
+        }
+
+        const selectedDate =
+          `${currentYear}-${String(currentMonth).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+
+        localStorage.setItem("group_id", "{{ $group->id }}")
 
             window.location.href =
                 `/group/{{ $group->id }}/scheduleDetail?date=${fullDate}`;
@@ -434,9 +471,10 @@ window.changeMonthSelect = async () => {
     currentMonth =
         Number(document.getElementById("monthSelect").value);
 
+
     await createCalendar();
 
-    // 編集終了
+
     document
         .getElementById("calendarEditor")
         .classList.add("d-none");
@@ -446,11 +484,99 @@ window.changeMonthSelect = async () => {
         .classList.remove("d-none");
 
 };
+  window.loadGroupTasks = async (id) => {
+    const list = document.getElementById("groupTaskList");
+    const area = document.getElementById("groupTaskArea");
 
-/**
- * タスク一覧
- */
-window.openTaskList = (id) => {
+    list.innerHTML = '<p class="text-muted small mb-0">読み込み中...</p>';
+
+    try {
+      const response = await fetch(`/api/grouptasks?group_id=${encodeURIComponent(id)}`);
+      const data = await response.json();
+
+      if (!response.ok || data.status === "error") {
+        throw new Error(data.message || "グループタスクの取得に失敗しました");
+      }
+
+      const tasks = data.tasks || [];
+      renderGroupTaskList(tasks);
+
+      taskData = tasks.map((task) => ({
+        id: task.id,
+        title: task.title,
+        weekdays: normalizeWeekDays(task.week_days),
+        startDate: task.start_date,
+        endDate: task.end_date,
+        color: task.color || "#198754",
+      }));
+      createCalendar();
+      area.scrollIntoView({ behavior: "smooth", block: "start" });
+    } catch (error) {
+      console.error(error);
+      list.innerHTML = '<p class="text-danger small mb-0">グループタスクの読み込みに失敗しました</p>';
+    }
+  };
+
+  function renderGroupTaskList(tasks) {
+    const list = document.getElementById("groupTaskList");
+    list.innerHTML = "";
+
+    if (tasks.length === 0) {
+      list.innerHTML = '<p class="text-muted small mb-0">まだグループタスクがありません</p>';
+      return;
+    }
+
+    tasks.forEach((task) => {
+      const item = document.createElement("div");
+      item.className = "border rounded p-3 mb-2";
+
+      const title = document.createElement("div");
+      title.className = "fw-bold";
+      title.textContent = task.title || "無題のタスク";
+      item.appendChild(title);
+
+      if (task.content) {
+        const content = document.createElement("div");
+        content.className = "small text-muted mt-1";
+        content.textContent = task.content;
+        item.appendChild(content);
+      }
+
+      list.appendChild(item);
+    });
+  }
+
+  function normalizeWeekDays(value) {
+    if (!value) {
+      return [];
+    }
+
+    if (Array.isArray(value)) {
+      return value;
+    }
+
+    try {
+      const parsed = JSON.parse(value);
+      if (Array.isArray(parsed)) {
+        return parsed;
+      }
+    } catch (error) {
+      // comma separated values are handled below.
+    }
+
+    return String(value)
+      .split(",")
+      .map((day) => day.trim())
+      .filter(Boolean);
+  }
+
+  window.openGroupTasks = (id) => {
+    window.location.href = `/group/${id}/tasks`;
+  };
+
+  window.openTaskContinue = (id) => {
+    window.location.href = `/group/${id}/tasks`;
+  };
 
     window.location.href = `/group/${id}/tasks`;
 
@@ -471,8 +597,6 @@ window.editGroup = (id) => {
 (async () => {
 
     await createCalendar();
-
-})();
 
 })();
 

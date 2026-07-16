@@ -58,6 +58,9 @@
     </button>
 
   </div>
+
+    <x-menubar />
+
 </div>
   <x-menubar />
 
@@ -92,6 +95,12 @@ async function createGroup() {
     }),
   });
 
+  if(response.ok){
+    const data = await response.json();
+    alert("グループを作成しました");
+    location.href = "/gurupu";
+  }
+  else{
   if (!groupResponse.ok) {
     alert("グループ作成に失敗しました");
     return;

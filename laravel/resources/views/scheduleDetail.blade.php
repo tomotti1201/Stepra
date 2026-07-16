@@ -377,12 +377,13 @@ async function loadGroupDayData(selectedGroupId=null) {
             if (end && target > end) return false;
 
             // weekdays check
-            if (t.week_days && t.week_days.trim() !== '') {
-                const days = t.week_days.split(',').map(s => s.trim());
+            const days = normalizeWeekDays(t.week_days);
+            if (days.length > 0) {
                 const week = target.getDay();
+                const isoWeek = week === 0 ? 7 : week;
                 return days.some(d => {
                     const map = { '日':0,'月':1,'火':2,'水':3,'木':4,'金':5,'土':6 };
-                    return map[d] === week || Number(d) === week;
+                    return map[d] === week || Number(d) === isoWeek;
                 });
             }
 
@@ -416,6 +417,30 @@ async function loadGroupDayData(selectedGroupId=null) {
 }
 
 // 時間変換
+function normalizeWeekDays(value) {
+    if (!value) {
+        return [];
+    }
+
+    if (Array.isArray(value)) {
+        return value.map(day => String(day));
+    }
+
+    try {
+        const parsed = JSON.parse(value);
+        if (Array.isArray(parsed)) {
+            return parsed.map(day => String(day));
+        }
+    } catch (e) {
+        // comma separated values are handled below.
+    }
+
+    return String(value)
+        .split(",")
+        .map(day => day.trim())
+        .filter(Boolean);
+}
+
 function timeToMinutes(time) {
     const [h, m] = time.split(":").map(Number);
     return h * 60 + m;

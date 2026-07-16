@@ -1002,9 +1002,11 @@ function createGroupGoals(tasks){
                     </div>
 
                     <div class="small text-muted">
-                        ${task.start_time.slice(0,5)}
+                        ${formatTime(task.start_time)}
                         /
-                        ${task.required_minutes}分
+                        ${task.required_minutes ?? 0}分
+                        /
+                        ${task.priority ?? "未設定"}
                     </div>
 
                     ${
@@ -1027,26 +1029,20 @@ function createGroupGoals(tasks){
             <div class="d-flex gap-2 px-3">
 
                 ${
-                    task.status === "active"
-                    ?
-                    `
-                    <button class="btn btn-success btn-sm"
-                    onclick="doneTask(this)">
-                        ○
-                    </button>
+                    task.status === "active" && !readonly
+                    ? `
+                        <button class="btn btn-success btn-sm"
+                            onclick="doneTask(this)">○</button>
 
-                    <button class="btn btn-danger btn-sm"
-                    onclick="openReasonModal(this)">
-                        ×
-                    </button>
-                    `
-                    :
-                    `
-                    <button class="btn btn-secondary btn-sm"
-                    onclick="cancelTask(this)">
-                        取消
-                    </button>
-                    `
+                        <button class="btn btn-danger btn-sm"
+                            onclick="openReasonModal(this)">×</button>
+                      `
+                    : readonly
+                    ? ""
+                    : `
+                        <button class="btn btn-secondary btn-sm"
+                            onclick="cancelTask(this)">取消</button>
+                      `
                 }
 
             </div>
@@ -1102,6 +1098,14 @@ function createGroupGoals(tasks){
 
         });
 
+    }
+
+    if(tasks.length === 0){
+        goalList.innerHTML += `
+            <div class="text-center text-muted small py-4">
+                表示できる目標がありません
+            </div>
+        `;
     }
 
 }

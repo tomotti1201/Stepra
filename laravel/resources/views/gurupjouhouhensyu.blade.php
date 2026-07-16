@@ -34,14 +34,19 @@
           </div>
 
           <div class="row g-3 mt-4 mb-5">
-            <div class="col-12 col-md-6">
+            <div class="col-12 col-md-4">
               <button id="group-edit-button" class="btn btn-primary w-100 py-3 fw-bold shadow-sm" onclick="openGroupEdit()" disabled>
                 グループの編集
               </button>
             </div>
-            <div class="col-12 col-md-6">
+            <div class="col-12 col-md-4">
               <button class="btn btn-success w-100 py-3 fw-bold shadow-sm" onclick="openGroupTasks()">
                 グループタスクの追加・編集
+              </button>
+            </div>
+            <div class="col-12 col-md-4">
+              <button id="home-group-button" class="btn btn-outline-success w-100 py-3 fw-bold shadow-sm" onclick="setHomeGroup()">
+                ホーム画面に設定
               </button>
             </div>
           </div>
@@ -195,6 +200,30 @@
       location.href = `/group/${groupId}/task/create`;
     }
 
+    function setHomeGroup() {
+      const selectedGroupId = localStorage.getItem('group_id');
+
+      if (String(selectedGroupId) === String(groupId)) {
+        localStorage.setItem('group_id', '');
+      } else {
+        localStorage.setItem('group_id', groupId);
+      }
+
+      updateHomeGroupButton();
+    }
+
+    function updateHomeGroupButton() {
+      const button = document.getElementById('home-group-button');
+      const selectedGroupId = localStorage.getItem('group_id');
+      const isSelected = String(selectedGroupId) === String(groupId);
+
+      button.classList.toggle('btn-success', isSelected);
+      button.classList.toggle('btn-outline-success', !isSelected);
+      button.textContent = isSelected
+        ? 'ホーム画面に設定中'
+        : 'ホーム画面に設定';
+    }
+
     function showInviteCode() {
       document.getElementById('invite-code-text').textContent = groupData.invite_code || '招待コードがありません';
       bootstrap.Modal.getOrCreateInstance(document.getElementById('inviteCodeModal')).show();
@@ -332,7 +361,10 @@
       menuBar?.classList.remove('d-none');
     }
 
-    document.addEventListener('DOMContentLoaded', loadMembers);
+    document.addEventListener('DOMContentLoaded', () => {
+      updateHomeGroupButton();
+      loadMembers();
+    });
   </script>
 </body>
 </html>

@@ -21,6 +21,10 @@ class GroupmemberController extends Controller{
             $query->where('group_members.group_id', $request->group_id);
         }
 
+        if ($request->filled('user_id')) {
+            $query->where('group_members.user_id', $request->user_id);
+        }
+
         $memberlist = $query
             ->orderby('group_members.id','desc')
             ->get();
@@ -104,4 +108,3 @@ class GroupmemberController extends Controller{
             return response()->json(null, 204);
         }
 }
-
