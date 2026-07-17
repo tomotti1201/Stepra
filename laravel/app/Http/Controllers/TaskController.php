@@ -102,13 +102,18 @@ class TaskController extends Controller
             ? null
             : $endDate;
 
-        $requiredMinutes =
-            ((int)$duration_hours * 60) +
-            (int)$duration_minutes;
+$requiredMinutes =
+    ((int)$duration_hours * 60) +
+    (int)$duration_minutes;
 
-        if (
-            $requiredMinutes <= 0
-        ) {
+if ($requiredMinutes > 1440) {
+    return response()->json([
+        'status' => 'error',
+        'message' => '所要時間は24時間以内で入力してください'
+    ], 400);
+}
+
+if ($requiredMinutes <= 0) {
             return response()->json([
                 'status' => 'error',
                 'message' => '所要時間を入力してください'
@@ -277,9 +282,16 @@ while ($date->lte($endLimit)) {
         $duration_hours = (int)$request->duration_hours;
         $duration_minutes = (int)$request->duration_minutes;
 
-        $requiredMinutes = ($duration_hours * 60) + $duration_minutes;
+$requiredMinutes =
+    ((int)$duration_hours * 60) +
+    (int)$duration_minutes;
 
-        if (
+if ($requiredMinutes > 1440) {
+    return response()->json([
+        'status' => 'error',
+        'message' => '所要時間は24時間以内で入力してください'
+    ], 400);
+}        if (
             $requiredMinutes <= 0
         ) {
             return response()->json([
