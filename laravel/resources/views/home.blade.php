@@ -284,15 +284,7 @@ function createGoals(tasks){
 
     goalList.innerHTML += `<h5 class="mt-3">今日のタスク</h5>`;
 
-    if(active.length > 0){
-
-        active.forEach(task=>{
-
-            goalList.innerHTML += createCard(task);
-
-        });
-
-    }else{
+    if(tasks.length === 0){
 
         goalList.innerHTML += `
             <p class="text-muted">
@@ -300,8 +292,13 @@ function createGoals(tasks){
             </p>
         `;
 
-    }
+    }else{
 
+        active.forEach(task=>{
+            goalList.innerHTML += createCard(task);
+        });
+
+    }
 
     if(completed.length > 0){
 
@@ -1109,14 +1106,6 @@ function createGroupGoals(tasks){
 
         });
 
-    }
-
-    if(tasks.length === 0){
-        goalList.innerHTML += `
-            <div class="text-center text-muted small py-4">
-                表示できる目標がありません
-            </div>
-        `;
     }
 
 }

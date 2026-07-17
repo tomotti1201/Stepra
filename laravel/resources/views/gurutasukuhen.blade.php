@@ -639,7 +639,7 @@ async function saveGroupTask() {
     const data = {
         title: document.getElementById('goal-name').value,
 
-        week_days: [...document.querySelectorAll('.day.active')]
+        week_days: [...document.querySelectorAll('#frequency-group .day.active')]
             .map(el => el.innerText),
 
         start_time: document.getElementById('start-timing').value,
