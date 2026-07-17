@@ -70,9 +70,11 @@
             </button>
             <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="changeIcon(event)">
 
-            <div class="form-control d-flex align-items-center justify-content-center fw-bold bg-light" style="height: 80px; font-size: 1.1rem;">
-              ユーザー名
-            </div>
+         <div id="userName"
+     class="form-control d-flex align-items-center justify-content-center fw-bold bg-light"
+     style="height: 80px; font-size: 1.1rem;">
+  ユーザー名
+</div>
           </div>
 
           <div class="border rounded bg-white p-3 mb-4 shadow-sm">
@@ -83,7 +85,8 @@
                     0<span class="fs-4">%</span>
                 </div>
 
-                <p class="text-muted small mb-0">仮</p>
+              
+              
             </div>
 
             <div class="bg-light rounded p-3 mb-3">
