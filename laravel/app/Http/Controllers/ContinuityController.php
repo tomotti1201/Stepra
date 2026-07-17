@@ -21,6 +21,7 @@ class ContinuityController extends Controller
         return response()->json([
             'status' => 'success',
             'name' => $user->name,
+            'icon' => $user->icon,
             'rate' => 0,
             'total' => 0,
             'completed' => 0,
@@ -106,11 +107,12 @@ if ($rate >= 90) {
 
 } else {
 
-    $medal = "Beginner-medal.png";
+    $medal = "bronze-medal.png";
 }
     return response()->json([
     'status' => 'success',
     'name' => $user->name,
+    'icon' => $user->icon,
     'rate' => $rate,
     'total' => $total,
     'completed' => $completed,
