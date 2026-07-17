@@ -124,6 +124,22 @@ document.addEventListener("DOMContentLoaded", async()=>{
     await loadTodayGoals();
 
 });
+function updateNowLine(){
+
+    if(isGroupMode){
+
+        loadGroupGoals(currentGroupId);
+
+    }
+    else{
+
+        loadChart();
+
+    }
+
+}
+
+setInterval(updateNowLine,60000);
 
 // 状態管理
 let currentTaskId = null;
@@ -857,6 +873,116 @@ function renderChart(tasks){
 
     chart.appendChild(center);
 
+        // 現在時刻ライン表示
+    const now = new Date();
+
+    const nowMinutes =
+        now.getHours() * 60 +
+        now.getMinutes();
+
+    const nowAngle =
+        (nowMinutes / 1440) * 360 - 90;
+
+
+    const innerRadius = 80;
+    const outerRadius = 140;
+
+
+    const x1 =
+        140 +
+        innerRadius *
+        Math.cos(nowAngle * Math.PI / 180);
+
+    const y1 =
+        140 +
+        innerRadius *
+        Math.sin(nowAngle * Math.PI / 180);
+
+
+    const x2 =
+        140 +
+        outerRadius *
+        Math.cos(nowAngle * Math.PI / 180);
+
+    const y2 =
+        140 +
+        outerRadius *
+        Math.sin(nowAngle * Math.PI / 180);
+
+
+
+    const nowLine = document.createElement("div");
+
+
+    const length =
+        Math.sqrt(
+            (x2-x1)**2 +
+            (y2-y1)**2
+        );
+
+
+    const angleDeg =
+        Math.atan2(
+            y2-y1,
+            x2-x1
+        )
+        *
+        180
+        /
+        Math.PI;
+
+
+
+    nowLine.style.position = "absolute";
+    nowLine.style.left = `${x1}px`;
+    nowLine.style.top = `${y1}px`;
+    nowLine.style.width = `${length}px`;
+    nowLine.style.height = "3px";
+
+    // 現在時刻は赤
+    nowLine.style.background = "#dc3545";
+
+    nowLine.style.transformOrigin = "0 0";
+
+    nowLine.style.transform =
+        `rotate(${angleDeg}deg)`;
+
+
+    nowLine.style.zIndex = "10";
+
+
+    chart.appendChild(nowLine);
+    // 現在時刻の待ち針
+const pin = document.createElement("div");
+
+const pinRadius = 6;
+
+// 円の内側から刺さっているようにする
+const pinRadiusPosition = 80;
+
+const pinX =
+    140 +
+    pinRadiusPosition *
+    Math.cos(nowAngle * Math.PI / 180);
+
+const pinY =
+    140 +
+    pinRadiusPosition *
+    Math.sin(nowAngle * Math.PI / 180);
+
+
+pin.style.position = "absolute";
+pin.style.width = `${pinRadius * 2}px`;
+pin.style.height = `${pinRadius * 2}px`;
+pin.style.background = "#dc3545";
+pin.style.borderRadius = "50%";
+pin.style.left = `${pinX}px`;
+pin.style.top = `${pinY}px`;
+pin.style.transform = "translate(-50%, -50%)";
+pin.style.zIndex = "11";
+
+
+chart.appendChild(pin);
 }
 
 // グループ切替
