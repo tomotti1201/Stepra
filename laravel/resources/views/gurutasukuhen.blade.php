@@ -182,7 +182,7 @@
 
                 <div class="d-flex gap-1">
 
-                    <input type="number" id="duration-hours" class="form-control" min="0">
+                    <input type="number" id="duration-hours" class="form-control" min="0" max="23">
 
                     <span class="align-self-center">
                         時間
@@ -555,9 +555,47 @@ function removeColor(color){
 
 }
 
+function clampDurationInput(){
+    const hoursInput=document.getElementById('duration-hours');
+    const minutesInput=document.getElementById('duration-minutes');
+
+    let hours=Number(hoursInput.value);
+    let minutes=Number(minutesInput.value);
+
+    if(!Number.isFinite(hours) || hours < 0){
+        hours=0;
+    }
+
+    if(!Number.isFinite(minutes) || minutes < 0){
+        minutes=0;
+    }
+
+    if(minutes > 59){
+        minutes=59;
+    }
+
+    if(hours >= 24){
+        hours=23;
+        minutes=59;
+    }
+
+    hoursInput.value=hours;
+    minutesInput.value=minutes;
+}
+
+function initGroupTaskEdit(){
+    document.getElementById('duration-hours')
+        .addEventListener('input',clampDurationInput);
+
+    document.getElementById('duration-minutes')
+        .addEventListener('input',clampDurationInput);
+
+    loadGroupTask();
+}
+
 document.addEventListener(
     "DOMContentLoaded",
-    loadGroupTask
+    initGroupTaskEdit
 );
 
 
@@ -750,7 +788,11 @@ if(task.priority){
 
     if(!availableColors.includes(task.color)){
 
-        availableColors.push(task.color);
+        if(availableColors.length >= 5){
+            availableColors[availableColors.length - 1] = task.color;
+        }else{
+            availableColors.push(task.color);
+        }
 
     }
 
@@ -931,6 +973,8 @@ function selectSingle(element){
 }
 async function saveGroupTask(){
 
+    clampDurationInput();
+
     const id =
         new URLSearchParams(location.search)
         .get('task_id');
@@ -939,6 +983,23 @@ async function saveGroupTask(){
     if(!id){
 
         alert('タスクIDがありません');
+        return;
+
+    }
+
+
+    const durationHours =
+        Number(document.getElementById('duration-hours').value);
+
+    const durationMinutes =
+        Number(document.getElementById('duration-minutes').value);
+
+    const requiredMinutes =
+        durationHours * 60 + durationMinutes;
+
+    if(requiredMinutes >= 1440){
+
+        alert('所要時間は24時間未満にしてください');
         return;
 
     }

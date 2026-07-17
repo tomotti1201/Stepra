@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Group;
 use App\Models\Groupmember;
+use App\Models\GroupSchedule;
+use App\Models\Grouptask;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class GroupController extends Controller
@@ -80,10 +83,35 @@ class GroupController extends Controller
         return response()->json($group);
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $group = Group::findOrFail($id);
-        $group->delete();
+        $requestUserId = $request->query('request_user_id', $request->input('request_user_id'));
+
+        if (!$requestUserId) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'request_user_id is required',
+            ], 400);
+        }
+
+        $requestMember = Groupmember::where('group_id', $group->id)
+            ->where('user_id', $requestUserId)
+            ->first();
+
+        if (!$requestMember || $requestMember->role !== 'admin') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Only admins can delete groups',
+            ], 403);
+        }
+
+        DB::transaction(function () use ($group) {
+            GroupSchedule::where('group_id', $group->id)->delete();
+            Grouptask::where('group_id', $group->id)->delete();
+            Groupmember::where('group_id', $group->id)->delete();
+            $group->delete();
+        });
 
         return response()->json(null, 204);
     }

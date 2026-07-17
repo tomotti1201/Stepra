@@ -163,6 +163,7 @@
                 class="form-control"
                 id="duration-hours"
                 min="0"
+                max="23"
                 value="0">
 
             <span class="align-self-center small">
@@ -392,6 +393,7 @@ function selectSingle(element){
 
 
 let selectedColor="#0d6efd";
+const maxColorCount = 5;
 
 
 function selectColor(element){
@@ -411,6 +413,19 @@ function addCustomColor(value){
 
     const colorGroup=document.getElementById("color-group");
     const addButton=document.getElementById("add-color-btn");
+    const existingColor=[...document.querySelectorAll("#color-group .color-circle:not(.custom)")]
+        .find(circle=>circle.dataset.color === value);
+
+    if(existingColor){
+        selectColor(existingColor);
+        return;
+    }
+
+    if(getColorCount() >= maxColorCount){
+        alert("色は5個までです");
+        updateAddColorButton();
+        return;
+    }
 
     const newColor=document.createElement("div");
 
@@ -429,13 +444,60 @@ function addCustomColor(value){
     colorGroup.insertBefore(newColor,addButton);
 
     selectedColor=value;
+    updateAddColorButton();
 }
 
 
 function selectCustomColor(){
 
+    if(getColorCount() >= maxColorCount){
+        alert("色は5個までです");
+        updateAddColorButton();
+        return;
+    }
+
     document.getElementById("custom-color-picker").click();
 
+}
+
+function getColorCount(){
+    return document.querySelectorAll("#color-group .color-circle:not(.custom)").length;
+}
+
+function updateAddColorButton(){
+    const addButton=document.getElementById("add-color-btn");
+    if(!addButton)return;
+
+    const isLimitReached=getColorCount() >= maxColorCount;
+    addButton.style.display=isLimitReached ? "none" : "";
+}
+
+function clampDurationInput(){
+    const hoursInput=document.getElementById("duration-hours");
+    const minutesInput=document.getElementById("duration-minutes");
+
+    let hours=Number(hoursInput.value);
+    let minutes=Number(minutesInput.value);
+
+    if(!Number.isFinite(hours) || hours < 0){
+        hours=0;
+    }
+
+    if(!Number.isFinite(minutes) || minutes < 0){
+        minutes=0;
+    }
+
+    if(minutes > 59){
+        minutes=59;
+    }
+
+    if(hours >= 24){
+        hours=23;
+        minutes=59;
+    }
+
+    hoursInput.value=hours;
+    minutesInput.value=minutes;
 }
 
 
@@ -483,6 +545,13 @@ document.addEventListener("DOMContentLoaded",()=>{
     startDate.value=today;
 
     endDate.min=today;
+    updateAddColorButton();
+
+    document.getElementById("duration-hours")
+        .addEventListener("input",clampDurationInput);
+
+    document.getElementById("duration-minutes")
+        .addEventListener("input",clampDurationInput);
 
 });
 
@@ -504,6 +573,7 @@ async function saveGoal(){
     const userId = localStorage.getItem("user_id");
 
     const groupId = {{ $group->id }};
+    clampDurationInput();
 
     if(!userId){
         alert("ログインしてください");
@@ -557,6 +627,16 @@ async function saveGoal(){
 
     }
 
+    const requiredMinutes=
+        durationHours*60+durationMinutes;
+
+    if(requiredMinutes >= 1440){
+
+        alert("所要時間は24時間未満にしてください");
+        return;
+
+    }
+
 
     const priorityBox=
         document.getElementById("priority-box");
@@ -577,10 +657,6 @@ async function saveGoal(){
     const weekDays=
         Array.from(daysActive)
         .map(el=>el.innerText);
-
-
-    const requiredMinutes=
-        durationHours*60+durationMinutes;
 
 
     try{

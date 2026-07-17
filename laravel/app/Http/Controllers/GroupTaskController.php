@@ -58,6 +58,13 @@ public function store(Request $request)
         ],400);
     }
 
+    if($requiredMinutes >= 1440){
+        return response()->json([
+            'status'=>'error',
+            'message'=>'所要時間は24時間未満にしてください'
+        ],400);
+    }
+
     $startDate = trim($request->start_date ?? '');
     $endDate = trim($request->end_date ?? '');
 
@@ -349,6 +356,15 @@ public function update(Request $request, $id)
         return response()->json([
             'status'=>'error',
             'message'=>'所要時間を入力してください'
+        ],400);
+
+    }
+
+    if($requiredMinutes >= 1440){
+
+        return response()->json([
+            'status'=>'error',
+            'message'=>'所要時間は24時間未満にしてください'
         ],400);
 
     }

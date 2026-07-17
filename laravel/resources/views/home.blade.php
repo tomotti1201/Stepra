@@ -155,9 +155,33 @@
     const goalList = document.getElementById("goalList");
     goalList.innerHTML = "";
 
-    const active = tasks.filter(t => t.status === "active");
-    const completed = tasks.filter(t => t.status === "completed");
-    const failed = tasks.filter(t => t.status === "failed");
+    const active = tasks.filter(t => t.status === "active").sort(compareByPriority);
+    const completed = tasks.filter(t => t.status === "completed").sort(compareByPriority);
+    const failed = tasks.filter(t => t.status === "failed").sort(compareByPriority);
+
+    function priorityRank(priority) {
+        const key = String(priority || "").toLowerCase();
+        const ranks = {
+            high: 0,
+            "\u9ad8": 0,
+            middle: 1,
+            medium: 1,
+            "\u4e2d": 1,
+            low: 2,
+            "\u4f4e": 2
+        };
+
+        return ranks[key] ?? 3;
+    }
+
+    function compareByPriority(a, b) {
+        const priorityDiff = priorityRank(a.priority) - priorityRank(b.priority);
+        if (priorityDiff !== 0) {
+            return priorityDiff;
+        }
+
+        return String(a.start_time || "").localeCompare(String(b.start_time || ""));
+    }
 
     function createCard(task){
 

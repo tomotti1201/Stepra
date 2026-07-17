@@ -64,13 +64,13 @@
           <h2 class="text-center fw-bold mb-4 fs-4">ユーザー情報</h2>
 
           <div class="d-flex align-items-center gap-3 mb-4">
-            <button type="button" class="user-icon-circle shadow-sm" onclick="selectImage()">
+            <button type="button" class="user-icon-circle shadow-sm" disabled>
               <img id="iconImage" src="" alt="ユーザーアイコン">
-              <span id="iconText" class="small fw-bold text-white">画像選択</span>
+              <span id="iconText" class="small fw-bold text-white"></span>
             </button>
             <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="changeIcon(event)">
 
-            <div class="form-control d-flex align-items-center justify-content-center fw-bold bg-light" style="height: 80px; font-size: 1.1rem;">
+            <div id="userName" class="form-control d-flex align-items-center justify-content-center fw-bold bg-light" style="height: 80px; font-size: 1.1rem;">
               ユーザー名
             </div>
           </div>
@@ -139,7 +139,9 @@ async function loadContinuity() {
 
     const data = await res.json();
 
-    document.getElementById("userName").textContent = data.name;
+    document.getElementById("userName").textContent =
+        data.name || "ユーザー名";
+    renderUserIcon(data.icon, data.name);
 
     document.getElementById("rate").innerHTML =
         `${Number(data.rate).toFixed(1)}<span class="fs-4">%</span>`;
@@ -150,10 +152,41 @@ async function loadContinuity() {
     document.getElementById("month").textContent =
         `${data.month_completed}/${data.month_total}`;
 
-    const medal = data.medal.split(" ");
-
     document.getElementById("medal").src =
-        `/image/${data.medal}`;
+        `/image/${data.medal || "bronze-medal.png"}`;
+}
+
+function renderUserIcon(icon, name) {
+    const iconImage = document.getElementById("iconImage");
+    const iconText = document.getElementById("iconText");
+    const value = String(icon || "").trim();
+
+    iconImage.style.display = "none";
+    iconImage.removeAttribute("src");
+    iconText.textContent = "";
+
+    if (!value) {
+        iconText.textContent = String(name || "U").trim().slice(0, 1);
+        return;
+    }
+
+    const isImagePath =
+        value.startsWith("/") ||
+        value.startsWith("http://") ||
+        value.startsWith("https://") ||
+        /\.(png|jpe?g|gif|webp|svg)$/i.test(value);
+
+    if (isImagePath) {
+        iconImage.src = value;
+        iconImage.style.display = "block";
+        iconImage.onerror = () => {
+            iconImage.style.display = "none";
+            iconText.textContent = String(name || "U").trim().slice(0, 1);
+        };
+        return;
+    }
+
+    iconText.textContent = value;
 }
 </script>
 

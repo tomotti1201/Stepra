@@ -34,19 +34,24 @@
           </div>
 
           <div class="row g-3 mt-4 mb-5">
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-md-3">
               <button id="group-edit-button" class="btn btn-primary w-100 py-3 fw-bold shadow-sm" onclick="openGroupEdit()" disabled>
                 グループの編集
               </button>
             </div>
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-md-3">
               <button class="btn btn-success w-100 py-3 fw-bold shadow-sm" onclick="openGroupTasks()">
                 グループタスクの追加・編集
               </button>
             </div>
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-md-3">
               <button id="home-group-button" class="btn btn-outline-success w-100 py-3 fw-bold shadow-sm" onclick="setHomeGroup()">
                 ホーム画面に設定
+              </button>
+            </div>
+            <div class="col-12 col-md-3">
+              <button id="group-delete-button" class="btn btn-outline-danger w-100 py-3 fw-bold shadow-sm" onclick="deleteGroup()" disabled>
+                グループを削除
               </button>
             </div>
           </div>
@@ -200,6 +205,33 @@
       location.href = `/gtasutkuitiran/${groupId}`;
     }
 
+    async function deleteGroup() {
+      if (!isCurrentUserAdmin()) {
+        alert('管理者だけがグループを削除できます');
+        return;
+      }
+
+      const groupName = groupData.name || 'このグループ';
+      if (!confirm(`${groupName} を削除しますか？\nグループメンバーからも削除されます。`)) {
+        return;
+      }
+
+      const response = await fetch(`/api/groups/${groupId}?request_user_id=${encodeURIComponent(currentUserId || '')}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        alert('グループを削除できませんでした');
+        return;
+      }
+
+      if (String(localStorage.getItem('group_id')) === String(groupId)) {
+        localStorage.removeItem('group_id');
+      }
+
+      location.href = `/group?user_id=${encodeURIComponent(currentUserId || '')}`;
+    }
+
     function setHomeGroup() {
       const selectedGroupId = localStorage.getItem('group_id');
 
@@ -320,10 +352,15 @@
 
     function updateAdminControls() {
       const editButton = document.getElementById('group-edit-button');
+      const deleteButton = document.getElementById('group-delete-button');
       editButton.disabled = !isCurrentUserAdmin();
       editButton.title = isCurrentUserAdmin()
         ? ''
         : '管理者だけがグループ名を変更できます';
+      deleteButton.disabled = !isCurrentUserAdmin();
+      deleteButton.title = isCurrentUserAdmin()
+        ? ''
+        : '管理者だけがグループを削除できます';
     }
 
     async function deleteMember(memberId, username) {
