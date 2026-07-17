@@ -128,6 +128,7 @@ document.addEventListener("DOMContentLoaded", async()=>{
 // 状態管理
 let currentTaskId = null;
 let isGroupMode = false;
+let currentGroupId = null;
 
 // グループ切替用
 let userGroups = [];
@@ -354,18 +355,14 @@ async function doneTask(btn){
 
     if(isGroupMode){
 
-        await fetch(`/api/grouptasks/${id}`,{
-
-            method:"PUT",
-
+        await fetch(`/api/groups/groupschedules/${id}/status`, {
+            method: "PUT",
             headers:{
                 "Content-Type":"application/json"
             },
-
             body:JSON.stringify({
                 status:"completed"
             })
-
         });
 
     }else{
@@ -388,8 +385,7 @@ async function doneTask(btn){
 
     if(isGroupMode){
 
-        await loadGroupGoals();
-        await loadGroupChart();
+        await loadGroupGoals(currentGroupId);
 
     }else{
 
@@ -431,7 +427,7 @@ async function registerReason(){
 
     if(isGroupMode){
 
-        await fetch(`/api/grouptasks/${currentTaskId}`,{
+        await fetch(`/api/groups/groupschedules/${currentTaskId}/status`,{
 
             method:"PUT",
 
@@ -473,8 +469,7 @@ async function registerReason(){
 
     if(isGroupMode){
 
-        await loadGroupGoals();
-        await loadGroupChart();
+        await loadGroupGoals(currentGroupId);
 
     }else{
 
@@ -494,7 +489,7 @@ async function cancelTask(btn){
 
     if(isGroupMode){
 
-        await fetch(`/api/grouptasks/${id}`,{
+        await fetch(`/api/groups/groupschedules/${id}/status`,{
 
             method:"PUT",
 
@@ -528,8 +523,7 @@ async function cancelTask(btn){
 
     if(isGroupMode){
 
-        await loadGroupGoals();
-        await loadGroupChart();
+        await loadGroupGoals(currentGroupId);
 
     }else{
 
@@ -887,12 +881,20 @@ async function nextGroup(){
 async function prevGroup(){
 
     if(currentGroupIndex === -1){
-        return;
+
+        isGroupMode = false;
+
+        currentGroupId = null;
+
+        await loadTodayGoals();
+
     }
 
     currentGroupIndex--;
 
     if(currentGroupIndex === -1){
+
+        currentGroupId = null;
 
         await loadTodayGoals();
 
@@ -913,10 +915,13 @@ async function prevGroup(){
 
 async function showCurrentGroup(){
 
+    isGroupMode = true;
+
     const group = userGroups[currentGroupIndex];
 
-    document.getElementById("goalTitle")
-        .textContent =
+    currentGroupId = group.id;
+
+    document.getElementById("goalTitle").textContent =
         group.name + " の目標一覧";
 
     await loadGroupGoals(group.id);
