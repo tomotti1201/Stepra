@@ -11,6 +11,7 @@ use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\ContinuityController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\GroupTaskController;
+use App\Http\Controllers\GroupScheduleController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\GroupmemberController;
 
@@ -68,9 +69,18 @@ Route::prefix('groups')->group(function () {
     Route::post('/join', [GroupController::class, 'join']);
     Route::put('/{id}', [GroupController::class, 'update']);
     Route::delete('/{id}', [GroupController::class, 'destroy']);
-
+    Route::get('/grouptasks/daily', [GroupTaskController::class,'daily']);
+    Route::put('/grouptasks/{id}', [GroupTaskController::class,'update']);
+    Route::put('/groupschedules/{id}/status', [GroupTaskController::class, 'updateStatus']);
 });
-
+Route::get(
+    '/groupSchedules/monthly',
+    [GroupScheduleController::class, 'getMonthlySchedules']
+);
+Route::get(
+    '/user/groups',
+    [GroupController::class,'userGroups']
+);
 
 // グループタスク
 

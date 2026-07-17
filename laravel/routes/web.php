@@ -3,6 +3,7 @@
 use App\Http\Controllers\GroupTaskController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\GroupScheduleController;
 use App\Models\Group;
 use App\Models\Groupmember;
 use App\Models\Grouptask;
@@ -59,26 +60,25 @@ Route::delete('/tasks/{id}', [TaskController::class, 'destroy']);
 
 // グループ画面
 
-Route::get('/groupCreate', function () {
+Route::get('/group/create', function () {
     return view('groupCreate');
 });
 
+// グループ一覧
 Route::get('/group', function () {
-    $groups = Group::all();
-    $userId = request('user_id');
 
-    if ($userId) {
-        $groupIds = Groupmember::where('user_id', $userId)
-            ->pluck('group_id');
-        $groups = Group::whereIn('id', $groupIds)->get();
-    }
+    $userId = session('user_id');
 
-    return view('group', [
-        'groups' => $groups
-    ]);
+    $groupIds = Groupmember::where('user_id', $userId)
+        ->pluck('group_id');
+
+    $groups = Group::whereIn('id', $groupIds)->get();
+
+    return view('group', compact('groups'));
 });
 
-Route::get('/grouptask/{id}', function ($id) {
+// グループタスク一覧
+Route::get('/group/{id}/tasks', function ($id) {
     $tasklist = Grouptask::where('group_id', $id)->get();
     $group = Group::findOrFail($id);
 
@@ -88,11 +88,8 @@ Route::get('/grouptask/{id}', function ($id) {
     ]);
 });
 
-Route::get('/gtasutkuitiran/{id}', function ($id) {
-    return redirect("/grouptask/{$id}");
-});
-
-Route::get('/gurupjouhouhensyu/{id}', function ($id) {
+// グループ情報編集
+Route::get('/group/{id}/edit', function ($id) {
     $group = Group::findOrFail($id);
     $member = Groupmember::where('group_id', $id)->get();
 
@@ -102,7 +99,8 @@ Route::get('/gurupjouhouhensyu/{id}', function ($id) {
     ]);
 });
 
-Route::get('/gurupumokuhyosinki/{id}', function ($id) {
+// グループタスク作成
+Route::get('/group/{id}/task/create', function ($id) {
     $group = Group::findOrFail($id);
 
     return view('gurupumokuhyosinki', [
@@ -110,7 +108,8 @@ Route::get('/gurupumokuhyosinki/{id}', function ($id) {
     ]);
 });
 
-Route::get('/groupSchedule/{id}', function ($id) {
+// グループスケジュール
+Route::get('/group/{id}/schedule', function ($id) {
     $group = Group::findOrFail($id);
     $tasklist = Grouptask::where('group_id', $id)->get();
 
@@ -120,7 +119,13 @@ Route::get('/groupSchedule/{id}', function ($id) {
     ]);
 });
 
-Route::get('/gurutaskukuhen/{group_id}', function ($group_id) {
+Route::get(
+    '/group/{id}/scheduleDetail',
+    [GroupScheduleController::class, 'detail']
+);
+
+// グループタスク編集
+Route::get('/group/{group_id}/task/edit', function ($group_id) {
     $task_id = request('task_id');
 
     $task = Grouptask::where('id', $task_id)
@@ -131,7 +136,6 @@ Route::get('/gurutaskukuhen/{group_id}', function ($group_id) {
         'task' => $task
     ]);
 });
-
 // グループタスクAPI
 
 Route::get('/api/grouptasks/{id}', [GroupTaskController::class, 'show']);

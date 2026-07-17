@@ -50,7 +50,7 @@
             onclick="createGroup()" >
       グループ作成
     </button>
-</dib>
+</div>
 
     <button class="btn btn-secondary w-100 py-3 fw-bold fs-5" 
             onclick="goBack()">
@@ -113,6 +113,7 @@ async function createGroup() {
 
   if (joinResponse.ok) {
     alert("グループを作成しました");
+    window.location.href = "/group";
   } else {
     alert("グループメンバー登録に失敗しました");
   }
@@ -151,7 +152,7 @@ function checkGroupName(){
 /* 戻る */
 /* ===================================================== */
 function goBack(){
-  window.location.href = "/group?user_id=" + encodeURIComponent(localStorage.getItem("user_id") || "");
+    window.location.href = "/group";
 }
 </script>
 

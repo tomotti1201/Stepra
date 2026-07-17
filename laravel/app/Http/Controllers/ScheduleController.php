@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Schedule;
+use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -61,10 +62,29 @@ class ScheduleController extends Controller
         'color' => $schedule->color,
     ];
 });
+$tasks = Task::query()
+            ->when($userId, fn($q) => $q->where('user_id', $userId))
+            ->where('status', 'active')
+            ->get()
+            ->map(function ($task) {
+                return [
+                    'id' => $task->id,
+                    'title' => $task->title,
+                    'start_date' => $task->start_date,
+                    'end_date' => $task->end_date,
+                    'week_days' => $task->week_days,
+                    'start_time' => $task->start_time,
+                    'required_minutes' => $task->required_minutes,
+                    'color' => $task->color,
+                    'priority' => $task->priority,
+                ];
+            });
+        
 
         return response()->json([
             'status' => 'success',
-            'schedules' => $schedules
+            'schedules' => $schedules,
+            'tasks' => $tasks
         ]);
     }
 
@@ -112,41 +132,85 @@ class ScheduleController extends Controller
         ]);
     }
     public function getDailySchedules(Request $request)
-    {
-        $date = $request->query('date');
-        $userId = $request->query('user_id', Auth::id());
+{
+    $date = $request->query('date');
+    $userId = $request->query('user_id', Auth::id());
 
-        if (!$date) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'date is required'
-            ], 400);
-        }
+    if (!$date) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'date is required'
+        ], 400);
+    }
 
-        $schedules = Schedule::query()
-            ->whereDate('scheduled_date', $date)
-            ->when($userId, fn($q) => $q->where('user_id', $userId))
-            ->orderBy('start_time')
-            ->get()
-            ->map(function ($s) {
+    // まずScheduleを取得
+    $schedules = Schedule::whereDate('scheduled_date', $date)
+        ->when($userId, fn($q) => $q->where('user_id', $userId))
+        ->orderBy('start_time')
+        ->get();
+
+    // Scheduleが存在すればそれを返す
+    if ($schedules->isNotEmpty()) {
+
+        return response()->json([
+            'status' => 'success',
+            'date' => $date,
+            'schedules' => $schedules->map(function ($s) {
+
                 return [
                     'id' => $s->id,
                     'title' => $s->title,
                     'content' => $s->content,
                     'start_time' => $s->start_time,
                     'required_minutes' => $s->required_minutes,
-                    'color' => $s->color ?? '#198754',
+                    'color' => $s->color,
                     'status' => $s->status,
                     'scheduled_date' => $s->scheduled_date->format('Y-m-d'),
                 ];
-            });
-        
-        return response()->json([
-            'status' => 'success',
-            'date' => $date,
-            'schedules' => $schedules
+            })
         ]);
     }
+
+    // Scheduleが無ければTaskから生成
+    $week = date('N', strtotime($date));
+
+    $tasks = Task::where('user_id', $userId)
+    ->whereDate('start_date', '<=', $date)
+    ->where(function ($q) use ($date) {
+
+        $q->whereNull('end_date')
+          ->orWhereDate('end_date', '>=', $date);
+
+    })
+        ->get()
+        ->filter(function ($task) use ($week) {
+
+            $days = json_decode($task->week_days, true);
+
+            return in_array($week, $days ?? []);
+        })
+        ->map(function ($task) use ($date) {
+
+            return [
+                'id' => null,
+                'task_id' => $task->id,
+                'title' => $task->title,
+                'content' => $task->content,
+                'start_time' => $task->start_time,
+                'required_minutes' => $task->required_minutes,
+                'color' => $task->color,
+                'status' => 'active',
+                'scheduled_date' => $date,
+            ];
+        })
+        ->values();
+
+    return response()->json([
+        'status' => 'success',
+        'date' => $date,
+        'schedules' => $tasks
+    ]);
+}
     public function detail(Request $request)
     {
         return view('scheduleDetail');

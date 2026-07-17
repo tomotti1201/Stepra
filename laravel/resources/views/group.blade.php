@@ -12,9 +12,8 @@
 </head>
 <body>
 
-<div class="container-fluid py-4">
-  <img src="/image/tit.png" alt="STEPRA" class="mb-3" style="width:200px;">
-
+<div class="container py-4 mb-5">
+  <img src="{{ asset('image/tit.png') }}" alt="STEPRA" class="mb-3" style="width:200px;">
   <div class="row justify-content-center">
     <div class="col-12 col-md-8 col-lg-5">
       <div class="card shadow border-0 mb-4">
@@ -82,11 +81,11 @@
 
 <script>
   function goCreateGroup() {
-    window.location.href = "/groupCreate";
+    window.location.href = "/group/create";
   }
 
   function openGroup(id) {
-    window.location.href = `/groupSchedule/${id}`;
+    window.location.href = `/group/${id}/schedule`;
   }
 
   async function searchGroup() {

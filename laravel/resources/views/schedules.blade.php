@@ -118,6 +118,7 @@
         // キャッシュ
         let scheduleCache = {};
         let scheduleData = [];
+        let taskData = [];
 
         /**
          * スケジュール取得（キャッシュ付き）
@@ -143,6 +144,8 @@
 
             scheduleCache[key] = data.schedules || [];
             scheduleData = scheduleCache[key];
+
+            taskData = data.tasks || [];
         }
 
         /**
@@ -179,9 +182,65 @@
                 const fullDate =
                     `${year}-${String(month + 1).padStart(2, "0")}-${String(date).padStart(2, "0")}`;
 
-                const schedulesForDay = scheduleData.filter(s => {
+                // スケジュールテーブルのデータ
+                let schedulesForDay = scheduleData.filter(s => {
                     return String(s.scheduled_date).slice(0, 10) === fullDate;
                 });
+
+                // スケジュールが無い未来日はTaskテーブルから生成
+                if (schedulesForDay.length === 0) {
+
+                    const date = new Date(fullDate);
+
+                    const dayOfWeek = date.getDay();
+
+                    // JS: 日=0 ～ 土=6
+                    // DB: 月=1 ～ 日=7
+                    const weekNo = dayOfWeek === 0 ? 7 : dayOfWeek;
+
+                    schedulesForDay = taskData
+                        .filter(task => {
+
+                            // 開始日以前
+                            if (task.start_date && fullDate < task.start_date) {
+                                return false;
+                            }
+
+                            // 終了日以後
+                            if (task.end_date && fullDate > task.end_date) {
+                                return false;
+                            }
+
+                            // 曜日判定
+                            if (task.week_days) {
+
+                                let days = task.week_days;
+
+                                if (typeof days === "string") {
+                                    try {
+                                        days = JSON.parse(days);
+                                    } catch {
+                                        days = days.split(",");
+                                    }
+                                }
+
+                                days = days.map(Number);
+
+                                if (!days.includes(weekNo)) {
+                                    return false;
+                                }
+                            }
+
+                            return true;
+                        })
+                        .map(task => ({
+                            id: null,
+                            task_id: task.id,
+                            scheduled_date: fullDate,
+                            title: task.title,
+                            color: task.color
+                        }));
+                }
 
                 const dayEl = document.createElement("button");
 

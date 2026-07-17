@@ -53,7 +53,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: white;
+            background: white;
             border: 2px dashed #666;
             font-size: 20px;
             color: #666;
@@ -83,272 +83,206 @@
             font-size: clamp(1.5rem, 2vw, 2.2rem);
         }
 
-        .form-label,
-        .form-control,
-        .btn {
-            font-size: clamp(1rem, 1.2vw, 1.2rem);
-        }
+        .form-label{
+    font-size: clamp(0.95rem, 1.2vw, 1.2rem);
+}
+
+.form-control{
+    font-size: clamp(1rem, 1.2vw, 1.2rem);
+}
+
+.btn{
+    font-size: clamp(1rem, 1.3vw, 1.2rem);
+}
+
+.small{
+    font-size: clamp(0.9rem, 1vw, 1.1rem) !important;
+}
     </style>
 </head>
-
 
 <body>
 
 <div class="container py-4 mb-5">
 
-    <img src="{{ asset('image/tit.png') }}" class="mb-3" style="width:200px;">
+    <img src="{{ asset('image/tit.png') }}" 
+         class="mb-3" 
+         style="width:200px;">
 
+    <div class="row justify-content-center">
 
-    <div class="card-body p-4">
+    <!-- <div class="card shadow"> -->
 
-        <h2 class="text-center fw-bold mb-4">
-            グループタスク編集
-        </h2>
+                <div class="card-body p-4">
 
+                    <h2 class="text-center fw-bold">
+                        グループタスク編集
+                    </h2>
 
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">目標名</label>
+                            <input
+                                type="text"
+                                id="goal-name"
+                                class="form-control"
+                                placeholder="タスク名を入力">
+                        </div>
 
-        <div class="mb-3">
+                        <!-- 頻度 -->
 
-            <label class="form-label fw-bold">
-                目標名
-            </label>
+                        <div class="mb-3">
 
-            <input
-                type="text"
-                id="goal-name"
-                class="form-control"
-                placeholder="タスク名を入力">
+                            <label class="form-label fw-bold">頻度</label>
 
-        </div>
+                            <div class="d-flex gap-2 mb-2">
 
+                                <button
+                                    type="button"
+                                    id="everyday-btn"
+                                    class="btn btn-outline-secondary day"
+                                    onclick="toggleEveryday()">
+                                    毎日
+                                </button>
 
+                                <div class="btn-group flex-grow-1" id="frequency-group">
 
-        <!-- 頻度 -->
+                                    <button type="button" class="btn btn-outline-secondary day" onclick="toggleDay(this)">月</button>
+                                    <button type="button" class="btn btn-outline-secondary day" onclick="toggleDay(this)">火</button>
+                                    <button type="button" class="btn btn-outline-secondary day" onclick="toggleDay(this)">水</button>
+                                    <button type="button" class="btn btn-outline-secondary day" onclick="toggleDay(this)">木</button>
+                                    <button type="button" class="btn btn-outline-secondary day" onclick="toggleDay(this)">金</button>
+                                    <button type="button" class="btn btn-outline-secondary day" onclick="toggleDay(this)">土</button>
+                                    <button type="button" class="btn btn-outline-secondary day" onclick="toggleDay(this)">日</button>
 
-        <div class="mb-3">
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 時間設定 -->
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label fw-bold">開始時間</label>
+                                <input
+                                    type="time"
+                                    id="start-timing"
+                                    class="form-control">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-bold">所要時間</label>
+                                <div class="d-flex gap-1">
+                                    <input
+                                        type="number"
+                                        id="duration-hours"
+                                        class="form-control"
+                                        min="0">
+                                    <span class="align-self-center">時間</span>
+                                    <input
+                                        type="number"
+                                        id="duration-minutes"
+                                        class="form-control"
+                                        min="0"
+                                        max="59">
+                                    <span class="align-self-center">分</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- モード設定 -->
+                        <div class="mb-3 border rounded p-3">
+                            <label class="form-label fw-bold">モード設定</label>
+                            <div class="btn-group w-100 mb-2" id="mode-group">
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-secondary mode active"
+                                    onclick="selectMode(this)">
+                                    自由設定
+                                </button>
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-secondary mode"
+                                    onclick="selectMode(this)">
+                                    優先順位
+                                </button>
+                            </div>
+                            <div id="priority-box" class="disabled-group">
+                                <label class="form-label fw-bold">優先度</label>
+                                <div class="btn-group w-100" id="priority-group">
+                                    <button type="button" class="btn btn-outline-secondary priority" onclick="selectPriority(this)">高</button>
+                                    <button type="button" class="btn btn-outline-secondary priority" onclick="selectPriority(this)">中</button>
+                                    <button type="button" class="btn btn-outline-secondary priority" onclick="selectPriority(this)">低</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 開始日・終了日 -->
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <label class="form-label fw-bold">開始日</label>
+                                <input
+                                    type="date"
+                                    id="start-date"
+                                    class="form-control"
+                                    disabled>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-bold">終了日</label>
+                                <input
+                                    type="date"
+                                    id="end-date"
+                                    class="form-control">
+                            </div>
+                        </div>
+                        <!-- カラー設定 -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">タスクカラー</label>
+                            <div id="color-limit-message" class="form-text text-muted mb-2">
+                                好きな色を5色まで選べます。不要な色は削除できます。
+                            </div>
+                            <div class="color-selection" id="color-group"></div>
+                            <input
+                                type="color"
+                                id="custom-color-picker"
+                                style="display:none;"
+                                onchange="addCustomColor(this.value)">
+                        </div>
+                        <!-- ボタン -->
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <button
+                                    type="button"
+                                    class="btn btn-secondary w-100"
+                                    onclick="cancelEdit()">
+                                    キャンセル
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button
+                                    type="button"
+                                    class="btn btn-primary w-100"
+                                    onclick="saveGroupTask()">
+                                    編集を保存
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mt-2">
 
-            <label class="form-label fw-bold">
-                頻度
-            </label>
-
-
-            <div class="d-flex gap-2 mb-2">
-
-                <button type="button" id="everyday-btn" class="btn btn-outline-secondary day" onclick="toggleEveryday()">毎日</button>
-
-
-                <div class="btn-group flex-grow-1" id="frequency-group">
-
-                    <button type="button" class="btn btn-outline-secondary day" onclick="toggleDay(this)">月</button>
-                    <button type="button" class="btn btn-outline-secondary day" onclick="toggleDay(this)">火</button>
-                    <button type="button" class="btn btn-outline-secondary day" onclick="toggleDay(this)">水</button>
-                    <button type="button" class="btn btn-outline-secondary day" onclick="toggleDay(this)">木</button>
-                    <button type="button" class="btn btn-outline-secondary day" onclick="toggleDay(this)">金</button>
-                    <button type="button" class="btn btn-outline-secondary day" onclick="toggleDay(this)">土</button>
-                    <button type="button" class="btn btn-outline-secondary day" onclick="toggleDay(this)">日</button>
-
-                </div>
-
+                            <button
+                                type="button"
+                                class="btn btn-danger w-100"
+                                onclick="deleteGroupTask()">
+                                削除
+                            </button>
+                        </div>
+                    </div>
             </div>
 
         </div>
-
-
-
-        <!-- 時間設定 -->
-
-        <div class="row g-2 mb-3">
-
-            <div class="col-6">
-
-                <label class="form-label fw-bold">
-                    開始時間
-                </label>
-
-                <input
-                    type="time"
-                    id="start-timing"
-                    class="form-control">
-
-            </div>
-
-
-            <div class="col-6">
-
-                <label class="form-label fw-bold">
-                    所要時間
-                </label>
-
-
-                <div class="d-flex gap-1">
-
-                    <input type="number" id="duration-hours" class="form-control" min="0" max="23">
-
-                    <span class="align-self-center">
-                        時間
-                    </span>
-
-                    <input type="number" id="duration-minutes" class="form-control" min="0" max="59">
-
-                    <span class="align-self-center">
-                        分
-                    </span>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-
-        <!-- モード設定 -->
-
-        <div class="mb-3 border rounded p-3">
-
-            <label class="form-label fw-bold">
-                モード設定
-            </label>
-
-
-            <div class="btn-group w-100 mb-2" id="mode-group">
-
-                <button type="button" class="btn btn-outline-secondary mode active" onclick="selectMode(this)">自由設定</button>
-                <button type="button" class="btn btn-outline-secondary mode" onclick="selectMode(this)">優先順位</button>
-
-            </div>
-
-
-            <div id="priority-box" class="disabled-group">
-
-                <label class="form-label fw-bold">
-                    優先度
-                </label>
-
-
-                <div class="btn-group w-100" id="priority-group">
-
-                    <button type="button" class="btn btn-outline-secondary priority" onclick="selectPriority(this)">高</button>
-                    <button type="button" class="btn btn-outline-secondary priority" onclick="selectPriority(this)">中</button>
-                    <button type="button" class="btn btn-outline-secondary priority" onclick="selectPriority(this)">低</button>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-
-        <!-- 開始日・終了日 -->
-
-        <div class="row g-2 mb-3">
-
-            <div class="col-6">
-
-                <label class="form-label fw-bold">
-                    開始日
-                </label>
-
-                <input
-                    type="date"
-                    id="start-date"
-                    class="form-control"
-                    disabled>
-
-            </div>
-
-
-            <div class="col-6">
-
-                <label class="form-label fw-bold">
-                    終了日
-                </label>
-
-                <input
-                    type="date"
-                    id="end-date"
-                    class="form-control">
-
-            </div>
-
-        </div>
-
-
-
-        <!-- カラー設定 -->
-
-        <div class="mb-4">
-
-            <label class="form-label fw-bold">
-                タスクカラー
-            </label>
-
-
-            <div id="color-limit-message" class="form-text text-muted mb-2">
-                好きな色を5色まで選べます。不要な色は削除できます。
-            </div>
-
-
-            <div class="color-selection" id="color-group"></div>
-
-
-            <input
-                type="color"
-                id="custom-color-picker"
-                style="display:none;"
-                onchange="addCustomColor(this.value)">
-
-        </div>
-        <!-- ボタン -->
-
-        <div class="row g-2">
-
-            <div class="col-6">
-
-                <button
-                    type="button"
-                    class="btn btn-secondary w-100"
-                    onclick="cancelEdit()">
-                    キャンセル
-                </button>
-
-            </div>
-
-
-            <div class="col-6">
-
-                <button
-                    type="button"
-                    class="btn btn-primary w-100"
-                    onclick="saveGroupTask()">
-                    編集を保存
-                </button>
-
-            </div>
-
-        </div>
-
-
-        <div class="mt-2">
-
-            <button
-                type="button"
-                class="btn btn-danger w-100"
-                onclick="deleteGroupTask()">
-                削除
-            </button>
-
-        </div>
-
 
     </div>
 
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-
 <script>
+
 let availableColors = [
     "#0d6efd",
     "#198754",
@@ -358,190 +292,106 @@ let availableColors = [
 ];
 
 let selectedColor = availableColors[0];
-
-
-
-function renderColorPalette(){
+function renderColorPalette() {
 
     const colorGroup =
         document.getElementById("color-group");
 
-
-    if(!colorGroup){
+    if (!colorGroup) {
         return;
     }
 
-
     colorGroup.innerHTML = "";
 
+    availableColors.forEach(color => {
 
-    availableColors.forEach(color=>{
+        const option = document.createElement("div");
+        option.className = "color-option";
 
-        const option =
-            document.createElement("div");
+        const circle = document.createElement("div");
+        circle.className = "color-circle";
 
-        option.className =
-            "color-option";
-
-
-        const circle =
-            document.createElement("div");
-
-        circle.className =
-            "color-circle";
-
-
-        if(selectedColor === color){
-
-            circle.classList.add(
-                "selected"
-            );
-
+        if (selectedColor === color) {
+            circle.classList.add("selected");
         }
 
+        circle.style.backgroundColor = color;
 
-        circle.style.backgroundColor =
-            color;
-
-
-        circle.onclick = function(){
-
+        circle.onclick = function () {
             selectColor(color);
-
         };
 
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "color-remove";
+        remove.textContent = "×";
 
-        const remove =
-            document.createElement("button");
-
-
-        remove.type =
-            "button";
-
-
-        remove.className =
-            "color-remove";
-
-
-        remove.textContent =
-            "×";
-
-
-        remove.onclick=function(e){
-
+        remove.onclick = function (e) {
             e.stopPropagation();
-
             removeColor(color);
-
         };
-
 
         option.appendChild(circle);
-
         option.appendChild(remove);
-
-
         colorGroup.appendChild(option);
-
 
     });
 
-
-
-    const addButton =
-        document.createElement("div");
-
-
-    addButton.className =
-        "color-circle custom";
-
-
-    addButton.textContent =
-        "＋";
-
-
-    addButton.onclick =
-        selectCustomColor;
-
+    const addButton = document.createElement("div");
+    addButton.className = "color-circle custom";
+    addButton.textContent = "＋";
+    addButton.onclick = selectCustomColor;
 
     colorGroup.appendChild(addButton);
 
 }
 
+function selectColor(color) {
 
-
-function selectColor(color){
-
-    selectedColor =
-        color;
-
-
+    selectedColor = color;
     renderColorPalette();
 
 }
 
-
-
-function selectCustomColor(){
+function selectCustomColor() {
 
     document
-    .getElementById(
-        "custom-color-picker"
-    )
-    .click();
+        .getElementById("custom-color-picker")
+        .click();
 
 }
 
+function addCustomColor(value) {
 
-
-function addCustomColor(value){
-
-    if(!value){
+    if (!value) {
         return;
     }
 
+    if (!availableColors.includes(value)) {
 
-    if(!availableColors.includes(value)){
+        if (availableColors.length >= 5) {
 
-        if(availableColors.length >= 5){
-
-            alert(
-                "色は5色までです"
-            );
-
+            alert("色は5色までです");
             return;
-        }
 
+        }
 
         availableColors.push(value);
 
     }
 
-
-    selectedColor =
-        value;
-
-
+    selectedColor = value;
     renderColorPalette();
 
 }
 
+function removeColor(color) {
 
-
-function removeColor(color){
-
-    if(availableColors.length <= 1){
-
+    if (availableColors.length <= 1) {
         return;
-
     }
 
-
-    availableColors =
-        availableColors.filter(
-            c=>c!==color
-        );
-
+    availableColors = availableColors.filter(c => c !== color);
 
     if(selectedColor === color){
 
@@ -550,241 +400,99 @@ function removeColor(color){
 
     }
 
-
     renderColorPalette();
 
-}
-
-function clampDurationInput(){
-    const hoursInput=document.getElementById('duration-hours');
-    const minutesInput=document.getElementById('duration-minutes');
-
-    let hours=Number(hoursInput.value);
-    let minutes=Number(minutesInput.value);
-
-    if(!Number.isFinite(hours) || hours < 0){
-        hours=0;
-    }
-
-    if(!Number.isFinite(minutes) || minutes < 0){
-        minutes=0;
-    }
-
-    if(minutes > 59){
-        minutes=59;
-    }
-
-    if(hours >= 24){
-        hours=23;
-        minutes=59;
-    }
-
-    hoursInput.value=hours;
-    minutesInput.value=minutes;
-}
-
-function initGroupTaskEdit(){
-    document.getElementById('duration-hours')
-        .addEventListener('input',clampDurationInput);
-
-    document.getElementById('duration-minutes')
-        .addEventListener('input',clampDurationInput);
-
-    loadGroupTask();
 }
 
 document.addEventListener(
     "DOMContentLoaded",
     initGroupTaskEdit
 );
+async function loadGroupTask() {
 
+    const id = new URLSearchParams(location.search).get('task_id');
 
-async function loadGroupTask(){
-
-    const id =
-        new URLSearchParams(location.search)
-        .get('task_id');
-
-
-    if(!id){
-
+    if (!id) {
         alert('タスクIDがありません');
-
         return;
-
     }
 
+    const response = await fetch(`/api/grouptasks/${id}`);
+    const result = await response.json();
 
-    const response =
-        await fetch(
-            `/api/grouptasks/${id}`
-        );
-
-
-    const result =
-        await response.json();
-
-
-    if(!response.ok){
-
+    if (!response.ok) {
         alert(result.message);
-
         return;
-
     }
 
-
-    const task =
-        result.task;
-
-
+    const task = result.task;
 
     // 目標名
-
-    document.getElementById(
-        'goal-name'
-    ).value =
-        task.title;
-
-
+    document.getElementById('goal-name').value = task.title;
 
     // 開始時間
-
-    document.getElementById(
-        'start-timing'
-    ).value =
-        task.start_time;
-
-
+    document.getElementById('start-timing').value = task.start_time;
 
     // 所要時間
+    const hours = Math.floor(task.required_minutes / 60);
+    const minutes = task.required_minutes % 60;
 
-    const hours =
-        Math.floor(
-            task.required_minutes / 60
-        );
-
-
-    const minutes =
-        task.required_minutes % 60;
-
-
-
-    document.getElementById(
-        'duration-hours'
-    ).value =
-        hours;
-
-
-
-    document.getElementById(
-        'duration-minutes'
-    ).value =
-        minutes;
-
-
+    document.getElementById('duration-hours').value = hours;
+    document.getElementById('duration-minutes').value = minutes;
 
     // 日付
+    const startDate = document.getElementById('start-date');
+    startDate.value = task.start_date ?? "";
+    startDate.disabled = true;
 
-    const startDate =
-    document.getElementById('start-date');
-
-
-startDate.value =
-    task.start_date ?? "";
-
-
-startDate.disabled =
-    true;
-
-
-    document.getElementById(
-        'end-date'
-    ).value =
-        task.end_date ?? "";
-
-
+    document.getElementById('end-date').value = task.end_date ?? "";
 
     // 曜日
+    const days = JSON.parse(task.week_days);
 
-    let days =
-        JSON.parse(
-            task.week_days
-        );
+    document.querySelectorAll('.day').forEach(btn => {
 
-
-    document.querySelectorAll('.day')
-    .forEach(btn=>{
-
-        if(days.includes(
-            convertDay(btn.innerText)
-        )){
-
-            btn.classList.add(
-                'active'
-            );
-
+        if (days.includes(convertDay(btn.innerText))) {
+            btn.classList.add('active');
         }
 
     });
 
-
-
     // 優先度
+    if (task.priority) {
 
-if(task.priority){
+        const priorityMap = {
+            high: "高",
+            middle: "中",
+            low: "低"
+        };
 
-    const priorityMap = {
+        // 優先順位モードに変更
+        const priorityModeBtn = [...document.querySelectorAll('#mode-group .mode')]
+            .find(btn => btn.innerText === '優先順位');
 
-        high:"高",
+        if (priorityModeBtn) {
+            selectMode(priorityModeBtn);
+        }
 
-        middle:"中",
+        // 優先度ボタン選択
+        document.querySelectorAll('#priority-group .priority')
+            .forEach(btn => {
 
-        low:"低"
+                btn.classList.remove('active');
 
-    };
+                if (btn.innerText === priorityMap[task.priority]) {
+                    btn.classList.add('active');
+                }
 
-
-    // 優先順位モードに変更
-    const priorityModeBtn =
-        [...document.querySelectorAll('#mode-group .mode')]
-        .find(btn => btn.innerText === '優先順位');
-
-
-    if(priorityModeBtn){
-
-        selectMode(priorityModeBtn);
+            });
 
     }
 
-
-
-    // 優先度ボタンを選択
-
-    document
-    .querySelectorAll('#priority-group .priority')
-    .forEach(btn=>{
-
-        btn.classList.remove('active');
-
-
-        if(
-            btn.innerText === priorityMap[task.priority]
-        ){
-
-            btn.classList.add('active');
-
-        }
-
-    });
-
-}
-
     // 色
+    if (task.color) {
 
-    if(task.color){
-
-    selectedColor = task.color;
+        selectedColor = task.color;
 
     if(!availableColors.includes(task.color)){
 
@@ -796,101 +504,74 @@ if(task.priority){
 
     }
 
-    renderColorPalette();
+        renderColorPalette();
+
+    }
 
 }
-
-}
-
-
-
-function convertDay(day){
+function convertDay(day) {
 
     const map = {
-
-        "月":1,
-
-        "火":2,
-
-        "水":3,
-
-        "木":4,
-
-        "金":5,
-
-        "土":6,
-
-        "日":7
-
+        "月": 1,
+        "火": 2,
+        "水": 3,
+        "木": 4,
+        "金": 5,
+        "土": 6,
+        "日": 7
     };
-
 
     return map[day];
 
 }
-function toggleDay(element){
+
+function toggleDay(element) {
 
     element.classList.toggle('active');
-
 
     const dayButtons =
         document.querySelectorAll('#frequency-group .day');
 
-
     const everydayBtn =
         document.getElementById('everyday-btn');
-
 
     const allSelected =
         [...dayButtons].every(btn =>
             btn.classList.contains('active')
         );
 
-
-    if(allSelected){
-
+    if (allSelected) {
         everydayBtn.classList.add('active');
-
-    }else{
-
+    } else {
         everydayBtn.classList.remove('active');
-
     }
 
 }
 
-
-
-function toggleEveryday(){
+function toggleEveryday() {
 
     const everydayBtn =
         document.getElementById('everyday-btn');
 
-
     const dayButtons =
         document.querySelectorAll('#frequency-group .day');
-
 
     const isActive =
         everydayBtn.classList.contains('active');
 
-
-    if(isActive){
+    if (isActive) {
 
         everydayBtn.classList.remove('active');
 
-        dayButtons.forEach(btn=>{
+        dayButtons.forEach(btn => {
             btn.classList.remove('active');
         });
 
-
-    }else{
-
+    } else {
 
         everydayBtn.classList.add('active');
 
-
-        dayButtons.forEach(btn=>{
+        dayButtons.forEach(btn => {
             btn.classList.add('active');
         });
 
@@ -898,289 +579,189 @@ function toggleEveryday(){
 
 }
 
+function selectMode(element) {
 
-
-function selectMode(element){
-
-    // モードボタンだけactive制御
     document
-    .querySelectorAll('#mode-group .mode')
-    .forEach(btn=>{
-        btn.classList.remove('active');
-    });
-
+        .querySelectorAll('#mode-group .mode')
+        .forEach(btn => {
+            btn.classList.remove('active');
+        });
 
     element.classList.add('active');
-
 
     const priorityBox =
         document.getElementById('priority-box');
 
+    if (element.innerText === '優先順位') {
 
-    if(element.innerText === '優先順位'){
+        priorityBox.classList.remove('disabled-group');
 
-        priorityBox.classList.remove(
-            'disabled-group'
-        );
+    } else {
 
-
-    }else{
-
-        priorityBox.classList.add(
-            'disabled-group'
-        );
-
+        priorityBox.classList.add('disabled-group');
 
         document
-        .querySelectorAll('#priority-group .day')
-        .forEach(el=>{
-            el.classList.remove('active');
-        });
+            .querySelectorAll('#priority-group .priority')
+            .forEach(btn => {
+                btn.classList.remove('active');
+            });
 
     }
 
 }
-function selectPriority(element){
+
+function selectPriority(element) {
 
     document
-    .querySelectorAll('#priority-group .priority')
-    .forEach(btn=>{
-
-        btn.classList.remove('active');
-
-    });
-
+        .querySelectorAll('#priority-group .priority')
+        .forEach(btn => {
+            btn.classList.remove('active');
+        });
 
     element.classList.add('active');
 
 }
 
-
-function selectSingle(element){
+function selectSingle(element) {
 
     const parent =
         element.parentElement;
 
-
-    parent.querySelectorAll('.day')
-    .forEach(el=>{
-        el.classList.remove('active');
-    });
-
+    parent
+        .querySelectorAll('.day')
+        .forEach(el => {
+            el.classList.remove('active');
+        });
 
     element.classList.add('active');
 
 }
-async function saveGroupTask(){
+async function saveGroupTask() {
 
-    clampDurationInput();
+    const id = new URLSearchParams(location.search).get('task_id');
 
-    const id =
-        new URLSearchParams(location.search)
-        .get('task_id');
-
-
-    if(!id){
-
+    if (!id) {
         alert('タスクIDがありません');
         return;
-
     }
-
-
-    const durationHours =
-        Number(document.getElementById('duration-hours').value);
-
-    const durationMinutes =
-        Number(document.getElementById('duration-minutes').value);
-
-    const requiredMinutes =
-        durationHours * 60 + durationMinutes;
-
-    if(requiredMinutes >= 1440){
-
-        alert('所要時間は24時間未満にしてください');
-        return;
-
-    }
-
 
     const data = {
+        title: document.getElementById('goal-name').value,
 
-        title:
-            document.getElementById('goal-name').value,
+        week_days: [...document.querySelectorAll('#frequency-group .day.active')]
+            .map(el => el.innerText),
 
+        start_time: document.getElementById('start-timing').value,
 
-        week_days:
-            [...document.querySelectorAll('.day.active')]
-            .map(el=>el.innerText),
+        duration_hours: document.getElementById('duration-hours').value,
 
+        duration_minutes: document.getElementById('duration-minutes').value,
 
-        start_time:
-            document.getElementById('start-timing').value,
-
-
-        duration_hours:
-            document.getElementById('duration-hours').value,
-
-
-        duration_minutes:
-            document.getElementById('duration-minutes').value,
-
-
-        priority:
-            document.querySelector('.priority.active')
+        priority: document.querySelector('.priority.active')
             ?.innerText ?? null,
 
+        color: selectedColor,
 
-        color:
-            selectedColor,
+        start_date: document.getElementById('start-date').value,
 
-        start_date:
-            document.getElementById('start-date').value,
-
-
-        end_date:
-            document.getElementById('end-date').value
-
+        end_date: document.getElementById('end-date').value
     };
 
+    const response = await fetch(`/api/grouptasks/${id}`, {
+        method: 'PUT',
 
-    const response =
-        await fetch(`/api/grouptasks/${id}`,{
+        headers: {
+            'Content-Type': 'application/json',
 
-        method:'PUT',
-
-        headers:{
-
-            'Content-Type':'application/json',
-
-            'X-CSRF-TOKEN':
-            document.querySelector(
+            'X-CSRF-TOKEN': document.querySelector(
                 'meta[name="csrf-token"]'
             ).content
-
         },
 
-        body:
-            JSON.stringify(data)
-
+        body: JSON.stringify(data)
     });
 
+    const result = await response.json();
 
-    const result =
-        await response.json();
-
-
-    if(!response.ok){
-
+    if (!response.ok) {
         alert(result.message);
-
         return;
-
     }
-
 
     alert('更新しました');
 
-
     location.href =
-    `/gtasutkuitiran/${result.task.group_id}`;
-
+    `/group/${result.task.group_id}/tasks`;
 }
-function cancelEdit(){
+
+function cancelEdit() {
 
     const result =
         confirm('編集内容を破棄しますか？');
 
-
-    if(!result){
+    if (!result) {
         return;
     }
 
-
     const id =
         new URLSearchParams(location.search)
-        .get('task_id');
+            .get('task_id');
 
-
-    if(id){
+    if (id) {
 
         fetch(`/api/grouptasks/${id}`)
-        .then(res=>res.json())
-        .then(data=>{
+            .then(res => res.json())
+            .then(data => {
 
-            location.href =
-            `/gtasutkuitiran/${data.task.group_id}`;
+                location.href =
+                    `/group/${data.task.group_id}/tasks`;
 
-        });
+            });
 
-    }else{
+    } else {
 
         history.back();
 
     }
 
 }
-async function deleteGroupTask(){
+
+async function deleteGroupTask() {
 
     const id =
         new URLSearchParams(location.search)
-        .get('task_id');
+            .get('task_id');
 
-
-    if(!id){
-
+    if (!id) {
         alert('タスクIDがありません');
         return;
-
     }
 
-
-    if(!confirm('このグループタスクを削除しますか？')){
-
+    if (!confirm('このグループタスクを削除しますか？')) {
         return;
-
     }
 
+    const response = await fetch(`/api/grouptasks/${id}`, {
+        method: 'DELETE',
 
-    const response =
-        await fetch(`/api/grouptasks/${id}`,{
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector(
+                'meta[name="csrf-token"]'
+            ).content
+        }
+    });
 
-            method:'DELETE',
+    const result = await response.json();
 
-            headers:{
-
-                'X-CSRF-TOKEN':
-                document.querySelector(
-                    'meta[name="csrf-token"]'
-                ).content
-
-            }
-
-        });
-
-
-    const result =
-        await response.json();
-
-
-
-    if(!response.ok){
-
+    if (!response.ok) {
         alert(result.message);
-
         return;
-
     }
-
 
     alert('削除しました');
 
-
     location.href =
-    `/gtasutkuitiran/${result.group_id}`;
-
+    `/group/${result.group_id}/tasks`;
 }
 </script>
 </body>

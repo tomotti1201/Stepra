@@ -43,10 +43,22 @@
     <div class="container-fluid">
 
         <img src="{{ asset('image/tit.png') }}"
-             class="mb-3"
-             style="width:200px;">
+            class="mb-3"
+            style="width:200px;">
 
-        <div class="row justify-content-center">
+        <div class="d-flex">
+
+            <!-- サイドバー -->
+            <div class="flex-shrink-0 me-3" style="width:170px;">
+                <x-groupmenubar
+                    :group="$group"
+                    active="tasks" />
+            </div>
+
+            <!-- メイン -->
+            <div class="flex-grow-1">
+
+                <div class="row justify-content-center">
 
             <div class="col-12 px-3 px-md-4">
 
@@ -60,7 +72,7 @@
                     </h2>
 
                     <div class="mt-4">
-                        <a href="/gurupumokuhyosinki/{{ $group->id }}"
+                        <a href="/group/{{ $group->id }}/task/create"
                            class="btn btn-success w-100 py-3 fw-bold fs-5 shadow-sm">
                             ＋ 新規グループ目標作成
                         </a>
@@ -218,7 +230,7 @@ async function renderList(){
                 "編集";
 
             editLink.href =
-    `/gurutaskukuhen/{{ $group->id }}?task_id=${goal.id}`;
+                `/group/{{ $group->id }}/task/edit?task_id=${goal.id}`;
             editBtnWrapper.appendChild(editLink);
 
             item.appendChild(content);
