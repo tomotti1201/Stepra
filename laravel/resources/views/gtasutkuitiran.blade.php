@@ -43,10 +43,22 @@
     <div class="container-fluid">
 
         <img src="{{ asset('image/tit.png') }}"
-             class="mb-3"
-             style="width:200px;">
+            class="mb-3"
+            style="width:200px;">
 
-        <div class="row justify-content-center">
+        <div class="d-flex">
+
+            <!-- サイドバー -->
+            <div class="flex-shrink-0 me-3" style="width:170px;">
+                <x-groupmenubar
+                    :group="$group"
+                    active="tasks" />
+            </div>
+
+            <!-- メイン -->
+            <div class="flex-grow-1">
+
+                <div class="row justify-content-center">
 
             <div class="col-12 px-3 px-md-4">
 

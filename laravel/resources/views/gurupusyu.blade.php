@@ -7,9 +7,6 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
-  <div class="container py-4 mb-5">
-
-    <div class="card-body">
 
     <script>
         if (!localStorage.getItem("user_id")) {
@@ -17,122 +14,178 @@
         }
     </script>
 
-@php
-  $calendarTasks = $tasklist->map(function ($task) {
-    return [
-      'id' => $task->id,
-      'title' => $task->title,
-      'weekdays' => $task->week_days
-        ? array_map('trim', explode(',', $task->week_days))
-        : [],
-      'startDate' => $task->start_date,
-      'endDate' => $task->end_date,
-      'color' => $task->color ?: '#198754',
-    ];
-  })->values();
-@endphp
+    @php
+        $calendarTasks = $tasklist->map(function ($task) {
+            return [
+                'id' => $task->id,
+                'title' => $task->title,
+                'weekdays' => $task->week_days
+                    ? array_map('trim', explode(',', $task->week_days))
+                    : [],
+                'startDate' => $task->start_date,
+                'endDate' => $task->end_date,
+                'color' => $task->color ?: '#198754',
+            ];
+        })->values();
+    @endphp
 
-  <img src="/image/tit.png" alt="STEPRA" class="mb-3" style="width:200px;">
+    <div class="container py-4 mb-5">
 
-      <h2 class="text-center fw-bold mb-4 display-6">
-        {{ $group->name }}
-      </h2>
+        <img
+            src="/image/tit.png"
+            alt="STEPRA"
+            class="mb-3"
+            style="width:200px;"
+        >
 
-      <div class="row g-2 mb-4">
-          <div class="col-6 d-grid">
-              <button
-                  class="btn btn-outline-dark fw-bold py-4 h-100 d-flex align-items-center justify-content-center"
-                  onclick="openTaskList({{ $group->id }})">
-                  グループタスクを表示
-              </button>
-          </div>
+        <div class="row">
 
-          <div class="col-6 d-grid">
-              <button
-                  class="btn btn-primary fw-bold py-4 h-100 d-flex align-items-center justify-content-center"
-                  onclick="editGroup({{ $group->id }})">
-                  グループ編集
-              </button>
-          </div>
-      </div>
+            <div class="col-md-2">
 
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <button class="btn btn-secondary px-3 py-1 fw-bold" onclick="changeMonth(-1)" aria-label="previous month" title="previous month">&lt;</button>
-    <div id="calendarArea">
-    <!-- 通常表示 -->
-    <button
-        id="calendarTitle"
-        type="button"
-        class="btn btn-light border shadow-sm fw-bold fs-3 px-4 py-2"
-        onclick="showSelect()">
-    </button>
-    <!-- 編集用 -->
-    <div id="calendarEditor" class="d-none">
-      <div class="d-flex align-items-center gap-3">
-      <select
-          id="yearSelect"
-          class="form-select"
-          style="width:140px;"
-          onchange="changeYear()">
-      </select>
+                <x-groupmenubar
+                    :group="$group"
+                    active="schedule"/>
 
-      <select
-          id="monthSelect"
-          class="form-select"
-          style="width:140px;"
-          onchange="changeMonthSelect()">
-      </select>
+            </div>
 
-      </div>
+            <div class="col-md-10">
 
-    </div>
+                <div class="card-body">
 
-</div>
-          <button class="btn btn-secondary px-3 py-1 fw-bold" onclick="changeMonth(1)" aria-label="next month" title="next month">&gt;</button>
+                    <h2 class="text-center fw-bold mb-4 display-6">
+                        {{ $group->name }}
+                    </h2>
+
+            <div class="row g-2 mb-4">
+
+                <div class="col-6 d-grid">
+                    <button
+                        class="btn btn-outline-dark fw-bold py-4 h-100 d-flex align-items-center justify-content-center"
+                        onclick="openTaskList({{ $group->id }})">
+                        グループタスクを表示
+                    </button>
+                </div>
+
+                <div class="col-6 d-grid">
+                    <button
+                        class="btn btn-primary fw-bold py-4 h-100 d-flex align-items-center justify-content-center"
+                        onclick="editGroup({{ $group->id }})">
+                        グループ編集
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- カレンダー切替 -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+
+                <button
+                    class="btn btn-secondary px-3 py-1 fw-bold"
+                    onclick="changeMonth(-1)">
+                    &lt;
+                </button>
+
+                <div id="calendarArea">
+
+                    <button
+                        id="calendarTitle"
+                        type="button"
+                        class="btn btn-light border shadow-sm fw-bold fs-3 px-4 py-2"
+                        onclick="showSelect()">
+                    </button>
+
+                    <div id="calendarEditor" class="d-none">
+
+                        <div class="d-flex align-items-center gap-3">
+
+                            <select
+                                id="yearSelect"
+                                class="form-select"
+                                style="width:140px;"
+                                onchange="changeYear()">
+                            </select>
+
+                            <select
+                                id="monthSelect"
+                                class="form-select"
+                                style="width:140px;"
+                                onchange="changeMonthSelect()">
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <button
+                    class="btn btn-secondary px-3 py-1 fw-bold"
+                    onclick="changeMonth(1)">
+                    &gt;
+                </button>
+
+            </div>
+            <!-- 曜日 -->
+            <div
+                class="d-grid text-center fw-bold border-bottom pb-3 mb-3 fs-5"
+                style="grid-template-columns: repeat(7,1fr);"
+            >
+                <div class="text-danger">日</div>
+                <div>月</div>
+                <div>火</div>
+                <div>水</div>
+                <div>木</div>
+                <div>金</div>
+                <div class="text-primary">土</div>
+            </div>
+
+            <!-- カレンダー -->
+            <div
+                id="calendarGrid"
+                class="d-grid gap-1 text-center fs-6"
+                style="
+                    grid-template-columns: repeat(7,1fr);
+                    grid-auto-rows:95px;
+                    align-items:stretch;
+                "
+            >
+            </div>
+
+            <!-- グループタスク一覧 -->
+            <div class="mt-1 border rounded p-3 bg-white">
+
+                <p class="fw-bold mb-3">
+                    グループタスク一覧
+                </p>
+
+                @forelse ($tasklist as $task)
+
+                    <div class="border rounded p-3 mb-2">
+
+                        <div class="fw-bold">
+                            {{ $task->title }}
+                        </div>
+
+                        @if (!empty($task->content))
+                            <div class="small text-muted mt-1">
+                                {{ $task->content }}
+                            </div>
+                        @endif
+
+                    </div>
+
+                @empty
+
+                    <p class="text-muted small mb-0">
+                        まだグループタスクがありません
+                    </p>
+
+                @endforelse
+
+            </div>
+
         </div>
-
-        <div
-            class="d-grid text-center fw-bold border-bottom pb-3 mb-3 fs-5"
-            style="grid-template-columns:repeat(7,1fr);">
-            <div class="text-danger">日</div>
-            <div>月</div>
-            <div>火</div>
-            <div>水</div>
-            <div>木</div>
-            <div>金</div>
-            <div class="text-primary">土</div>
-        </div>
-
-       <div
-          id="calendarGrid"
-          class="d-grid gap-1 text-center fs-6"
-          style="
-              grid-template-columns: repeat(7,1fr);
-              grid-auto-rows:95px;
-              align-items:stretch;
-          ">
-      </div>
-
-      <div class="mt-4 border rounded p-3 bg-white">
-        <p class="fw-bold mb-3">グループタスク一覧</p>
-
-        @forelse ($tasklist as $task)
-          <div class="border rounded p-3 mb-2">
-            <div class="fw-bold">{{ $task->title }}</div>
-
-            @if (!empty($task->content))
-              <div class="small text-muted mt-1">{{ $task->content }}</div>
-            @endif
-          </div>
-        @empty
-          <p class="text-muted small mb-0">まだグループタスクがありません</p>
-        @endforelse
-      </div>
     </div>
-  </div>
-</div>
-    </div>
-  </div>
 </div>
 
 <x-menubar />
@@ -320,14 +373,13 @@ async function createCalendar() {
 
     // 最後の空白セル
     const totalCells = firstDay + lastDate;
-    const remainCells = 42 - totalCells;
+
+    // 7で割り切れるようにだけ空白を追加
+    const remainCells = (7 - (totalCells % 7)) % 7;
 
     for (let i = 0; i < remainCells; i++) {
-
         const empty = document.createElement("div");
-
         empty.style.height = "95px";
-
         calendar.appendChild(empty);
     }
 

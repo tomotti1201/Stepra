@@ -8,10 +8,28 @@
 </head>
 <body class="bg-light">
 
-  <div id="screen-main" class="container-fluid py-4" style="padding-bottom: 120px;">
-    <div class="row justify-content-center">
-      <div class="col-12">
-        <div class="card shadow p-3 bg-body-tertiary">
+  <div id="screen-main" class="container py-4 mb-5">
+
+    <!-- アイコン -->
+    <img src="{{ asset('image/tit.png') }}"
+         class="mb-3"
+         style="width:200px;">
+
+    <div class="d-flex">
+
+        <!-- サイドバー -->
+        <div class="flex-shrink-0 me-4" style="width:180px;">
+
+            <x-groupmenubar
+                :group="$group"
+                active="info"/>
+
+        </div>
+
+        <!-- メイン -->
+        <div class="flex-grow-1">
+
+            <div class="card shadow p-3 bg-body-tertiary">
           <div class="row g-2 mb-3 align-items-center">
             <div class="col-12 col-md-9">
               <h1 class="text-center fw-bold display-6 m-0 border py-2 bg-white rounded fs-4">グループ管理</h1>

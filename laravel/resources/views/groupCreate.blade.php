@@ -113,6 +113,7 @@ async function createGroup() {
 
   if (joinResponse.ok) {
     alert("グループを作成しました");
+    window.location.href = "/group";
   } else {
     alert("グループメンバー登録に失敗しました");
   }
@@ -151,7 +152,7 @@ function checkGroupName(){
 /* 戻る */
 /* ===================================================== */
 function goBack(){
-  history.back();
+    window.location.href = "/group";
 }
 </script>
 
