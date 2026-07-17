@@ -83,7 +83,8 @@
                     0<span class="fs-4">%</span>
                 </div>
 
-                <p class="text-muted small mb-0">仮</p>
+              
+              
             </div>
 
             <div class="bg-light rounded p-3 mb-3">
