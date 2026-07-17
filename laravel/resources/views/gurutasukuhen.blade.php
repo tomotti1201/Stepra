@@ -393,11 +393,8 @@ function removeColor(color) {
 
     availableColors = availableColors.filter(c => c !== color);
 
-    if(selectedColor === color){
-
-        selectedColor =
-            availableColors[0];
-
+    if (selectedColor === color) {
+        selectedColor = availableColors[0];
     }
 
     renderColorPalette();
@@ -503,6 +500,9 @@ async function loadGroupTask() {
         }
 
     }
+        if (!availableColors.includes(task.color)) {
+            availableColors.push(task.color);
+        }
 
         renderColorPalette();
 
