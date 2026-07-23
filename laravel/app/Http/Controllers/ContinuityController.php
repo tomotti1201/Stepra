@@ -106,7 +106,7 @@ if ($rate >= 90) {
 
 } else {
 
-    $medal = "Beginner-medal.png";
+    $medal = "bronze-medal.png";
 }
     return response()->json([
     'status' => 'success',
