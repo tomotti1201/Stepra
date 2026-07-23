@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
@@ -986,64 +986,91 @@ function renderChart(tasks){
 }
 
 // グループ切替
+let switchingGroup = false;
 async function nextGroup(){
 
-    if(userGroups.length === 0){
+    if(switchingGroup){
         return;
     }
 
-    if(currentGroupIndex < userGroups.length - 1){
+    switchingGroup = true;
 
-        currentGroupIndex++;
+    try{
 
-        await showCurrentGroup();
+        if(userGroups.length === 0){
+            return;
+        }
+
+        if(currentGroupIndex < userGroups.length - 1){
+
+            currentGroupIndex++;
+
+            await showCurrentGroup();
+
+        }
+
+        updateArrow();
+
+    }finally{
+
+        switchingGroup = false;
 
     }
-
-    updateArrow();
 
 }
 
 async function prevGroup(){
 
-    if(currentGroupIndex === -1){
-
-        isGroupMode = false;
-
-        currentGroupId = null;
-
-        await loadTodayGoals();
-
+    if(switchingGroup){
+        return;
     }
 
-    currentGroupIndex--;
+    switchingGroup = true;
 
-    if(currentGroupIndex === -1){
+    try{
 
-        currentGroupId = null;
+        if(currentGroupIndex === -1){
+            return;
+        }
 
-        await loadTodayGoals();
+        currentGroupIndex--;
 
-        document.getElementById("goalTitle")
-            .textContent =
-            "本日の目標一覧";
+        if(currentGroupIndex === -1){
+
+            isGroupMode = false;
+
+            currentGroupId = null;
+
+            await loadTodayGoals();
+
+            document.getElementById("goalTitle")
+                .textContent = "本日の目標一覧";
+
+        }else{
+
+            await showCurrentGroup();
+
+        }
+
+        updateArrow();
+
+    }finally{
+
+        switchingGroup = false;
 
     }
-    else{
-
-        await showCurrentGroup();
-
-    }
-
-    updateArrow();
 
 }
 
 async function showCurrentGroup(){
 
-    isGroupMode = true;
-
     const group = userGroups[currentGroupIndex];
+
+    if(!group){
+        return;
+    }
+
+    isGroupMode = true;
 
     currentGroupId = group.id;
 
