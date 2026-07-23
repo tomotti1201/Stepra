@@ -124,10 +124,27 @@ document.addEventListener("DOMContentLoaded", async()=>{
     await loadTodayGoals();
 
 });
+function updateNowLine(){
+
+    if(isGroupMode){
+
+        loadGroupGoals(currentGroupId);
+
+    }
+    else{
+
+        loadChart();
+
+    }
+
+}
+
+setInterval(updateNowLine,60000);
 
 // 状態管理
 let currentTaskId = null;
 let isGroupMode = false;
+let currentGroupId = null;
 
 // グループ切替用
 let userGroups = [];
@@ -354,18 +371,14 @@ async function doneTask(btn){
 
     if(isGroupMode){
 
-        await fetch(`/api/grouptasks/${id}`,{
-
-            method:"PUT",
-
+        await fetch(`/api/groups/groupschedules/${id}/status`, {
+            method: "PUT",
             headers:{
                 "Content-Type":"application/json"
             },
-
             body:JSON.stringify({
                 status:"completed"
             })
-
         });
 
     }else{
@@ -388,8 +401,7 @@ async function doneTask(btn){
 
     if(isGroupMode){
 
-        await loadGroupGoals();
-        await loadGroupChart();
+        await loadGroupGoals(currentGroupId);
 
     }else{
 
@@ -431,7 +443,7 @@ async function registerReason(){
 
     if(isGroupMode){
 
-        await fetch(`/api/grouptasks/${currentTaskId}`,{
+        await fetch(`/api/groups/groupschedules/${currentTaskId}/status`,{
 
             method:"PUT",
 
@@ -473,8 +485,7 @@ async function registerReason(){
 
     if(isGroupMode){
 
-        await loadGroupGoals();
-        await loadGroupChart();
+        await loadGroupGoals(currentGroupId);
 
     }else{
 
@@ -494,7 +505,7 @@ async function cancelTask(btn){
 
     if(isGroupMode){
 
-        await fetch(`/api/grouptasks/${id}`,{
+        await fetch(`/api/groups/groupschedules/${id}/status`,{
 
             method:"PUT",
 
@@ -528,8 +539,7 @@ async function cancelTask(btn){
 
     if(isGroupMode){
 
-        await loadGroupGoals();
-        await loadGroupChart();
+        await loadGroupGoals(currentGroupId);
 
     }else{
 
@@ -863,51 +873,192 @@ function renderChart(tasks){
 
     chart.appendChild(center);
 
+    // 現在時刻ライン表示
+//     const now = new Date();
+
+//     const nowMinutes =
+//         now.getHours() * 60 +
+//         now.getMinutes();
+
+//     const nowAngle =
+//         (nowMinutes / 1440) * 360 - 90;
+
+
+//     const innerRadius = 80;
+//     const outerRadius = 140;
+
+
+//     const x1 =
+//         140 +
+//         innerRadius *
+//         Math.cos(nowAngle * Math.PI / 180);
+
+//     const y1 =
+//         140 +
+//         innerRadius *
+//         Math.sin(nowAngle * Math.PI / 180);
+
+
+//     const x2 =
+//         140 +
+//         outerRadius *
+//         Math.cos(nowAngle * Math.PI / 180);
+
+//     const y2 =
+//         140 +
+//         outerRadius *
+//         Math.sin(nowAngle * Math.PI / 180);
+
+
+
+//     const nowLine = document.createElement("div");
+
+
+//     const length =
+//         Math.sqrt(
+//             (x2-x1)**2 +
+//             (y2-y1)**2
+//         );
+
+
+//     const angleDeg =
+//         Math.atan2(
+//             y2-y1,
+//             x2-x1
+//         )
+//         *
+//         180
+//         /
+//         Math.PI;
+
+
+
+//     nowLine.style.position = "absolute";
+//     nowLine.style.left = `${x1}px`;
+//     nowLine.style.top = `${y1}px`;
+//     nowLine.style.width = `${length}px`;
+//     nowLine.style.height = "3px";
+
+//     // 現在時刻は赤
+//     nowLine.style.background = "#dc3545";
+
+//     nowLine.style.transformOrigin = "0 0";
+
+//     nowLine.style.transform =
+//         `rotate(${angleDeg}deg)`;
+
+
+//     nowLine.style.zIndex = "10";
+
+
+//     chart.appendChild(nowLine);
+//     // 現在時刻の待ち針
+// const pin = document.createElement("div");
+
+// const pinRadius = 6;
+
+// // 円の内側から刺さっているようにする
+// const pinRadiusPosition = 80;
+
+// const pinX =
+//     140 +
+//     pinRadiusPosition *
+//     Math.cos(nowAngle * Math.PI / 180);
+
+// const pinY =
+//     140 +
+//     pinRadiusPosition *
+//     Math.sin(nowAngle * Math.PI / 180);
+
+
+// pin.style.position = "absolute";
+// pin.style.width = `${pinRadius * 2}px`;
+// pin.style.height = `${pinRadius * 2}px`;
+// pin.style.background = "#dc3545";
+// pin.style.borderRadius = "50%";
+// pin.style.left = `${pinX}px`;
+// pin.style.top = `${pinY}px`;
+// pin.style.transform = "translate(-50%, -50%)";
+// pin.style.zIndex = "11";
+
+
+// chart.appendChild(pin);
 }
 
 // グループ切替
+let switchingGroup = false;
 async function nextGroup(){
 
-    if(userGroups.length === 0){
+    if(switchingGroup){
         return;
     }
 
-    if(currentGroupIndex < userGroups.length - 1){
+    switchingGroup = true;
 
-        currentGroupIndex++;
+    try{
 
-        await showCurrentGroup();
+        if(userGroups.length === 0){
+            return;
+        }
+
+        if(currentGroupIndex < userGroups.length - 1){
+
+            currentGroupIndex++;
+
+            await showCurrentGroup();
+
+        }
+
+        updateArrow();
+
+    }finally{
+
+        switchingGroup = false;
 
     }
-
-    updateArrow();
 
 }
 
 async function prevGroup(){
 
-    if(currentGroupIndex === -1){
+    if(switchingGroup){
         return;
     }
 
-    currentGroupIndex--;
+    switchingGroup = true;
 
-    if(currentGroupIndex === -1){
+    try{
 
-        await loadTodayGoals();
+        if(currentGroupIndex === -1){
+            return;
+        }
 
-        document.getElementById("goalTitle")
-            .textContent =
-            "本日の目標一覧";
+        currentGroupIndex--;
+
+        if(currentGroupIndex === -1){
+
+            isGroupMode = false;
+
+            currentGroupId = null;
+
+            await loadTodayGoals();
+
+            document.getElementById("goalTitle")
+                .textContent = "本日の目標一覧";
+
+        }else{
+
+            await showCurrentGroup();
+
+        }
+
+        updateArrow();
+
+    }finally{
+
+        switchingGroup = false;
 
     }
-    else{
-
-        await showCurrentGroup();
-
-    }
-
-    updateArrow();
 
 }
 
@@ -915,8 +1066,15 @@ async function showCurrentGroup(){
 
     const group = userGroups[currentGroupIndex];
 
-    document.getElementById("goalTitle")
-        .textContent =
+    if(!group){
+        return;
+    }
+
+    isGroupMode = true;
+
+    currentGroupId = group.id;
+
+    document.getElementById("goalTitle").textContent =
         group.name + " の目標一覧";
 
     await loadGroupGoals(group.id);
