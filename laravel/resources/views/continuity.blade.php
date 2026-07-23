@@ -133,7 +133,6 @@ async function loadContinuity() {
 
     document.getElementById("userName").textContent =
         data.name || "ユーザー名";
-    renderUserIcon(data.icon, data.name);
 
     document.getElementById("rate").innerHTML =
         `${Number(data.rate).toFixed(1)}<span class="fs-4">%</span>`;
@@ -146,39 +145,6 @@ async function loadContinuity() {
 
     document.getElementById("medal").src =
         `/image/${data.medal || "bronze-medal.png"}`;
-}
-
-function renderUserIcon(icon, name) {
-    const iconImage = document.getElementById("iconImage");
-    const iconText = document.getElementById("iconText");
-    const value = String(icon || "").trim();
-
-    iconImage.style.display = "none";
-    iconImage.removeAttribute("src");
-    iconText.textContent = "";
-
-    if (!value) {
-        iconText.textContent = String(name || "U").trim().slice(0, 1);
-        return;
-    }
-
-    const isImagePath =
-        value.startsWith("/") ||
-        value.startsWith("http://") ||
-        value.startsWith("https://") ||
-        /\.(png|jpe?g|gif|webp|svg)$/i.test(value);
-
-    if (isImagePath) {
-        iconImage.src = value;
-        iconImage.style.display = "block";
-        iconImage.onerror = () => {
-            iconImage.style.display = "none";
-            iconText.textContent = String(name || "U").trim().slice(0, 1);
-        };
-        return;
-    }
-
-    iconText.textContent = value;
 }
 </script>
 
